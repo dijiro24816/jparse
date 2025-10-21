@@ -13,6 +13,7 @@ public class App {
 		System.out.println("Hello World!");
 
 		String src = """
+				/*hello world*/a
 				hello
 				""";
 
