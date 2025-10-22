@@ -1,6 +1,5 @@
 package myprototype.jparse;
 
-import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -17,8 +16,8 @@ public class Parser {
 	}
 	
 	public CompilationUnit parse(InputStream inStrm) throws IOException {
-		BufferedInputStream strm = new BufferedInputStream(inStrm);
 		
+		System.out.println(this.tokenizer.tokenize(inStrm));
 		System.out.println(this.tokenizer.tokenize(inStrm));
 		return new CompilationUnit();
 	}
