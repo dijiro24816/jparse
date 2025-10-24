@@ -2,6 +2,7 @@ package myprototype.jparse.token;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.HexFormat;
 
 public class Tokenizer {
 	public int lineNumber;
@@ -30,7 +31,7 @@ public class Tokenizer {
 		// Peek character after the specified count
 		public int peek(InputStream inStrm, int count) throws IOException {
 			int index = this.index;
-			for (int i = 0; i < count - 2; i++)
+			for (int i = 0; i < count - 1; i++)
 				read(inStrm);
 
 			int ch = peek(inStrm);
@@ -79,41 +80,137 @@ public class Tokenizer {
 
 	public TokenBuffer textBuffer = new TokenBuffer();
 
-	//	public int peek() throws IOException {
-	//		return textBuffer.peek(inputStream);
-	//	}
-	//
-	//	public int peek(int count) throws IOException {
-	//		return textBuffer.peek(inputStream, count);
-	//	}
-	//
-	//	public int read() throws IOException {
-	//		return textBuffer.read(inputStream);
-	//	}
-	//
-	//	public void erase(int length) {
-	//		textBuffer.erase(length);
-	//	}
-	//
-	//	public int skip() throws IOException {
-	//		return textBuffer.skip(inputStream);
-	//	}
-
 	public Token extractAfterAlphabet(InputStream inStrm) throws IOException {
-		int ch, length = 1;
+		int ch, length = 0;
 		while ((ch = textBuffer.read(inStrm)) != -1 && (Character.isAlphabetic(ch) || Character.isDigit(ch)))
 			length++;
 
 		int beg = textBuffer.getFirstByteCount();
 		String s = textBuffer.extract(length);
 		int end = textBuffer.getFirstByteCount();
-
-		System.out.println(s);
+		
+		
+		Token tok;
+		
+		tok = KeywordToken.capture(beg, end, s);
+		if (tok != null) return tok;
+		
+		tok = NullLiteralToken.capture(beg, end, s);
+		if (tok != null) return tok;
+		
 		return new IdentifierToken(beg, end, s);
 	}
 
-	public Token extractAfterDigit() {
-		return new LiteralToken(0, 0);
+	public Token extractAfterDigit(InputStream inStrm) throws IOException {
+		int ch = textBuffer.peek(inStrm);
+		int length = 0;
+		int beg = textBuffer.getFirstByteCount();
+		int end;
+		String s;
+		long value = 0;
+		
+		if (ch != '0') { // Decimal Integer Literal
+			while ((ch = textBuffer.read(inStrm)) != -1) {
+				int num = ch - '0';
+				if (num <= 0 || num > 9)
+					break;
+				
+				length++;
+			}
+			
+			s = textBuffer.extract(length);
+			end = textBuffer.getFirstByteCount();
+			
+			value = Long.parseLong(s);
+			
+			return new IntegerLiteralToken(beg, end, value);
+		}
+		
+		switch (textBuffer.peek(inStrm, 2)) {
+		case 'x':
+		case 'X': // Hexdecimal Integer Literal
+			textBuffer.erase(2);
+			while ((ch = textBuffer.read(inStrm)) != -1) {
+				int num;
+				
+				if (ch >= '0' && ch <= '9')
+					num = ch - '0';
+				else if (ch >= 'a' && ch <= 'f')
+					num = ch - 'a';
+				else if (ch >= 'A' && ch <= 'F')
+					num = ch - 'A';
+				else
+					break;
+				
+				length++;
+			}
+			
+			s = textBuffer.extract(length);
+			end = textBuffer.getFirstByteCount();
+			
+			value = HexFormat.fromHexDigitsToLong(s);
+			
+			int digit = 1000;
+			
+			return new IntegerLiteralToken(beg, end, value);
+			
+		case 'b':
+		case 'B': {
+			// Binary Integer Literal
+			textBuffer.erase(2);
+			while ((ch = textBuffer.read(inStrm)) != -1) {
+				if (ch < '0'|| ch > '1')
+					break;
+				
+				length++;
+			}
+			
+			s = textBuffer.extract(length);
+			end = textBuffer.getFirstByteCount();
+			
+			int m = 1;
+			int i = s.length();
+			while ((i--) > 0) {
+				int num = s.charAt(i) - '0';
+				value += num * m;
+				m *= 2;
+			}
+			
+			return new IntegerLiteralToken(beg, end, value);
+		}
+		
+		default: {
+			// Octal Integer Literal or 0
+			textBuffer.erase(1);
+			
+			while ((ch = textBuffer.read(inStrm)) != -1) {
+				if (ch < '0' || ch > '7')
+					break;
+				
+				length++;
+			}
+			
+			s = textBuffer.extract(length);
+			end = textBuffer.getFirstByteCount();
+			
+			
+			int m = 1;
+			int i = s.length();
+			while ((i--) > 0) {
+				int num = s.charAt(i) - '0';
+				value += num * m;
+				m *= 8;
+			}
+			
+			return new IntegerLiteralToken(beg, end, value);
+		}
+			
+		}
+		
+		
+//		textBuffer.erase(1);
+//		end = textBuffer.getFirstByteCount();
+//		return new IntegerLiteralToken(beg, end, 0);
 	}
 
 	public Token tokenize(InputStream inStrm) throws IOException {
@@ -144,17 +241,15 @@ public class Tokenizer {
 				continue;
 			}
 
-			//			System.out.println(textBuffer.count);
-
 			if (Character.isAlphabetic(ch))
 				return extractAfterAlphabet(inStrm);
 
-			//			if (Character.isDigit(ch))
-			//				return extractAfterDigit();
+			if (Character.isDigit(ch))
+				return extractAfterDigit(inStrm);
 
 			break;
 		}
 
-		return new Token(0, 0);
+		return null;
 	}
 }

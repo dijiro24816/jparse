@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import myprototype.jparse.syntax.CompilationUnit;
+import myprototype.jparse.token.Token;
 import myprototype.jparse.token.Tokenizer;
 
 public class Parser {
@@ -16,9 +17,11 @@ public class Parser {
 	}
 	
 	public CompilationUnit parse(InputStream inStrm) throws IOException {
+		Token token;
 		
-		System.out.println(this.tokenizer.tokenize(inStrm));
-		System.out.println(this.tokenizer.tokenize(inStrm));
+		while ((token = this.tokenizer.tokenize(inStrm)) != null) {
+			System.out.println(token);
+		}
 		return new CompilationUnit();
 	}
 }

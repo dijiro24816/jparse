@@ -11,27 +11,50 @@ import myprototype.jparse.token.Tokenizer;
  */
 public class App {
 	public static void main(String[] args) {
-		System.out.println("Hello World!");
 
+//		String src = """
+//				/*hello world      private abstract          asdf asdf asdf asd*/   hello private
+//				hello
+//				private
+//				abstract
+//				abs
+//				
+//				null
+//				public class Main
+//				123123
+//				0x1
+//				""";
+
+		
+//		String src = """
+//				123124
+//				0xFFFF
+//				0
+//				""";
+		
 		String src = """
-				/*hello world*/   hello world
-				hello
+				public class Main
+				0b011
+				011
 				""";
-		try {
-			InputStream inStrm = new ByteArrayInputStream(src.getBytes());
-			int ch;
-			while ((ch = inStrm.read()) != -1) {
-				System.out.print((char) ch);
-			}
-		} catch (IOException e) {
-			System.out.println(e.getMessage());
-			System.exit(0);
-		}
+		
+		
+//		try {
+//			InputStream inStrm = new ByteArrayInputStream(src.getBytes());
+//			int ch;
+//			while ((ch = inStrm.read()) != -1) {
+//				System.out.print((char) ch);
+//			}
+//		} catch (IOException e) {
+//			System.out.println(e.getMessage());
+//			System.exit(0);
+//		}
 		
 		try {
 			Parser parser = new Parser(new Tokenizer());
 			InputStream inStrm = new ByteArrayInputStream(src.getBytes());
 			parser.parse(inStrm);
+			System.out.println("MSG: Finished!");
 		} catch (IOException e) {
 			System.out.println(e.getMessage());
 			System.exit(0);
