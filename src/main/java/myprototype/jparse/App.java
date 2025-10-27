@@ -32,10 +32,18 @@ public class App {
 //				0
 //				""";
 		
+//		String src = """
+//				public class Main
+//				boolean _sample = true;
+//				0b011
+//				(011)
+//				""";
+	
 		String src = """
-				public class Main
-				0b011
-				011
+				= > < ! ~ ? :
+				== <= >= != && || ++ --
+				+ - * / & | ^ % << >> >>>
+				+= -= *= /= &= |= ^= %= <<= >>= >>>=
 				""";
 		
 		

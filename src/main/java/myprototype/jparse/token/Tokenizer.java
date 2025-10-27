@@ -29,9 +29,9 @@ public class Tokenizer {
 		}
 
 		// Peek character after the specified count
-		public int peek(InputStream inStrm, int count) throws IOException {
+		public int peek(InputStream inStrm, int nth) throws IOException {
 			int index = this.index;
-			for (int i = 0; i < count - 1; i++)
+			for (int i = 0; i < nth; i++)
 				read(inStrm);
 
 			int ch = peek(inStrm);
@@ -65,10 +65,14 @@ public class Tokenizer {
 			stringBuilder.delete(0, length);
 			index = 0; // reset index
 		}
+		
+		public String substring(int length) {
+			return stringBuilder.substring(0, length);
+		}
 
 		// Extract from stringBuilder, but keep stringBuilder's character after the specified length
 		public String extract(int length) {
-			String string = stringBuilder.substring(0, length);
+			String string = substring(length);
 			erase(length);
 			return string;
 		}
@@ -80,9 +84,9 @@ public class Tokenizer {
 
 	public TokenBuffer textBuffer = new TokenBuffer();
 
-	public Token extractAfterAlphabet(InputStream inStrm) throws IOException {
+	public Token extractAfterJavaLetter(InputStream inStrm) throws IOException {
 		int ch, length = 0;
-		while ((ch = textBuffer.read(inStrm)) != -1 && (Character.isAlphabetic(ch) || Character.isDigit(ch)))
+		while ((ch = textBuffer.read(inStrm)) >= 0 && (isJavaLetter(ch) || Character.isDigit(ch)))
 			length++;
 
 		int beg = textBuffer.getFirstByteCount();
@@ -110,7 +114,7 @@ public class Tokenizer {
 		long value = 0;
 		
 		if (ch != '0') { // Decimal Integer Literal
-			while ((ch = textBuffer.read(inStrm)) != -1) {
+			while ((ch = textBuffer.read(inStrm)) >= 0) {
 				int num = ch - '0';
 				if (num <= 0 || num > 9)
 					break;
@@ -126,11 +130,11 @@ public class Tokenizer {
 			return new IntegerLiteralToken(beg, end, value);
 		}
 		
-		switch (textBuffer.peek(inStrm, 2)) {
+		switch (textBuffer.peek(inStrm, 1)) {
 		case 'x':
 		case 'X': // Hexdecimal Integer Literal
 			textBuffer.erase(2);
-			while ((ch = textBuffer.read(inStrm)) != -1) {
+			while ((ch = textBuffer.read(inStrm)) >= 0) {
 				int num;
 				
 				if (ch >= '0' && ch <= '9')
@@ -150,15 +154,13 @@ public class Tokenizer {
 			
 			value = HexFormat.fromHexDigitsToLong(s);
 			
-			int digit = 1000;
-			
 			return new IntegerLiteralToken(beg, end, value);
 			
 		case 'b':
 		case 'B': {
 			// Binary Integer Literal
 			textBuffer.erase(2);
-			while ((ch = textBuffer.read(inStrm)) != -1) {
+			while ((ch = textBuffer.read(inStrm)) >= 0) {
 				if (ch < '0'|| ch > '1')
 					break;
 				
@@ -183,7 +185,7 @@ public class Tokenizer {
 			// Octal Integer Literal or 0
 			textBuffer.erase(1);
 			
-			while ((ch = textBuffer.read(inStrm)) != -1) {
+			while ((ch = textBuffer.read(inStrm)) >= 0) {
 				if (ch < '0' || ch > '7')
 					break;
 				
@@ -212,16 +214,109 @@ public class Tokenizer {
 //		end = textBuffer.getFirstByteCount();
 //		return new IntegerLiteralToken(beg, end, 0);
 	}
+	
+	public Token eatOperatorToken(int n) {
+		int beg = textBuffer.getFirstByteCount();
+		String symbols = textBuffer.extract(n);
+		int end = beg + n;
+		return new OperatorToken(beg, end, symbols);
+	}
+	
+	public Token eatSeparatorToken() {
+		int beg = textBuffer.getFirstByteCount();
+		int symbol = textBuffer.extract(1).charAt(0);
+		int end = beg + 1;
+		return new SeparatorToken(beg, end, symbol);
+	}
+	
+	public Token extractSymbol(InputStream inStrm) throws IOException {
+		int beg = textBuffer.getFirstByteCount();
+		int end;
+		int ch = textBuffer.peek(inStrm);
+		String symbols;
+		
+		switch (ch) {
+		case '(':
+		case ')':
+		case '{':
+		case '}':
+		case '[':
+		case ']':
+		case ';':
+		case ',':
+		case '.':
+			return eatSeparatorToken();
+		}
+		
+		for (int i = 0; i < 4; i++)
+			textBuffer.peek(inStrm, i);
+		
+		String peekS = textBuffer.substring(4);
+		System.out.println(peekS.length());
+		switch (peekS.charAt(0)) {
+		case '=':
+			if (peekS.charAt(1) == '=') {
+				symbols = textBuffer.extract(2);
+				end = textBuffer.getFirstByteCount();
+				return new OperatorToken(beg, end, symbols);
+			}
+			
+			return eatOperatorToken(1);
+			
+		case '>':
+			return eatOperatorToken(1);
+			
+		case '<':
+			switch (peekS.charAt(1)) {
+			case '=':
+				return eatOperatorToken(1);
+				
+			case '<':
+				if (peekS.charAt(3) == '=') {
+					
+				}
+			}
+			
+			return eatOperatorToken(1);
+			
+		case '!':
+			return eatOperatorToken(1);
+		
+		case '~':
+			return eatOperatorToken(1);
+
+		case '?':
+			return eatOperatorToken(1);
+			
+		case '-':
+		
+		case '?':
+		
+		case ':':
+		
+		}
+		
+		return null;
+	}
+	
+	public boolean isJavaLetter(int ch) {
+		if (Character.isAlphabetic(ch) || ch == '_')
+			return true;
+		
+		return false;
+	}
 
 	public Token tokenize(InputStream inStrm) throws IOException {
 		int ch;
-		while ((ch = textBuffer.peek(inStrm)) != -1) {
+		while ((ch = textBuffer.peek(inStrm)) >= 0) {
+			if (ch != '\n' && (ch < ' ' || ch > 126)) // Invaild character
+				break;
 
 			// Skip whitespace
 			if (Character.isWhitespace(ch)) {
 				textBuffer.erase(1);
 
-				while ((ch = textBuffer.skip(inStrm)) != -1) {
+				while ((ch = textBuffer.skip(inStrm)) >= 0) {
 					if (!Character.isWhitespace(ch)) {
 						textBuffer.unskip(inStrm, (char) ch);
 						break;
@@ -230,24 +325,25 @@ public class Tokenizer {
 			}
 
 			// Skip comment
-			if (ch == '/' && textBuffer.peek(inStrm, 2) == '*') {
+			if (ch == '/' && textBuffer.peek(inStrm, 1) == '*') {
 				textBuffer.erase(2); // Erase stored character '/' and '*'
 
 				int ch1, ch2 = 0;
 				do {
 					ch1 = ch2;
 
-				} while ((ch2 = textBuffer.skip(inStrm)) != -1 && (ch1 != '*' || ch2 != '/'));
+				} while ((ch2 = textBuffer.skip(inStrm)) >= 0 && (ch1 != '*' || ch2 != '/'));
 				continue;
 			}
 
-			if (Character.isAlphabetic(ch))
-				return extractAfterAlphabet(inStrm);
+			if (isJavaLetter(ch))
+				return extractAfterJavaLetter(inStrm);
 
 			if (Character.isDigit(ch))
 				return extractAfterDigit(inStrm);
 
-			break;
+			
+			return extractSymbol(inStrm);
 		}
 
 		return null;

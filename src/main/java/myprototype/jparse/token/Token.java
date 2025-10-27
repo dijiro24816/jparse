@@ -1,6 +1,6 @@
 package myprototype.jparse.token;
 
-public sealed class Token permits IdentifierToken, KeywordToken, LiteralToken {
+public sealed class Token permits IdentifierToken, KeywordToken, LiteralToken, SeparatorToken, OperatorToken {
 	public int beg;
 	public int end;
 
