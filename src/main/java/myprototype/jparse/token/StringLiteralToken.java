@@ -1,9 +1,16 @@
 package myprototype.jparse.token;
 
 public final class StringLiteralToken extends LiteralToken {
-
-	public StringLiteralToken(int beg, int end) {
+	public String value;
+	
+	public StringLiteralToken(int beg, int end, String value) {
 		super(beg, end);
+		
+		this.value = value;
 	}
 
+	@Override
+	public String toString() {
+		return "StringLiteralToken [beg=" + beg + " end=" + end + " value=" + value + "]";
+	}
 }

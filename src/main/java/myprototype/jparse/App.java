@@ -39,13 +39,21 @@ public class App {
 //				(011)
 //				""";
 	
+//		String src = """
+//				= > < ! ~ ? :
+//				== <= >= != && || ++ --
+//				+ - * / & | ^ % << >> >>>
+//				+= -= *= /= &= |= ^= %= <<= >>= >>>=
+//				""";
+		
 		String src = """
-				= > < ! ~ ? :
-				== <= >= != && || ++ --
-				+ - * / & | ^ % << >> >>>
-				+= -= *= /= &= |= ^= %= <<= >>= >>>=
+				.1
+				0.1
+				0x1p-2
 				""";
 		
+//		System.out.println(Long.valueOf("0012"));
+//		System.exit(0);
 		
 //		try {
 //			InputStream inStrm = new ByteArrayInputStream(src.getBytes());

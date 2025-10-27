@@ -38,10 +38,16 @@ public class Tokenizer {
 			this.index = index;
 			return ch;
 		}
-
+		
 		public int read(InputStream inStrm) throws IOException {
 			int ch = peek(inStrm);
 			index++;
+			return ch;
+		}
+		
+		public int read(InputStream inStrm, int nth) throws IOException {
+			int ch = peek(inStrm, nth);
+			this.index = nth + 1;
 			return ch;
 		}
 
@@ -102,6 +108,9 @@ public class Tokenizer {
 		tok = NullLiteralToken.capture(beg, end, s);
 		if (tok != null) return tok;
 		
+		tok = BooleanLiteralToken.capture(beg, end, s);
+		if (tok != null) return tok;
+		
 		return new IdentifierToken(beg, end, s);
 	}
 
@@ -113,10 +122,20 @@ public class Tokenizer {
 		String s;
 		long value = 0;
 		
-		if (ch != '0') { // Decimal Integer Literal
+		boolean isFloatingPoint = false;
+		double floatingPointValue;
+		
+		// Decimal Integer Literal or Decimal Floating Point Literal
+		if (ch != '0' || ch == '.' || textBuffer.peek(inStrm, 1) == '.') {
 			while ((ch = textBuffer.read(inStrm)) >= 0) {
+				if (ch == '.') {
+					isFloatingPoint = true;
+					length++;
+					continue;
+				}
+
 				int num = ch - '0';
-				if (num <= 0 || num > 9)
+				if (num < 0 || num > 9)
 					break;
 				
 				length++;
@@ -124,7 +143,11 @@ public class Tokenizer {
 			
 			s = textBuffer.extract(length);
 			end = textBuffer.getFirstByteCount();
-			
+		
+			if (isFloatingPoint) {
+				floatingPointValue = Double.parseDouble(s);
+				return new FloatingPointLiteralToken(beg, end, floatingPointValue);
+			}
 			value = Long.parseLong(s);
 			
 			return new IntegerLiteralToken(beg, end, value);
@@ -133,7 +156,10 @@ public class Tokenizer {
 		switch (textBuffer.peek(inStrm, 1)) {
 		case 'x':
 		case 'X': // Hexdecimal Integer Literal
-			textBuffer.erase(2);
+			
+			textBuffer.read(inStrm, 1);
+			length += 2;
+			
 			while ((ch = textBuffer.read(inStrm)) >= 0) {
 				int num;
 				
@@ -151,6 +177,12 @@ public class Tokenizer {
 			
 			s = textBuffer.extract(length);
 			end = textBuffer.getFirstByteCount();
+			
+			if (isFloatingPoint) {
+				return null;
+			}
+			
+			textBuffer.erase(2);
 			
 			value = HexFormat.fromHexDigitsToLong(s);
 			
@@ -182,7 +214,7 @@ public class Tokenizer {
 		}
 		
 		default: {
-			// Octal Integer Literal or 0
+			// Octal Integer Literal
 			textBuffer.erase(1);
 			
 			while ((ch = textBuffer.read(inStrm)) >= 0) {
@@ -252,34 +284,48 @@ public class Tokenizer {
 			textBuffer.peek(inStrm, i);
 		
 		String peekS = textBuffer.substring(4);
-		System.out.println(peekS.length());
 		switch (peekS.charAt(0)) {
 		case '=':
-			if (peekS.charAt(1) == '=') {
-				symbols = textBuffer.extract(2);
-				end = textBuffer.getFirstByteCount();
-				return new OperatorToken(beg, end, symbols);
-			}
+			if (peekS.charAt(1) == '=')
+				return eatOperatorToken(2);
 			
 			return eatOperatorToken(1);
 			
 		case '>':
+			switch (peekS.charAt(1)) {
+			case '=':
+				return eatOperatorToken(2);
+			case '>':
+				switch (peekS.charAt(2)) {
+				case '>':
+					if (peekS.charAt(3) == '=')
+						return eatOperatorToken(4);
+					
+					return eatOperatorToken(3);
+				case '=':
+					return eatOperatorToken(3);
+				}
+				return eatOperatorToken(2);
+			}
 			return eatOperatorToken(1);
 			
 		case '<':
 			switch (peekS.charAt(1)) {
 			case '=':
-				return eatOperatorToken(1);
+				return eatOperatorToken(2);
 				
 			case '<':
-				if (peekS.charAt(3) == '=') {
-					
-				}
+				if (peekS.charAt(2) == '=')
+					return eatOperatorToken(3);
+				return eatOperatorToken(2);
 			}
 			
 			return eatOperatorToken(1);
 			
 		case '!':
+			if (peekS.charAt(1) == '=')
+				return eatOperatorToken(2);
+			
 			return eatOperatorToken(1);
 		
 		case '~':
@@ -288,12 +334,75 @@ public class Tokenizer {
 		case '?':
 			return eatOperatorToken(1);
 			
-		case '-':
-		
-		case '?':
-		
 		case ':':
+			return eatOperatorToken(1);
 		
+		case '&':
+			switch (peekS.charAt(1)) {
+			case '&':
+				return eatOperatorToken(2);
+			
+			case '=':
+				return eatOperatorToken(2);
+			}
+			
+			return eatOperatorToken(1);
+		
+		case '|':
+			switch (peekS.charAt(1)) {
+			case '|':
+				return eatOperatorToken(2);
+			
+			case '=':
+				return eatOperatorToken(2);
+			}
+			
+			return eatOperatorToken(1);
+		
+		case '+':
+			switch (peekS.charAt(1)) {
+			case '+':
+				return eatOperatorToken(2);
+				
+			case '=':
+				return eatOperatorToken(2);
+			}
+			
+			return eatOperatorToken(1);
+		
+		case '-':
+			switch (peekS.charAt(1)) {
+			case '-':
+				return eatOperatorToken(2);
+			
+			case '=':
+				return eatOperatorToken(2);
+			}
+			
+			return eatOperatorToken(1);
+		
+		case '*':
+			if (peekS.charAt(1) == '=')
+				return eatOperatorToken(2);
+			
+			return eatOperatorToken(1);
+		
+		case '/':
+			if (peekS.charAt(1) == '=')
+				return eatOperatorToken(2);
+			
+			return eatOperatorToken(1);
+		
+		case '^':
+			if (peekS.charAt(1) == '=')
+				return eatOperatorToken(2);
+			return eatOperatorToken(1);
+		
+		case '%':
+			if (peekS.charAt(1) == '=')
+				return eatOperatorToken(2);
+			
+			return eatOperatorToken(1);
 		}
 		
 		return null;
@@ -339,10 +448,9 @@ public class Tokenizer {
 			if (isJavaLetter(ch))
 				return extractAfterJavaLetter(inStrm);
 
-			if (Character.isDigit(ch))
+			if (Character.isDigit(ch) || ch == '.') // Digit or FloatingPoint
 				return extractAfterDigit(inStrm);
 
-			
 			return extractSymbol(inStrm);
 		}
 
