@@ -3,6 +3,7 @@ package myprototype.jparse.token;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.HexFormat;
+import java.util.function.Function;
 
 public class Tokenizer {
 	public int lineNumber;
@@ -38,13 +39,13 @@ public class Tokenizer {
 			this.index = index;
 			return ch;
 		}
-		
+
 		public int read(InputStream inStrm) throws IOException {
 			int ch = peek(inStrm);
 			index++;
 			return ch;
 		}
-		
+
 		public int read(InputStream inStrm, int nth) throws IOException {
 			int ch = peek(inStrm, nth);
 			this.index = nth + 1;
@@ -71,7 +72,7 @@ public class Tokenizer {
 			stringBuilder.delete(0, length);
 			index = 0; // reset index
 		}
-		
+
 		public String substring(int length) {
 			return stringBuilder.substring(0, length);
 		}
@@ -98,20 +99,106 @@ public class Tokenizer {
 		int beg = textBuffer.getFirstByteCount();
 		String s = textBuffer.extract(length);
 		int end = textBuffer.getFirstByteCount();
-		
-		
+
 		Token tok;
-		
+
 		tok = KeywordToken.capture(beg, end, s);
-		if (tok != null) return tok;
-		
+		if (tok != null)
+			return tok;
+
 		tok = NullLiteralToken.capture(beg, end, s);
-		if (tok != null) return tok;
-		
+		if (tok != null)
+			return tok;
+
 		tok = BooleanLiteralToken.capture(beg, end, s);
-		if (tok != null) return tok;
-		
+		if (tok != null)
+			return tok;
+
 		return new IdentifierToken(beg, end, s);
+	}
+
+	public boolean isHexDecimalDigit(int ch) {
+		return (ch >= '0' && ch <= '9') || (ch >= 'a' && ch <= 'f') || (ch >= 'A' && ch <= 'F');
+	}
+	
+	public boolean isDecimalDigit(int ch) {
+		return (ch >= '0' && ch <= '9');
+	}
+	
+	public long parseNumber(String src, int digit, Function<Integer, Integer> parseDigit) {
+		long value = 0;
+		
+		int m = 1;
+		int i = src.length();
+		while ((i--) > 0) {
+			int num = parseDigit.apply((int)src.charAt(i));
+			value += num * m;
+			m *= digit;
+		}
+		
+		return value;
+	}
+
+	public int parseHexDecimalDigit(int ch) {
+		if (ch >= '0' && ch <= '9')
+			return ch - '0';
+		else if (ch >= 'a' && ch <= 'f')
+			return ch - 'a';
+		else if (ch >= 'A' && ch <= 'F')
+			return ch - 'A';
+
+		return -1;
+	}
+	
+	public int parseDecimalDigit(int ch) {
+		return ch - '0';
+	}
+	
+	public long parseHexDecimalDigits(String src) {
+		return (long)parseNumber(src, 16, (Integer ch) -> { return parseHexDecimalDigit(ch); });
+	}
+	
+	public long parseDecimalDigits(String src) {
+		return (long)parseNumber(src, 10, (Integer ch) -> { return parseDecimalDigit(ch); });
+	}
+
+	public Token extractAfterBinaryExponent(InputStream inStrm, String left) throws IOException {
+		int beg = textBuffer.getFirstByteCount() - left.length();
+		
+		double value = 0;
+		long exponent = 0;
+		
+		int ch = textBuffer.peek(inStrm, 1);
+		boolean minus = false;
+		switch (ch) {
+		case '-':
+			minus = true;
+		case '+':
+			textBuffer.erase(2);
+			break;
+		default:
+			textBuffer.erase(1);
+		}
+		
+		int length = 0;
+		while ((ch = textBuffer.read(inStrm)) >= 0 && isHexDecimalDigit(ch))
+			length++;
+		
+		String right = textBuffer.extract(length);
+		
+		value = parseHexDecimalDigits(left);
+		exponent = parseDecimalDigits(right);
+		
+		value = Math.pow(value, minus ? -exponent : exponent);
+		
+		textBuffer.erase(length);
+		int end = textBuffer.getFirstByteCount();
+
+		System.out.println(beg + length);
+		System.out.println(textBuffer.peek(inStrm));
+		System.exit(0);
+		
+		return new FloatingPointLiteralToken(beg, end, value);
 	}
 
 	public Token extractAfterDigit(InputStream inStrm) throws IOException {
@@ -121,14 +208,14 @@ public class Tokenizer {
 		int end;
 		String s;
 		long value = 0;
-		
+
 		boolean isFloatingPoint = false;
 		double floatingPointValue;
-		
+
 		// Decimal Integer Literal or Decimal Floating Point Literal
 		if (ch != '0' || ch == '.' || textBuffer.peek(inStrm, 1) == '.') {
 			while ((ch = textBuffer.read(inStrm)) >= 0) {
-				if (ch == '.') {
+				if (ch == '.' && !isFloatingPoint) { // Don't allow this process second time
 					isFloatingPoint = true;
 					length++;
 					continue;
@@ -137,32 +224,33 @@ public class Tokenizer {
 				int num = ch - '0';
 				if (num < 0 || num > 9)
 					break;
-				
+
 				length++;
 			}
-			
+
 			s = textBuffer.extract(length);
 			end = textBuffer.getFirstByteCount();
-		
+
 			if (isFloatingPoint) {
 				floatingPointValue = Double.parseDouble(s);
 				return new FloatingPointLiteralToken(beg, end, floatingPointValue);
 			}
 			value = Long.parseLong(s);
-			
+
 			return new IntegerLiteralToken(beg, end, value);
 		}
-		
+
 		switch (textBuffer.peek(inStrm, 1)) {
 		case 'x':
 		case 'X': // Hexdecimal Integer Literal
-			
-			textBuffer.read(inStrm, 1);
-			length += 2;
-			
+			textBuffer.erase(2);
+
 			while ((ch = textBuffer.read(inStrm)) >= 0) {
 				int num;
-				
+
+				if (ch == 'p')
+					return extractAfterBinaryExponent(inStrm, textBuffer.extract(length));
+
 				if (ch >= '0' && ch <= '9')
 					num = ch - '0';
 				else if (ch >= 'a' && ch <= 'f')
@@ -171,37 +259,30 @@ public class Tokenizer {
 					num = ch - 'A';
 				else
 					break;
-				
+
 				length++;
 			}
-			
+
 			s = textBuffer.extract(length);
-			end = textBuffer.getFirstByteCount();
-			
-			if (isFloatingPoint) {
-				return null;
-			}
-			
-			textBuffer.erase(2);
-			
 			value = HexFormat.fromHexDigitsToLong(s);
-			
+			end = textBuffer.getFirstByteCount();
+
 			return new IntegerLiteralToken(beg, end, value);
-			
+
 		case 'b':
 		case 'B': {
 			// Binary Integer Literal
 			textBuffer.erase(2);
 			while ((ch = textBuffer.read(inStrm)) >= 0) {
-				if (ch < '0'|| ch > '1')
+				if (ch < '0' || ch > '1')
 					break;
-				
+
 				length++;
 			}
-			
+
 			s = textBuffer.extract(length);
 			end = textBuffer.getFirstByteCount();
-			
+
 			int m = 1;
 			int i = s.length();
 			while ((i--) > 0) {
@@ -209,25 +290,24 @@ public class Tokenizer {
 				value += num * m;
 				m *= 2;
 			}
-			
+
 			return new IntegerLiteralToken(beg, end, value);
 		}
-		
+
 		default: {
 			// Octal Integer Literal
 			textBuffer.erase(1);
-			
+
 			while ((ch = textBuffer.read(inStrm)) >= 0) {
 				if (ch < '0' || ch > '7')
 					break;
-				
+
 				length++;
 			}
-			
+
 			s = textBuffer.extract(length);
 			end = textBuffer.getFirstByteCount();
-			
-			
+
 			int m = 1;
 			int i = s.length();
 			while ((i--) > 0) {
@@ -235,38 +315,37 @@ public class Tokenizer {
 				value += num * m;
 				m *= 8;
 			}
-			
+
 			return new IntegerLiteralToken(beg, end, value);
 		}
-			
+
 		}
-		
-		
-//		textBuffer.erase(1);
-//		end = textBuffer.getFirstByteCount();
-//		return new IntegerLiteralToken(beg, end, 0);
+
+		//		textBuffer.erase(1);
+		//		end = textBuffer.getFirstByteCount();
+		//		return new IntegerLiteralToken(beg, end, 0);
 	}
-	
+
 	public Token eatOperatorToken(int n) {
 		int beg = textBuffer.getFirstByteCount();
 		String symbols = textBuffer.extract(n);
 		int end = beg + n;
 		return new OperatorToken(beg, end, symbols);
 	}
-	
+
 	public Token eatSeparatorToken() {
 		int beg = textBuffer.getFirstByteCount();
 		int symbol = textBuffer.extract(1).charAt(0);
 		int end = beg + 1;
 		return new SeparatorToken(beg, end, symbol);
 	}
-	
+
 	public Token extractSymbol(InputStream inStrm) throws IOException {
 		int beg = textBuffer.getFirstByteCount();
 		int end;
 		int ch = textBuffer.peek(inStrm);
 		String symbols;
-		
+
 		switch (ch) {
 		case '(':
 		case ')':
@@ -279,18 +358,18 @@ public class Tokenizer {
 		case '.':
 			return eatSeparatorToken();
 		}
-		
+
 		for (int i = 0; i < 4; i++)
 			textBuffer.peek(inStrm, i);
-		
+
 		String peekS = textBuffer.substring(4);
 		switch (peekS.charAt(0)) {
 		case '=':
 			if (peekS.charAt(1) == '=')
 				return eatOperatorToken(2);
-			
+
 			return eatOperatorToken(1);
-			
+
 		case '>':
 			switch (peekS.charAt(1)) {
 			case '=':
@@ -300,7 +379,7 @@ public class Tokenizer {
 				case '>':
 					if (peekS.charAt(3) == '=')
 						return eatOperatorToken(4);
-					
+
 					return eatOperatorToken(3);
 				case '=':
 					return eatOperatorToken(3);
@@ -308,110 +387,110 @@ public class Tokenizer {
 				return eatOperatorToken(2);
 			}
 			return eatOperatorToken(1);
-			
+
 		case '<':
 			switch (peekS.charAt(1)) {
 			case '=':
 				return eatOperatorToken(2);
-				
+
 			case '<':
 				if (peekS.charAt(2) == '=')
 					return eatOperatorToken(3);
 				return eatOperatorToken(2);
 			}
-			
+
 			return eatOperatorToken(1);
-			
+
 		case '!':
 			if (peekS.charAt(1) == '=')
 				return eatOperatorToken(2);
-			
+
 			return eatOperatorToken(1);
-		
+
 		case '~':
 			return eatOperatorToken(1);
 
 		case '?':
 			return eatOperatorToken(1);
-			
+
 		case ':':
 			return eatOperatorToken(1);
-		
+
 		case '&':
 			switch (peekS.charAt(1)) {
 			case '&':
 				return eatOperatorToken(2);
-			
+
 			case '=':
 				return eatOperatorToken(2);
 			}
-			
+
 			return eatOperatorToken(1);
-		
+
 		case '|':
 			switch (peekS.charAt(1)) {
 			case '|':
 				return eatOperatorToken(2);
-			
+
 			case '=':
 				return eatOperatorToken(2);
 			}
-			
+
 			return eatOperatorToken(1);
-		
+
 		case '+':
 			switch (peekS.charAt(1)) {
 			case '+':
 				return eatOperatorToken(2);
-				
+
 			case '=':
 				return eatOperatorToken(2);
 			}
-			
+
 			return eatOperatorToken(1);
-		
+
 		case '-':
 			switch (peekS.charAt(1)) {
 			case '-':
 				return eatOperatorToken(2);
-			
+
 			case '=':
 				return eatOperatorToken(2);
 			}
-			
+
 			return eatOperatorToken(1);
-		
+
 		case '*':
 			if (peekS.charAt(1) == '=')
 				return eatOperatorToken(2);
-			
+
 			return eatOperatorToken(1);
-		
+
 		case '/':
 			if (peekS.charAt(1) == '=')
 				return eatOperatorToken(2);
-			
+
 			return eatOperatorToken(1);
-		
+
 		case '^':
 			if (peekS.charAt(1) == '=')
 				return eatOperatorToken(2);
 			return eatOperatorToken(1);
-		
+
 		case '%':
 			if (peekS.charAt(1) == '=')
 				return eatOperatorToken(2);
-			
+
 			return eatOperatorToken(1);
 		}
-		
+
 		return null;
 	}
-	
+
 	public boolean isJavaLetter(int ch) {
 		if (Character.isAlphabetic(ch) || ch == '_')
 			return true;
-		
+
 		return false;
 	}
 
