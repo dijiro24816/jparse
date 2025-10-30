@@ -49,7 +49,7 @@ public class App {
 		String src = """
 				.1
 				0.1
-				0x2p3
+				0x2p+3
 				""";
 		
 //		System.out.println(Long.valueOf("0012"));

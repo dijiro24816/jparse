@@ -194,10 +194,6 @@ public class Tokenizer {
 		textBuffer.erase(length);
 		int end = textBuffer.getFirstByteCount();
 
-		System.out.println(beg + length);
-		System.out.println(textBuffer.peek(inStrm));
-		System.exit(0);
-		
 		return new FloatingPointLiteralToken(beg, end, value);
 	}
 
@@ -320,10 +316,6 @@ public class Tokenizer {
 		}
 
 		}
-
-		//		textBuffer.erase(1);
-		//		end = textBuffer.getFirstByteCount();
-		//		return new IntegerLiteralToken(beg, end, 0);
 	}
 
 	public Token eatOperatorToken(int n) {
@@ -338,6 +330,62 @@ public class Tokenizer {
 		int symbol = textBuffer.extract(1).charAt(0);
 		int end = beg + 1;
 		return new SeparatorToken(beg, end, symbol);
+	}
+	
+	
+	
+	public int extractEscapeCharacter(InputStream inStrm) throws IOException {
+		int beg = textBuffer.getFirstByteCount();
+		int ch = textBuffer.read(inStrm, 1); // next character
+		
+		
+		switch (ch) {
+		case 'b':
+			return '\b';
+		
+		case 't':
+			return '\t';
+		
+		case 'n':
+			return '\n';
+			
+		case 'f':
+			return '\f';
+		
+		case 'r':
+			return '\r';
+		
+		case '"':
+			return '"';
+		
+		case '\'':
+			return '\'';
+		
+		case '\\':
+			return '\\';
+		
+		}
+		
+		int ch;
+		while ((ch = textBuffer.read(inStrm)) >= 0) {
+			
+		}
+		
+		return 0;
+	}
+	
+	
+	public Token extractString(InputStream inStrm) throws IOException {
+		return null;
+	}
+	
+	public Token extractCharacter(InputStream inStrm) throws IOException {
+		textBuffer.read(inStrm);
+		
+		
+		
+		
+		return null;
 	}
 
 	public Token extractSymbol(InputStream inStrm) throws IOException {
@@ -529,6 +577,12 @@ public class Tokenizer {
 
 			if (Character.isDigit(ch) || ch == '.') // Digit or FloatingPoint
 				return extractAfterDigit(inStrm);
+			
+			if (ch == '"') {
+				return extractString(inStrm);
+			} else if (ch == '\'') {
+				return extractCharacter(inStrm);
+			}
 
 			return extractSymbol(inStrm);
 		}
