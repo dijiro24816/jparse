@@ -11,6 +11,24 @@ import myprototype.jparse.token.Tokenizer;
  */
 public class App {
 	public static void main(String[] args) {
+		String s = """
+				a017
+				""";
+		
+		String s2 = "";
+		Tokenizer tokenizer = new Tokenizer();
+		InputStream ins = new ByteArrayInputStream(s.getBytes());
+		StringBuilder sb = new StringBuilder();
+		sb.append("hello");
+		
+		try {
+			tokenizer.textBuffer.read(ins);
+		System.out.println(tokenizer.captureOctalDigits(ins));
+		} catch (IOException e) {
+			
+		}
+		
+		System.exit(0);
 
 //		String src = """
 //				/*hello world      private abstract          asdf asdf asdf asd*/   hello private
