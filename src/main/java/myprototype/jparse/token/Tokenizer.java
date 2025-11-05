@@ -109,7 +109,7 @@ public class Tokenizer {
 		return length;
 	}
 
-	public long captureOctalDigits(InputStream inStrm) throws IOException {
+	public long extractOctalDigits(InputStream inStrm) throws IOException {
 		int start = textBuffer.getIndex();
 		int end = start + getLength(inStrm, (Integer ch) -> {
 			return isOctalDigit(ch);
@@ -117,6 +117,16 @@ public class Tokenizer {
 
 		String src = textBuffer.substring(start, end);
 		return parseOctalDigits(src);
+	}
+	
+	public long captureHexdecimalDigits(InputStream inStrm) throws IOException {
+		int start = textBuffer.getIndex();
+		int end = start + getLength(inStrm, (Integer ch) -> {
+			return isHexDecimalDigit(ch);
+		});
+		
+		String src = textBuffer.substring(start, end);
+		return parseHexDecimalDigits(src);
 	}
 
 	public Token extractAfterBinaryExponent(InputStream inStrm, String left) throws IOException {

@@ -96,6 +96,14 @@ public class TextBuffer {
 	public int getFirstByteCount() {
 		return count - length();
 	}
+	
+	public StringBuilder delete(int start, int end) {
+		return stringBuilder.delete(start, end);
+	}
+	
+	public void deleteAfterIndex(int length) {
+		stringBuilder.delete(index, index + length);
+	}
 
 	public void erase(int length) {
 		stringBuilder.delete(0, length);

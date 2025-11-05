@@ -11,6 +11,20 @@ import myprototype.jparse.token.Tokenizer;
  */
 public class App {
 	public static void main(String[] args) {
+		int a = 123456789;
+		System.out.println(a
+			         +       
+			       + - +     
+			     + - - - +   
+			   + - - - - - + 
+			 + - - - - - - - +
+			   + - - - - - + 
+			     + - - - +   
+			       + - +      
+			         +       
+		a);
+		System.exit(a);
+		
 		String s = """
 				a017
 				""";
@@ -23,7 +37,7 @@ public class App {
 		
 		try {
 			tokenizer.textBuffer.read(ins);
-		System.out.println(tokenizer.captureOctalDigits(ins));
+		System.out.println(tokenizer.extractOctalDigits(ins));
 		} catch (IOException e) {
 			
 		}
