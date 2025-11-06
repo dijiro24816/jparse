@@ -14,7 +14,7 @@ public final class CharacterLiteralToken extends LiteralToken {
 
 	@Override
 	public String toString() {
-		return "CharacterLiteralToken [beg=" + beg + " end=" + end + " value=" + value + "]";
+		return "CharacterLiteralToken [beg=" + beg + " end=" + end + " value=" + (char)value + "]";
 	}
 
 }

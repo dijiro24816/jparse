@@ -1,0 +1,1 @@
+extract...() should textBuffer.extract() there domain range
