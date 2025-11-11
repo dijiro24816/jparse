@@ -333,6 +333,7 @@ public class Tokenizer {
 				return 0;
 			}
 			
+			textBuffer.goBack(inStrm);		
 			ch = (int) extractOctalDigits(inStrm);
 			textBuffer.erase(index, index + 1); // erase '\\'
 			return ch;
@@ -379,7 +380,7 @@ public class Tokenizer {
 			textBuffer.erase(1); // erase single character
 		}
 		
-		if (textBuffer.goNext(inStrm) != '\'')
+		if (textBuffer.getCharacter(inStrm) != '\'')
 			throw new InvalidTokenException();
 
 		return ch;
