@@ -70,23 +70,28 @@ public class TextBuffer {
 
 		return length;
 	}
-
-	public int getCharacter(InputStream inStrm) throws IOException, InvalidTokenException {
-		int index = getIndex();
+	
+	public int pullByteCharacter(InputStream inStrm) throws IOException {
+		int ch = inStrm.read();
+		stringBuilder.append((char)ch);
+		count++;
+		return ch;
+	}
+	
+	public int pullCharacter(InputStream inStrm) throws IOException {
+		int start = length();
 		
-		int ch = goNext(inStrm);
-		if (ch != '\\' || goNext(inStrm) != 'u')
+		int ch = pullByteCharacter(inStrm);
+		
+		if (ch != '\\')
 			return ch;
 		
-		for (int i = 0; i < 4; i++)
-			goNext(inStrm);
+		if (pullByteCharacter(inStrm) != 'u')
+			return ch;
 		
-		if (peek(inStrm) == 'u')
-			throw new InvalidTokenException();
+		ch = (int) Util.parseHexDecimalDigits(copy(start + 2, start + 6));
+		replaceAsCharacter(start, start + 6, ch);
 		
-		ch = (int) Util.parseHexDecimalDigits(copy(index + 2, index + 2 + 4));
-		replaceAsCharacter(index, index + 2 + 4, ch);
-		setIndex(index + 1);
 		return ch;
 	}
 
@@ -95,26 +100,24 @@ public class TextBuffer {
 			this.index = index;
 			return stringBuilder.charAt(index);
 		}
-
-		for (this.index = length(); this.index <= index; this.index++, this.count++) {
-			int ch;
-			if ((ch = inStrm.read()) < 0)
-				return -1;
-
-			stringBuilder.append((char) ch);
+		
+		for (this.index = length(); this.index < index; this.index++) {
+			int ch = pullCharacter(inStrm);
+			if (ch < 0)
+				return ch;
+			this.count++;
 		}
-		this.index = index;
-
-		return stringBuilder.charAt(index);
+		
+		return pullCharacter(inStrm);
 	}
 
-	public int goNext(InputStream inStrm) throws IOException {
-		int ch = jump(inStrm, index);
-		index++;
+	public int getCharacter(InputStream inStrm) throws IOException {
+		int ch = jump(inStrm, this.index);
+		this.index++;
 		return ch;
 	}
 
-	public int goBack(InputStream inStrm) throws IOException {
+	public int getPreviousCharacter(InputStream inStrm) throws IOException {
 		index--;
 		int ch = jump(inStrm, index);
 		return ch;

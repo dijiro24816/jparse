@@ -36,69 +36,6 @@ public class Tokenizer {
 		return new IdentifierToken(beg, end, s);
 	}
 
-	//	public boolean isHexDecimalDigit(int ch) {
-	//		return (ch >= '0' && ch <= '9') || (ch >= 'a' && ch <= 'f') || (ch >= 'A' && ch <= 'F');
-	//	}
-	//
-	//	public boolean isDecimalDigit(int ch) {
-	//		return (ch >= '0' && ch <= '9');
-	//	}
-	//
-	//	public boolean isOctalDigit(int ch) {
-	//		return (ch >= '0' && ch <= '7');
-	//	}
-	//
-	//	public long parseNumber(String src, int digit, Function<Integer, Integer> parseDigit) {
-	//		long value = 0;
-	//
-	//		int m = 1;
-	//		int i = src.length();
-	//		while ((i--) > 0) {
-	//			int num = parseDigit.apply((int) src.charAt(i));
-	//			value += num * m;
-	//			m *= digit;
-	//		}
-	//
-	//		return value;
-	//	}
-	//
-	//	public int parseHexDecimalDigit(int ch) {
-	//		if (ch >= '0' && ch <= '9')
-	//			return ch - '0';
-	//		else if (ch >= 'a' && ch <= 'f')
-	//			return ch - 'a';
-	//		else if (ch >= 'A' && ch <= 'F')
-	//			return ch - 'A';
-	//
-	//		return -1;
-	//	}
-	//
-	//	public int parseDecimalDigit(int ch) {
-	//		return ch - '0';
-	//	}
-	//
-	//	public int parseOctalDigit(int ch) {
-	//		return parseDecimalDigit(ch);
-	//	}
-	//
-	//	public long parseHexDecimalDigits(String src) {
-	//		return (long) parseNumber(src, 16, (Integer ch) -> {
-	//			return parseHexDecimalDigit(ch);
-	//		});
-	//	}
-	//
-	//	public long parseDecimalDigits(String src) {
-	//		return (long) parseNumber(src, 10, (Integer ch) -> {
-	//			return parseDecimalDigit(ch);
-	//		});
-	//	}
-	//
-	//	public long parseOctalDigits(String src) {
-	//		return (long) parseNumber(src, 8, (Integer ch) -> {
-	//			return parseOctalDigit(ch);
-	//		});
-	//	}
-
 	public long extractOctalDigits(InputStream inStrm) throws IOException, InvalidTokenException {
 		int start = textBuffer.getIndex();
 		int end = start + textBuffer.countLength(inStrm, (Integer ch) -> {
@@ -196,7 +133,7 @@ public class Tokenizer {
 		case 'X': // Hexdecimal Integer Literal
 			textBuffer.erase(2);
 
-			while ((ch = textBuffer.goNext(inStrm)) >= 0) {
+			while ((ch = textBuffer.getCharacter(inStrm)) >= 0) {
 				int num;
 
 				if (ch == 'p')
@@ -224,7 +161,7 @@ public class Tokenizer {
 		case 'B': {
 			// Binary Integer Literal
 			textBuffer.erase(2);
-			while ((ch = textBuffer.goNext(inStrm)) >= 0) {
+			while ((ch = textBuffer.getCharacter(inStrm)) >= 0) {
 				if (ch < '0' || ch > '1')
 					break;
 
@@ -249,7 +186,7 @@ public class Tokenizer {
 			// Octal Integer Literal
 			textBuffer.erase(1);
 
-			while ((ch = textBuffer.goNext(inStrm)) >= 0) {
+			while ((ch = textBuffer.getCharacter(inStrm)) >= 0) {
 				if (ch < '0' || ch > '7')
 					break;
 
@@ -333,7 +270,7 @@ public class Tokenizer {
 				return 0;
 			}
 			
-			textBuffer.goBack(inStrm);		
+			textBuffer.getPreviousCharacter(inStrm);		
 			ch = (int) extractOctalDigits(inStrm);
 			textBuffer.erase(index, index + 1); // erase '\\'
 			return ch;
@@ -369,12 +306,11 @@ public class Tokenizer {
 //	}
 
 	public int extractSingleCharacter(InputStream inStrm) throws IOException, InvalidTokenException {
-		int ch = textBuffer.getCharacter(inStrm); // go next character
+		int ch = textBuffer.getCharacter(inStrm); // go after '\''
 		if (ch < 0 || ch == '\'')
 			throw new InvalidTokenException();
 		
 		if (ch == '\\') {
-			textBuffer.goBack(inStrm);
 			ch = extractEscapeSequence(inStrm);
 		} else {
 			textBuffer.erase(1); // erase single character
