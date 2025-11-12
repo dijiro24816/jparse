@@ -164,9 +164,9 @@ public class TextBuffer {
 	//		return ch;
 	//	}
 
-	public int jumpNext(InputStream inStrm, int nth) throws IOException {
-		return jump(inStrm, getIndex() + nth);
-	}
+//	public int jumpNext(InputStream inStrm, int nth) throws IOException {
+//		return jump(inStrm, getIndex() + nth);
+//	}
 
 	// Read character without putting on stringBuilder
 	public int skip(InputStream inStrm) throws IOException {

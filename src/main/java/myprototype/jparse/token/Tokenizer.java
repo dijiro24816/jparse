@@ -306,7 +306,7 @@ public class Tokenizer {
 //	}
 
 	public int extractSingleCharacter(InputStream inStrm) throws IOException, InvalidTokenException {
-		int ch = textBuffer.getCharacter(inStrm); // go after '\''
+		int ch = textBuffer.peek(inStrm); // go after '\''
 		if (ch < 0 || ch == '\'')
 			throw new InvalidTokenException();
 		
