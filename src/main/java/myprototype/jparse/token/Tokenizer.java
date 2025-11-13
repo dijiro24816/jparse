@@ -92,7 +92,10 @@ public class Tokenizer {
 	public Token extractAfterDigit(InputStream inStrm) throws IOException, InvalidTokenException {
 		int ch = textBuffer.peek(inStrm);
 		int length = 0;
-		int beg = textBuffer.getFirstByteCount();
+		
+		int offset = textBuffer.getIndex();
+		
+		int beg = textBuffer.getByteCount(offset);
 		int end;
 		String s;
 		long value = 0;
@@ -226,9 +229,9 @@ public class Tokenizer {
 
 	public int extractEscapeSequence(InputStream inStrm) throws IOException, InvalidTokenException {
 		int beg = textBuffer.getFirstByteCount();
-		int index = textBuffer.getIndex();
+		int offset = textBuffer.getIndex();
 		
-//		textBuffer.jump(inStrm, index + 1);
+		textBuffer.jump(inStrm, offset + 1);
 		int ch = textBuffer.getCharacter(inStrm); // go after '\' character
 		
 		switch (ch) {
@@ -272,61 +275,55 @@ public class Tokenizer {
 			
 			textBuffer.getPreviousCharacter(inStrm);		
 			ch = (int) extractOctalDigits(inStrm);
-			textBuffer.erase(index, index + 1); // erase '\\'
+			textBuffer.erase(offset, offset + 1); // erase '\\'
 			return ch;
 		}
 		
-		textBuffer.erase(index, index + 2); // erase '\\' + '[btnfr"\'\\]'
+		textBuffer.erase(offset, offset + 2); // erase '\\' + '[btnfr"\'\\]'
 		return ch;
 	}
 
-	public Token extractStringLiteralToken(InputStream inStrm) throws IOException {
+	public Token extractStringLiteralToken(InputStream inStrm) throws IOException, InvalidTokenException {
 		int beg = textBuffer.getFirstByteCount();
-		textBuffer.erase(1); // erase '"'
+		int offset = textBuffer.getIndex();
+		
+		StringBuilder sb = new StringBuilder();
+		
+		textBuffer.jump(inStrm, offset + 1); // jump after '"'
+		int ch;
+		while ((ch = textBuffer.peek(inStrm)) != '"') {
+			if (ch < 0)
+				throw new InvalidTokenException();
+			ch = extractSingleCharacter(inStrm);
+			sb.append((char)ch);
+		}
 
-		//		while ()
+		textBuffer.erase(offset, offset + 2); // erase '"' + '"'
 
-		textBuffer.erase(1); // erase '"'
-
-		String sssss = \u0022   asdjfkasldfasdf \u0022;
-		return null;
+		return new StringLiteralToken(beg, textBuffer.getByteCount(offset), sb.toString());
 	}
 
-//	public int extractCharacter(InputStream inStrm) throws IOException, InvalidTokenException {
-//		int ch = textBuffer.getCharacter(inStrm);
-//
-//		if (ch == '\\') {
-//			textBuffer.goBack(inStrm);
-//			ch = extractEscapeSequence(inStrm);
-//		} else {
-//			textBuffer.erase(1); // erase single character
-//		}
-//
-//		return ch;
-//	}
-
 	public int extractSingleCharacter(InputStream inStrm) throws IOException, InvalidTokenException {
+		int start = textBuffer.getIndex();
+		
 		int ch = textBuffer.peek(inStrm); // go after '\''
-		if (ch < 0 || ch == '\'')
+		if (ch < 0)
 			throw new InvalidTokenException();
 		
 		if (ch == '\\') {
 			ch = extractEscapeSequence(inStrm);
 		} else {
-			textBuffer.erase(1); // erase single character
+			textBuffer.erase(start, start + 1); // erase single character
 		}
-		
-		if (textBuffer.getCharacter(inStrm) != '\'')
-			throw new InvalidTokenException();
 
 		return ch;
 	}
 
 	public Token extractCharacterLiteralToken(InputStream inStrm) throws IOException, InvalidTokenException {
 		int beg = textBuffer.getFirstByteCount();
-		int index = textBuffer.getIndex();
+		int offset = textBuffer.getIndex();
 		
-		textBuffer.jump(inStrm, index + 1); // jump after '\''
+		textBuffer.jump(inStrm, offset + 1); // jump after '\''
 		if (textBuffer.peek(inStrm) == '\'')
 			throw new InvalidTokenException();
 
@@ -338,7 +335,10 @@ public class Tokenizer {
 			return null;
 		}
 		
-		textBuffer.erase(index, index + 2); // erase '\'' + '\''
+		if (textBuffer.getCharacter(inStrm) != '\'')
+			throw new InvalidTokenException();
+		
+		textBuffer.erase(offset, offset + 2); // erase '\'' + '\''
 		return new CharacterLiteralToken(beg, textBuffer.getFirstByteCount(), ch);
 	}
 

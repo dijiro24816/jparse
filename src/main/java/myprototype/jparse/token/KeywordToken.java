@@ -123,4 +123,12 @@ public final class KeywordToken extends Token {
 	public String toString() {
 		return "KeywordToken [beg=" + beg + " end=" + end + " value=" + value + "]";
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof KeywordToken tok) {
+			return super.equals(obj) && this.value == tok.value;
+		}
+		return false;
+	}
 }

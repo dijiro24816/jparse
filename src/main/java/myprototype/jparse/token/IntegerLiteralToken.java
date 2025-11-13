@@ -14,4 +14,12 @@ public final class IntegerLiteralToken extends LiteralToken {
 	public String toString() {
 		return "IntegerliteralToken [beg=" + beg + " end=" + end + " value=" + value + "]";
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof IntegerLiteralToken tok) {
+			return super.equals(obj) && this.value == tok.value;
+		}
+		return false;
+	}
 }

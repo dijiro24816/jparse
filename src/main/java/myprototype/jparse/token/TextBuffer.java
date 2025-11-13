@@ -89,6 +89,9 @@ public class TextBuffer {
 		if (pullByteCharacter(inStrm) != 'u')
 			return ch;
 		
+		for (int i = 0; i < 4; i++)
+			pullByteCharacter(inStrm);
+		
 		ch = (int) Util.parseHexDecimalDigits(copy(start + 2, start + 6));
 		replaceAsCharacter(start, start + 6, ch);
 		
@@ -213,7 +216,7 @@ public class TextBuffer {
 	}
 	
 	public ErasedString erase(int start, int end) {
-		System.out.println("Before: \"" + stringBuilder.toString() + "\"");
+//		System.out.println("Before: \"" + stringBuilder.toString() + "\"");
 		
 		stringBuilder.delete(start, end);
 		
@@ -230,7 +233,7 @@ public class TextBuffer {
 		
 		index = start;
 		
-		System.out.println(" -> After: \"" + stringBuilder.toString() + "\"");
+//		System.out.println(" -> After: \"" + stringBuilder.toString() + "\"");
 		return erasedString;
 	}
 

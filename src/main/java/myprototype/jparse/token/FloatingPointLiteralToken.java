@@ -14,4 +14,12 @@ public final class FloatingPointLiteralToken extends LiteralToken {
 	public String toString() {
 		return "FloatingPointLiteralToken [beg=" + beg + " end=" + end + " value=" + value + "]";
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof FloatingPointLiteralToken tok) {
+			return super.equals(obj) && this.value == tok.value;
+		}
+		return false;
+	}
 }

@@ -30,4 +30,12 @@ public final class BooleanLiteralToken extends LiteralToken {
 	public String toString() {
 		return "BooleanLiteralToken [beg=" + beg + " end=" + end + " value=" + (value ? "true" : "false") + "]";
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof BooleanLiteralToken tok) {
+			return super.equals(obj) && this.value == tok.value;
+		}
+		return false;
+	}
 }

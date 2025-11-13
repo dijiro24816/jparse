@@ -6,4 +6,9 @@ public sealed class LiteralToken extends Token
 	public LiteralToken(int beg, int end) {
 		super(beg, end);
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		return super.equals(obj);
+	}
 }

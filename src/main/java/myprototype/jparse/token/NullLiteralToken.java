@@ -14,4 +14,12 @@ public final class NullLiteralToken extends LiteralToken {
 	public String toString() {
 		return "NullLiteralToken [beg=" + beg + " end=" + end + "]";
 	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof NullLiteralToken tok) {
+			return super.equals(obj);
+		}
+		return false;
+	}
 }

@@ -12,4 +12,14 @@ public final class IdentifierToken extends Token {
 		super(beg, end);
 		this.value = value;
 	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof IdentifierToken tok) {
+			return super.equals(obj) && this.value.equals(tok.value);
+		}
+		return false;
+	}
+	
+	
 }

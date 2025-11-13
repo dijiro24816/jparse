@@ -13,4 +13,10 @@ public final class StringLiteralToken extends LiteralToken {
 	public String toString() {
 		return "StringLiteralToken [beg=" + beg + " end=" + end + " value=" + value + "]";
 	}
+	
+//	@Override
+//	public boolean equals(Object obj) {
+//		return super.equals(obj) &&
+//				obj instanceof StringLiteralToken
+//	}
 }

@@ -148,9 +148,13 @@ public class App {
 //				0.1
 //				0x2p+3
 //				""";
+//		String src = """
+//				'\\u005C141'
+//				'\\141'
+//				""";
+		
 		String src = """
-				/* '\\u005C\\u005C' */
-				'\\141'
+				"hello"
 				""";
 //		TextBuffer tb = new TextBuffer();
 //		InputStream is = new ByteArrayInputStream(src.getBytes());
