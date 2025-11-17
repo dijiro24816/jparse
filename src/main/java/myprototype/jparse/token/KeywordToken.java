@@ -1,133 +1,180 @@
 package myprototype.jparse.token;
 
-public final class KeywordToken extends Token {
-	public enum Type {
-		ABSTRACT, ASSERT, BOOLEAN, BREAK, BYTE, CASE, CATCH, CHAR, CLASS, CONST, CONTINUE, DEFAULT, DO, DOUBLE, ELSE, ENUM, EXTENDS, FINAL, FINALLY, FLOAT, FOR, IF, GOTO, IMPLEMENTS, IMPORT, INSTANCEOF, INT, INTERFACE, LONG, NATIVE, NEW, PACKAGE, PRIVATE, PROTECTED, PUBLIC, RETURN, SHORT, STATIC, STRICTFP, SUPER, SWITCH, SYNCHRONIZED, THIS, THROW, THROWS, TRANSICENT, TRY, VOID, VOLATILE, WHILE;
-	};
+import myprototype.jparse.token.keyword.AbstractKeywordToken;
+import myprototype.jparse.token.keyword.AssertKeywordToken;
+import myprototype.jparse.token.keyword.BooleanKeywordToken;
+import myprototype.jparse.token.keyword.BreakKeywordToken;
+import myprototype.jparse.token.keyword.ByteKeywordToken;
+import myprototype.jparse.token.keyword.CaseKeywordToken;
+import myprototype.jparse.token.keyword.CatchKeywordToken;
+import myprototype.jparse.token.keyword.CharKeywordToken;
+import myprototype.jparse.token.keyword.ClassKeywordToken;
+import myprototype.jparse.token.keyword.ConstKeywordToken;
+import myprototype.jparse.token.keyword.ContinueKeywordToken;
+import myprototype.jparse.token.keyword.DefaultKeywordToken;
+import myprototype.jparse.token.keyword.DoKeywordToken;
+import myprototype.jparse.token.keyword.DoubleKeywordToken;
+import myprototype.jparse.token.keyword.ElseKeywordToken;
+import myprototype.jparse.token.keyword.EnumKeywordToken;
+import myprototype.jparse.token.keyword.ExtendsKeywordToken;
+import myprototype.jparse.token.keyword.FinalKeywordToken;
+import myprototype.jparse.token.keyword.FinallyKeywordToken;
+import myprototype.jparse.token.keyword.FloatKeywordToken;
+import myprototype.jparse.token.keyword.ForKeywordToken;
+import myprototype.jparse.token.keyword.GotoKeywordToken;
+import myprototype.jparse.token.keyword.IfKeywordToken;
+import myprototype.jparse.token.keyword.ImplementsKeywordToken;
+import myprototype.jparse.token.keyword.ImportKeywordToken;
+import myprototype.jparse.token.keyword.InstanceofKeywordToken;
+import myprototype.jparse.token.keyword.IntKeywordToken;
+import myprototype.jparse.token.keyword.InterfaceKeywordToken;
+import myprototype.jparse.token.keyword.LongKeywordToken;
+import myprototype.jparse.token.keyword.NativeKeywordToken;
+import myprototype.jparse.token.keyword.NewKeywordToken;
+import myprototype.jparse.token.keyword.PackageKeywordToken;
+import myprototype.jparse.token.keyword.PrivateKeywordToken;
+import myprototype.jparse.token.keyword.ProtectedKeywordToken;
+import myprototype.jparse.token.keyword.PublicKeywordToken;
+import myprototype.jparse.token.keyword.ReturnKeywordToken;
+import myprototype.jparse.token.keyword.ShortKeywordToken;
+import myprototype.jparse.token.keyword.StaticKeywordToken;
+import myprototype.jparse.token.keyword.StrictfpKeywordToken;
+import myprototype.jparse.token.keyword.SuperKeywordToken;
+import myprototype.jparse.token.keyword.SwitchKeywordToken;
+import myprototype.jparse.token.keyword.SynchronizedKeywordToken;
+import myprototype.jparse.token.keyword.ThisKeywordToken;
+import myprototype.jparse.token.keyword.ThrowKeywordToken;
+import myprototype.jparse.token.keyword.ThrowsKeywordToken;
+import myprototype.jparse.token.keyword.TransicentKeywordToken;
+import myprototype.jparse.token.keyword.TryKeywordToken;
+import myprototype.jparse.token.keyword.VoidKeywordToken;
+import myprototype.jparse.token.keyword.VolatileKeywordToken;
+import myprototype.jparse.token.keyword.WhileKeywordToken;
 
-	public Type value;
+public class KeywordToken extends Token {
+	public KeywordToken() {
+	}
 
-	public KeywordToken(int beg, int end, Type value) {
+	public KeywordToken(int beg, int end) {
 		super(beg, end);
-		this.value = value;
 	}
 
 	public static KeywordToken capture(int beg, int end, String s) {
 		switch (s) {
 
 		case "abstract":
-			return new KeywordToken(beg, end, KeywordToken.Type.ABSTRACT);
+			return new AbstractKeywordToken(beg, end);
 		case "assert":
-			return new KeywordToken(beg, end, KeywordToken.Type.ASSERT);
+			return new AssertKeywordToken(beg, end);
 		case "boolean":
-			return new KeywordToken(beg, end, KeywordToken.Type.BOOLEAN);
+			return new BooleanKeywordToken(beg, end);
 		case "break":
-			return new KeywordToken(beg, end, KeywordToken.Type.BREAK);
+			return new BreakKeywordToken(beg, end);
 		case "byte":
-			return new KeywordToken(beg, end, KeywordToken.Type.BYTE);
+			return new ByteKeywordToken(beg, end);
 		case "case":
-			return new KeywordToken(beg, end, KeywordToken.Type.CASE);
+			return new CaseKeywordToken(beg, end);
 		case "catch":
-			return new KeywordToken(beg, end, KeywordToken.Type.CATCH);
+			return new CatchKeywordToken(beg, end);
 		case "char":
-			return new KeywordToken(beg, end, KeywordToken.Type.CHAR);
+			return new CharKeywordToken(beg, end);
 		case "class":
-			return new KeywordToken(beg, end, KeywordToken.Type.CLASS);
+			return new ClassKeywordToken(beg, end);
 		case "const":
-			return new KeywordToken(beg, end, KeywordToken.Type.CONST);
+			return new ConstKeywordToken(beg, end);
 		case "continue":
-			return new KeywordToken(beg, end, KeywordToken.Type.CONTINUE);
+			return new ContinueKeywordToken(beg, end);
 		case "default":
-			return new KeywordToken(beg, end, KeywordToken.Type.DEFAULT);
+			return new DefaultKeywordToken(beg, end);
 		case "do":
-			return new KeywordToken(beg, end, KeywordToken.Type.DO);
+			return new DoKeywordToken(beg, end);
 		case "double":
-			return new KeywordToken(beg, end, KeywordToken.Type.DOUBLE);
+			return new DoubleKeywordToken(beg, end);
 		case "else":
-			return new KeywordToken(beg, end, KeywordToken.Type.ELSE);
+			return new ElseKeywordToken(beg, end);
 		case "enum":
-			return new KeywordToken(beg, end, KeywordToken.Type.ENUM);
+			return new EnumKeywordToken(beg, end);
 		case "extends":
-			return new KeywordToken(beg, end, KeywordToken.Type.EXTENDS);
+			return new ExtendsKeywordToken(beg, end);
 		case "final":
-			return new KeywordToken(beg, end, KeywordToken.Type.FINAL);
+			return new FinalKeywordToken(beg, end);
 		case "finally":
-			return new KeywordToken(beg, end, KeywordToken.Type.FINALLY);
+			return new FinallyKeywordToken(beg, end);
 		case "float":
-			return new KeywordToken(beg, end, KeywordToken.Type.FLOAT);
+			return new FloatKeywordToken(beg, end);
 		case "for":
-			return new KeywordToken(beg, end, KeywordToken.Type.FOR);
+			return new ForKeywordToken(beg, end);
 		case "if":
-			return new KeywordToken(beg, end, KeywordToken.Type.IF);
+			return new IfKeywordToken(beg, end);
 		case "goto":
-			return new KeywordToken(beg, end, KeywordToken.Type.GOTO);
+			return new GotoKeywordToken(beg, end);
 		case "implements":
-			return new KeywordToken(beg, end, KeywordToken.Type.IMPLEMENTS);
+			return new ImplementsKeywordToken(beg, end);
 		case "import":
-			return new KeywordToken(beg, end, KeywordToken.Type.IMPORT);
+			return new ImportKeywordToken(beg, end);
 		case "instanceof":
-			return new KeywordToken(beg, end, KeywordToken.Type.INSTANCEOF);
+			return new InstanceofKeywordToken(beg, end);
 		case "int":
-			return new KeywordToken(beg, end, KeywordToken.Type.INT);
+			return new IntKeywordToken(beg, end);
 		case "interface":
-			return new KeywordToken(beg, end, KeywordToken.Type.INTERFACE);
+			return new InterfaceKeywordToken(beg, end);
 		case "long":
-			return new KeywordToken(beg, end, KeywordToken.Type.LONG);
+			return new LongKeywordToken(beg, end);
 		case "native":
-			return new KeywordToken(beg, end, KeywordToken.Type.NATIVE);
+			return new NativeKeywordToken(beg, end);
 		case "new":
-			return new KeywordToken(beg, end, KeywordToken.Type.NEW);
+			return new NewKeywordToken(beg, end);
 		case "package":
-			return new KeywordToken(beg, end, KeywordToken.Type.PACKAGE);
+			return new PackageKeywordToken(beg, end);
 		case "private":
-			return new KeywordToken(beg, end, KeywordToken.Type.PRIVATE);
+			return new PrivateKeywordToken(beg, end);
 		case "protected":
-			return new KeywordToken(beg, end, KeywordToken.Type.PROTECTED);
+			return new ProtectedKeywordToken(beg, end);
 		case "public":
-			return new KeywordToken(beg, end, KeywordToken.Type.PUBLIC);
+			return new PublicKeywordToken(beg, end);
 		case "return":
-			return new KeywordToken(beg, end, KeywordToken.Type.RETURN);
+			return new ReturnKeywordToken(beg, end);
 		case "short":
-			return new KeywordToken(beg, end, KeywordToken.Type.SHORT);
+			return new ShortKeywordToken(beg, end);
 		case "static":
-			return new KeywordToken(beg, end, KeywordToken.Type.STATIC);
+			return new StaticKeywordToken(beg, end);
 		case "strictfp":
-			return new KeywordToken(beg, end, KeywordToken.Type.STRICTFP);
+			return new StrictfpKeywordToken(beg, end);
 		case "super":
-			return new KeywordToken(beg, end, KeywordToken.Type.SUPER);
+			return new SuperKeywordToken(beg, end);
 		case "switch":
-			return new KeywordToken(beg, end, KeywordToken.Type.SWITCH);
+			return new SwitchKeywordToken(beg, end);
 		case "synchronized":
-			return new KeywordToken(beg, end, KeywordToken.Type.SYNCHRONIZED);
+			return new SynchronizedKeywordToken(beg, end);
 		case "this":
-			return new KeywordToken(beg, end, KeywordToken.Type.THIS);
+			return new ThisKeywordToken(beg, end);
 		case "throw":
-			return new KeywordToken(beg, end, KeywordToken.Type.THROW);
+			return new ThrowKeywordToken(beg, end);
 		case "throws":
-			return new KeywordToken(beg, end, KeywordToken.Type.THROWS);
+			return new ThrowsKeywordToken(beg, end);
 		case "transicent":
-			return new KeywordToken(beg, end, KeywordToken.Type.TRANSICENT);
+			return new TransicentKeywordToken(beg, end);
 		case "try":
-			return new KeywordToken(beg, end, KeywordToken.Type.TRY);
+			return new TryKeywordToken(beg, end);
 		case "void":
-			return new KeywordToken(beg, end, KeywordToken.Type.VOID);
+			return new VoidKeywordToken(beg, end);
 		case "volatile":
-			return new KeywordToken(beg, end, KeywordToken.Type.VOLATILE);
+			return new VolatileKeywordToken(beg, end);
 		case "while":
-			return new KeywordToken(beg, end, KeywordToken.Type.WHILE);
+			return new WhileKeywordToken(beg, end);
 		}
 		return null;
 	}
 
 	@Override
 	public String toString() {
-		return "KeywordToken [beg=" + beg + " end=" + end + " value=" + value + "]";
+		return "KeywordToken [beg=" + beg + " end=" + end + "]";
 	}
-	
+
 	@Override
 	public boolean equals(Object obj) {
 		if (obj instanceof KeywordToken tok) {
-			return super.equals(obj) && this.value == tok.value;
+			return super.equals(obj);
 		}
 		return false;
 	}

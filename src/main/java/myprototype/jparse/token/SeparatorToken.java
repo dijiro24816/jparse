@@ -1,8 +1,14 @@
 package myprototype.jparse.token;
 
-public final class SeparatorToken extends Token {
+public class SeparatorToken extends Token {
 
 	public int symbol;
+	
+	public SeparatorToken() {}
+			
+	public SeparatorToken(int beg, int end) {
+		super(beg, end);
+	}
 
 	public SeparatorToken(int beg, int end, int symbol) {
 		super(beg, end);

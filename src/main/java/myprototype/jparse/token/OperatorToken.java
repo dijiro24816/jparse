@@ -1,8 +1,14 @@
 package myprototype.jparse.token;
 
-public final class OperatorToken extends Token {
+public class OperatorToken extends Token {
 
 	public String symbols;
+	
+	public OperatorToken() {}
+	
+	public OperatorToken(int beg, int end) {
+		super(beg, end);
+	}
 
 	public OperatorToken(int beg, int end, String symbols) {
 		super(beg, end);

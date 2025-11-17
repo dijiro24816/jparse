@@ -6,19 +6,25 @@ import java.util.function.Function;
 
 import myprototype.jparse.token.Token;
 
-public class Rule {
-	public Class<?> product;
-	
+class Compounder<T> {
 	public Class<?>[] components;
 	
-	public Function<Stack<Token>, Object> compound;
-	
-	public Rule(int i) {
-		System.out.println(i);
+	public Compounder(Class<?>... components) {
+		this.components = components;
 	}
+	
+	public Function<Stack<Token>, T> compound;
+}
+
+public class Rule<T> {
+	public Class<T> product;
+	
+	public Compounder<T>[] compounders; 
 	
 	public static void main(String[] args) throws NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
 		System.out.println();
+		
+		
 		
 		Class<?> cls = Rule.class;
 		Rule r = (Rule)cls.getDeclaredConstructor(int.class).newInstance(1);
