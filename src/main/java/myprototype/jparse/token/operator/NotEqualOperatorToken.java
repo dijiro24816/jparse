@@ -4,5 +4,7 @@ import myprototype.jparse.token.OperatorToken;
 
 // '!='
 public class NotEqualOperatorToken extends OperatorToken {
-
+	public NotEqualOperatorToken(int beg, int end) {
+		super(beg, end);
+	}
 }

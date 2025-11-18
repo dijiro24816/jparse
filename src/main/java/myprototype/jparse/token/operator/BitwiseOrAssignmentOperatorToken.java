@@ -1,6 +1,10 @@
 package myprototype.jparse.token.operator;
 
-// '|='
-public class BitwiseOrAssignmentOperatorToken {
+import myprototype.jparse.token.OperatorToken;
 
+// '|='
+public class BitwiseOrAssignmentOperatorToken extends OperatorToken {
+	public BitwiseOrAssignmentOperatorToken(int beg, int end) {
+		super(beg, end);
+	}
 }

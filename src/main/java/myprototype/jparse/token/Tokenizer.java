@@ -4,6 +4,42 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.HexFormat;
 
+import myprototype.jparse.token.keyword.UnsignedRightShiftAssignmentOperatorToken;
+import myprototype.jparse.token.operator.AdditionAssignmentOperatorToken;
+import myprototype.jparse.token.operator.AdditionOperatorToken;
+import myprototype.jparse.token.operator.AssignmentOperatorToken;
+import myprototype.jparse.token.operator.BitwiseAndAssignmentOperatorToken;
+import myprototype.jparse.token.operator.BitwiseAndOperatorToken;
+import myprototype.jparse.token.operator.BitwiseNotOperatorToken;
+import myprototype.jparse.token.operator.BitwiseOrAssignmentOperatorToken;
+import myprototype.jparse.token.operator.BitwiseOrOperatorToken;
+import myprototype.jparse.token.operator.ColonOperatorToken;
+import myprototype.jparse.token.operator.ConditionalOperatorToken;
+import myprototype.jparse.token.operator.EqualOperatorToken;
+import myprototype.jparse.token.operator.GreaterThanEqualOperatorToken;
+import myprototype.jparse.token.operator.GreaterThanOperatorToken;
+import myprototype.jparse.token.operator.IncrementOperatorToken;
+import myprototype.jparse.token.operator.LeftShiftAssignmentOperatorToken;
+import myprototype.jparse.token.operator.LeftShiftOperatorToken;
+import myprototype.jparse.token.operator.LessThanEqualOperatorToken;
+import myprototype.jparse.token.operator.LessThanOperatorToken;
+import myprototype.jparse.token.operator.LogicalAndOperatorToken;
+import myprototype.jparse.token.operator.LogicalNotOperatorToken;
+import myprototype.jparse.token.operator.LogicalOrOperatorToken;
+import myprototype.jparse.token.operator.NotEqualOperatorToken;
+import myprototype.jparse.token.operator.RightShiftAssignmentOperatorToken;
+import myprototype.jparse.token.operator.RightShiftOperatorToken;
+import myprototype.jparse.token.operator.UnsignedRightShiftOperatorToken;
+import myprototype.jparse.token.separator.CommaSeparatorToken;
+import myprototype.jparse.token.separator.CurlyBracketCloseSeparatorToken;
+import myprototype.jparse.token.separator.CurlyBracketOpenSeparatorToken;
+import myprototype.jparse.token.separator.PeriodSeparatorToken;
+import myprototype.jparse.token.separator.RoundBracketCloseSeparatorToken;
+import myprototype.jparse.token.separator.RoundBracketOpenSeparatorToken;
+import myprototype.jparse.token.separator.SemicolonSeparatorToken;
+import myprototype.jparse.token.separator.SquareBracketCloseSeparatorToken;
+import myprototype.jparse.token.separator.SquareBracketOpenSeparatorToken;
+
 public class Tokenizer {
 	public int lineNumber;
 	public int columnNumber;
@@ -92,9 +128,9 @@ public class Tokenizer {
 	public Token extractAfterDigit(InputStream inStrm) throws IOException, InvalidTokenException {
 		int ch = textBuffer.peek(inStrm);
 		int length = 0;
-		
+
 		int offset = textBuffer.getIndex();
-		
+
 		int beg = textBuffer.getByteCount(offset);
 		int end;
 		String s;
@@ -230,10 +266,10 @@ public class Tokenizer {
 	public int extractEscapeSequence(InputStream inStrm) throws IOException, InvalidTokenException {
 		int beg = textBuffer.getFirstByteCount();
 		int offset = textBuffer.getIndex();
-		
+
 		textBuffer.jump(inStrm, offset + 1);
 		int ch = textBuffer.getCharacter(inStrm); // go after '\' character
-		
+
 		switch (ch) {
 		case 'b':
 			ch = '\b';
@@ -272,13 +308,13 @@ public class Tokenizer {
 				// Should we throw exception?
 				return 0;
 			}
-			
-			textBuffer.getPreviousCharacter(inStrm);		
+
+			textBuffer.getPreviousCharacter(inStrm);
 			ch = (int) extractOctalDigits(inStrm);
 			textBuffer.erase(offset, offset + 1); // erase '\\'
 			return ch;
 		}
-		
+
 		textBuffer.erase(offset, offset + 2); // erase '\\' + '[btnfr"\'\\]'
 		return ch;
 	}
@@ -286,16 +322,16 @@ public class Tokenizer {
 	public Token extractStringLiteralToken(InputStream inStrm) throws IOException, InvalidTokenException {
 		int beg = textBuffer.getFirstByteCount();
 		int offset = textBuffer.getIndex();
-		
+
 		StringBuilder sb = new StringBuilder();
-		
+
 		textBuffer.jump(inStrm, offset + 1); // jump after '"'
 		int ch;
 		while ((ch = textBuffer.peek(inStrm)) != '"') {
 			if (ch < 0)
 				throw new InvalidTokenException();
 			ch = extractSingleCharacter(inStrm);
-			sb.append((char)ch);
+			sb.append((char) ch);
 		}
 
 		textBuffer.erase(offset, offset + 2); // erase '"' + '"'
@@ -305,11 +341,11 @@ public class Tokenizer {
 
 	public int extractSingleCharacter(InputStream inStrm) throws IOException, InvalidTokenException {
 		int start = textBuffer.getIndex();
-		
+
 		int ch = textBuffer.peek(inStrm); // go after '\''
 		if (ch < 0)
 			throw new InvalidTokenException();
-		
+
 		if (ch == '\\') {
 			ch = extractEscapeSequence(inStrm);
 		} else {
@@ -322,7 +358,7 @@ public class Tokenizer {
 	public Token extractCharacterLiteralToken(InputStream inStrm) throws IOException, InvalidTokenException {
 		int beg = textBuffer.getFirstByteCount();
 		int offset = textBuffer.getIndex();
-		
+
 		textBuffer.jump(inStrm, offset + 1); // jump after '\''
 		if (textBuffer.peek(inStrm) == '\'')
 			throw new InvalidTokenException();
@@ -334,31 +370,31 @@ public class Tokenizer {
 			System.out.println(e.getMessage());
 			return null;
 		}
-		
+
 		if (textBuffer.getCharacter(inStrm) != '\'')
 			throw new InvalidTokenException();
-		
+
 		textBuffer.erase(offset, offset + 2); // erase '\'' + '\''
 		return new CharacterLiteralToken(beg, textBuffer.getFirstByteCount(), ch);
 	}
 
 	public Token extractSymbol(InputStream inStrm) throws IOException {
 		int beg = textBuffer.getFirstByteCount();
-		int end;
+		int index = textBuffer.getIndex();
+		
 		int ch = textBuffer.peek(inStrm);
 		String symbols;
 
 		switch (ch) {
-		case '(':
-		case ')':
-		case '{':
-		case '}':
-		case '[':
-		case ']':
-		case ';':
-		case ',':
-		case '.':
-			return eatSeparatorToken();
+		case '(': return new RoundBracketOpenSeparatorToken(beg, beg + 1);
+		case ')': return new RoundBracketCloseSeparatorToken(beg, beg + 1);
+		case '{': return new CurlyBracketOpenSeparatorToken(beg, beg + 1);
+		case '}': return new CurlyBracketCloseSeparatorToken(beg, beg + 1);
+		case '[': return new SquareBracketOpenSeparatorToken(beg, beg + 1);
+		case ']': return new SquareBracketCloseSeparatorToken(beg, beg + 1);
+		case ';': return new SemicolonSeparatorToken(beg, beg + 1);
+		case ',': return new CommaSeparatorToken(beg, beg + 1);
+		case '.': return new PeriodSeparatorToken(beg, beg + 1);
 		}
 
 		for (int i = 0; i < 4; i++)
@@ -367,89 +403,141 @@ public class Tokenizer {
 		String peekS = textBuffer.getHeadString(4);
 		switch (peekS.charAt(0)) {
 		case '=':
-			if (peekS.charAt(1) == '=')
-				return eatOperatorToken(2);
-
-			return eatOperatorToken(1);
+			if (peekS.charAt(1) == '=') {
+				textBuffer.erase(index, index + 2);
+				return new EqualOperatorToken(beg, beg + 2);
+			}
+			
+			textBuffer.erase(index, index + 1);
+			return new AssignmentOperatorToken(beg, beg + 1);
 
 		case '>':
 			switch (peekS.charAt(1)) {
 			case '=':
-				return eatOperatorToken(2);
+				textBuffer.erase(index, index + 2);
+				return new GreaterThanEqualOperatorToken(beg, beg + 2);
 			case '>':
 				switch (peekS.charAt(2)) {
 				case '>':
-					if (peekS.charAt(3) == '=')
-						return eatOperatorToken(4);
-
-					return eatOperatorToken(3);
+					if (peekS.charAt(3) == '=') {
+						textBuffer.erase(index, index + 4);
+						return new UnsignedRightShiftAssignmentOperatorToken(beg, beg + 4);
+					}
+					
+					textBuffer.erase(index, index + 3);
+					return new UnsignedRightShiftOperatorToken(beg, beg + 3);
 				case '=':
-					return eatOperatorToken(3);
+					
+					textBuffer.erase(index, index + 3);
+					return new RightShiftAssignmentOperatorToken(beg, beg + 3);
 				}
-				return eatOperatorToken(2);
+				
+				textBuffer.erase(index, index + 2);
+				return new RightShiftOperatorToken(beg, beg + 2);
 			}
-			return eatOperatorToken(1);
+			
+			textBuffer.erase(index, index + 1);
+			return new GreaterThanOperatorToken(beg, beg + 1);
 
 		case '<':
 			switch (peekS.charAt(1)) {
 			case '=':
-				return eatOperatorToken(2);
+				// '<='
+				textBuffer.erase(index, index + 2);
+				return new LessThanEqualOperatorToken(beg, beg + 2);
 
 			case '<':
-				if (peekS.charAt(2) == '=')
-					return eatOperatorToken(3);
-				return eatOperatorToken(2);
+				if (peekS.charAt(2) == '=') {
+					// '<<='
+					textBuffer.erase(index, index + 3);
+					return new LeftShiftAssignmentOperatorToken(beg, beg + 3);;
+				}
+				
+				// '<<'
+				textBuffer.erase(index, index + 2);
+				return new LeftShiftOperatorToken(beg, beg + 2);
 			}
 
-			return eatOperatorToken(1);
+			// '<'
+			textBuffer.erase(index, index + 1);
+			return new LessThanOperatorToken(beg, beg + 1);
 
 		case '!':
-			if (peekS.charAt(1) == '=')
-				return eatOperatorToken(2);
+			if (peekS.charAt(1) == '=') {
+				// '!='
+				textBuffer.erase(index, index + 2);
+				return new NotEqualOperatorToken(beg, beg + 2);
+			}
 
-			return eatOperatorToken(1);
+			// '!'
+			textBuffer.erase(index, index + 1);
+			return new LogicalNotOperatorToken(beg, beg + 1);
 
 		case '~':
-			return eatOperatorToken(1);
+			// '~'
+			textBuffer.erase(index, index + 1);
+			return new BitwiseNotOperatorToken(beg, beg + 1);
 
 		case '?':
-			return eatOperatorToken(1);
+			// '?'
+			textBuffer.erase(index, index + 1);
+			return new ConditionalOperatorToken(index, index + 1);
 
 		case ':':
-			return eatOperatorToken(1);
+			// ':'
+			textBuffer.erase(index, index + 1);
+			return new ColonOperatorToken(beg, beg + 1);
 
 		case '&':
 			switch (peekS.charAt(1)) {
 			case '&':
-				return eatOperatorToken(2);
+				// '&&'
+				textBuffer.erase(index, index + 2);
+				return new LogicalAndOperatorToken(beg, beg + 2);
 
 			case '=':
-				return eatOperatorToken(2);
+				// '&='
+				textBuffer.erase(index, index + 2);
+				return new BitwiseAndAssignmentOperatorToken(beg, beg + 2);
 			}
-
-			return eatOperatorToken(1);
+			
+			// '&'
+			textBuffer.erase(index, index + 1);
+			return new BitwiseAndOperatorToken(beg, beg + 1);
 
 		case '|':
 			switch (peekS.charAt(1)) {
 			case '|':
-				return eatOperatorToken(2);
+				// '||'
+				textBuffer.erase(index, index + 2);
+				return new LogicalOrOperatorToken(beg, beg + 2);
 
 			case '=':
-				return eatOperatorToken(2);
+				// '|='
+				textBuffer.erase(index, index + 2);
+				return new BitwiseOrAssignmentOperatorToken(beg, beg + 2);
 			}
 
-			return eatOperatorToken(1);
+			// '|'
+			textBuffer.erase(index, index + 1);
+			return new BitwiseOrOperatorToken(beg, beg + 1);
 
 		case '+':
 			switch (peekS.charAt(1)) {
 			case '+':
-				return eatOperatorToken(2);
+				// '++'
+				textBuffer.erase(index, index + 2);
+				return new IncrementOperatorToken(beg, beg + 2);
 
 			case '=':
-				return eatOperatorToken(2);
+				// '+='
+				textBuffer.erase(index, index + 2);
+				return new AdditionAssignmentOperatorToken(beg, beg + 2);
 			}
-
-			return eatOperatorToken(1);
+			
+			// '+'
+			textBuffer.erase(index, index + 1);
+			return new AdditionOperatorToken(beg, beg + 1);
 
 		case '-':
 			switch (peekS.charAt(1)) {
@@ -501,7 +589,7 @@ public class Tokenizer {
 		while ((ch = textBuffer.peek(inStrm)) >= 0) {
 			if (ch != '\n' && (ch < ' ' || ch > 126)) // Invaild character
 				break;
-						
+
 			// Skip whitespace
 			if (Character.isWhitespace(ch)) {
 				textBuffer.erase(1);

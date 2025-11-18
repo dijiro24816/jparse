@@ -4,7 +4,6 @@ import myprototype.jparse.token.KeywordToken;
 
 public class AssertKeywordToken extends KeywordToken {
 	public AssertKeywordToken(int beg, int end) {
-		this.beg = beg;
-		this.end = end;
+		super(beg, end);
 	}
 }

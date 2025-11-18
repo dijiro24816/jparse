@@ -13,7 +13,26 @@ class Sample {
 		this.a = a;
 		this.b = b;
 	}
+	
+	public static Class<? extends Sample> capture() {
+		try {
+			return getClass();
+		} catch (Exception e) {
+			// TODO 自動生成された catch ブロック
+			e.printStackTrace();
+		}
+	}
 }
+
+class A extends Sample {
+	public A(int a, int b) {
+		super(a, b);
+	}
+	
+	
+}
+
+
 /**
  * Hello world!
  */

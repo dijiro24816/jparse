@@ -5,6 +5,6 @@ import myprototype.jparse.token.OperatorToken;
 // +=
 public class AdditionAssignmentOperatorToken extends OperatorToken {
 	public AdditionAssignmentOperatorToken(int beg, int end) {
-		
+		super(beg, end);
 	}
 }

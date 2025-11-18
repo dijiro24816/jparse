@@ -4,7 +4,6 @@ import myprototype.jparse.token.KeywordToken;
 
 public class IntKeywordToken extends KeywordToken {
 	public IntKeywordToken(int beg, int end) {
-		this.beg = beg;
-		this.end = end;
+		super(beg, end);
 	}
 }
