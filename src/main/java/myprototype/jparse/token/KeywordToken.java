@@ -45,7 +45,7 @@ import myprototype.jparse.token.keyword.SynchronizedKeywordToken;
 import myprototype.jparse.token.keyword.ThisKeywordToken;
 import myprototype.jparse.token.keyword.ThrowKeywordToken;
 import myprototype.jparse.token.keyword.ThrowsKeywordToken;
-import myprototype.jparse.token.keyword.TransicentKeywordToken;
+import myprototype.jparse.token.keyword.TransientKeywordToken;
 import myprototype.jparse.token.keyword.TryKeywordToken;
 import myprototype.jparse.token.keyword.VoidKeywordToken;
 import myprototype.jparse.token.keyword.VolatileKeywordToken;
@@ -152,8 +152,8 @@ public class KeywordToken extends Token {
 			return new ThrowKeywordToken(beg, end);
 		case "throws":
 			return new ThrowsKeywordToken(beg, end);
-		case "transicent":
-			return new TransicentKeywordToken(beg, end);
+		case "transient":
+			return new TransientKeywordToken(beg, end);
 		case "try":
 			return new TryKeywordToken(beg, end);
 		case "void":

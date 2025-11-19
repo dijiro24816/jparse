@@ -17,7 +17,7 @@ public class SeparatorToken extends Token {
 
 	@Override
 	public String toString() {
-		return "SeparatorToken [beg=" + beg + " end=" + end + " symbol=" + (char) symbol + "]";
+		return getClass().getName() + " [beg=" + beg + " end=" + end + "]";
 	}
 
 	@Override

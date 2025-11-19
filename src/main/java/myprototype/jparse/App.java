@@ -5,32 +5,6 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import myprototype.jparse.token.Tokenizer;
-class Sample {
-	public int a;
-	public int b;
-	
-	public Sample(int a, int b) {
-		this.a = a;
-		this.b = b;
-	}
-	
-	public static Class<? extends Sample> capture() {
-		try {
-			return getClass();
-		} catch (Exception e) {
-			// TODO 自動生成された catch ブロック
-			e.printStackTrace();
-		}
-	}
-}
-
-class A extends Sample {
-	public A(int a, int b) {
-		super(a, b);
-	}
-	
-	
-}
 
 
 /**

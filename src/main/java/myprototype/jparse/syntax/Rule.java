@@ -19,10 +19,16 @@ class Compounder<T> {
 public class Rule<T> {
 	public Class<T> product;
 	
-	public Compounder<T>[] compounders; 
+	public Compounder<T>[] compounders;
+	
+	public Rule<Compounder>
 	
 	public static void main(String[] args) throws NoSuchMethodException, SecurityException, InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-		System.out.println();
+		Rule<Integer> rule = new Rule();
+		
+		System.exit(0);
+		
+		
 		
 		
 		

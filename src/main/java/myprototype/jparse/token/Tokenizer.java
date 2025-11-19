@@ -2,43 +2,8 @@ package myprototype.jparse.token;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 import java.util.HexFormat;
-
-import myprototype.jparse.token.keyword.UnsignedRightShiftAssignmentOperatorToken;
-import myprototype.jparse.token.operator.AdditionAssignmentOperatorToken;
-import myprototype.jparse.token.operator.AdditionOperatorToken;
-import myprototype.jparse.token.operator.AssignmentOperatorToken;
-import myprototype.jparse.token.operator.BitwiseAndAssignmentOperatorToken;
-import myprototype.jparse.token.operator.BitwiseAndOperatorToken;
-import myprototype.jparse.token.operator.BitwiseNotOperatorToken;
-import myprototype.jparse.token.operator.BitwiseOrAssignmentOperatorToken;
-import myprototype.jparse.token.operator.BitwiseOrOperatorToken;
-import myprototype.jparse.token.operator.ColonOperatorToken;
-import myprototype.jparse.token.operator.ConditionalOperatorToken;
-import myprototype.jparse.token.operator.EqualOperatorToken;
-import myprototype.jparse.token.operator.GreaterThanEqualOperatorToken;
-import myprototype.jparse.token.operator.GreaterThanOperatorToken;
-import myprototype.jparse.token.operator.IncrementOperatorToken;
-import myprototype.jparse.token.operator.LeftShiftAssignmentOperatorToken;
-import myprototype.jparse.token.operator.LeftShiftOperatorToken;
-import myprototype.jparse.token.operator.LessThanEqualOperatorToken;
-import myprototype.jparse.token.operator.LessThanOperatorToken;
-import myprototype.jparse.token.operator.LogicalAndOperatorToken;
-import myprototype.jparse.token.operator.LogicalNotOperatorToken;
-import myprototype.jparse.token.operator.LogicalOrOperatorToken;
-import myprototype.jparse.token.operator.NotEqualOperatorToken;
-import myprototype.jparse.token.operator.RightShiftAssignmentOperatorToken;
-import myprototype.jparse.token.operator.RightShiftOperatorToken;
-import myprototype.jparse.token.operator.UnsignedRightShiftOperatorToken;
-import myprototype.jparse.token.separator.CommaSeparatorToken;
-import myprototype.jparse.token.separator.CurlyBracketCloseSeparatorToken;
-import myprototype.jparse.token.separator.CurlyBracketOpenSeparatorToken;
-import myprototype.jparse.token.separator.PeriodSeparatorToken;
-import myprototype.jparse.token.separator.RoundBracketCloseSeparatorToken;
-import myprototype.jparse.token.separator.RoundBracketOpenSeparatorToken;
-import myprototype.jparse.token.separator.SemicolonSeparatorToken;
-import myprototype.jparse.token.separator.SquareBracketCloseSeparatorToken;
-import myprototype.jparse.token.separator.SquareBracketOpenSeparatorToken;
 
 public class Tokenizer {
 	public int lineNumber;
@@ -249,12 +214,12 @@ public class Tokenizer {
 		}
 	}
 
-	public Token eatOperatorToken(int n) {
-		int beg = textBuffer.getFirstByteCount();
-		String symbols = textBuffer.extract(n);
-		int end = beg + n;
-		return new OperatorToken(beg, end, symbols);
-	}
+//	public Token eatOperatorToken(int n) {
+//		int beg = textBuffer.getFirstByteCount();
+//		String symbols = textBuffer.extract(n);
+//		int end = beg + n;
+//		return new OperatorToken(beg, end, symbols);
+//	}
 
 	public Token eatSeparatorToken() {
 		int beg = textBuffer.getFirstByteCount();
@@ -377,204 +342,239 @@ public class Tokenizer {
 		textBuffer.erase(offset, offset + 2); // erase '\'' + '\''
 		return new CharacterLiteralToken(beg, textBuffer.getFirstByteCount(), ch);
 	}
-
+	
 	public Token extractSymbol(InputStream inStrm) throws IOException {
-		int beg = textBuffer.getFirstByteCount();
-		int index = textBuffer.getIndex();
-		
-		int ch = textBuffer.peek(inStrm);
-		String symbols;
-
-		switch (ch) {
-		case '(': return new RoundBracketOpenSeparatorToken(beg, beg + 1);
-		case ')': return new RoundBracketCloseSeparatorToken(beg, beg + 1);
-		case '{': return new CurlyBracketOpenSeparatorToken(beg, beg + 1);
-		case '}': return new CurlyBracketCloseSeparatorToken(beg, beg + 1);
-		case '[': return new SquareBracketOpenSeparatorToken(beg, beg + 1);
-		case ']': return new SquareBracketCloseSeparatorToken(beg, beg + 1);
-		case ';': return new SemicolonSeparatorToken(beg, beg + 1);
-		case ',': return new CommaSeparatorToken(beg, beg + 1);
-		case '.': return new PeriodSeparatorToken(beg, beg + 1);
+		try {
+			return SymbolTokenRelation.extract(textBuffer, inStrm);
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+				| NoSuchMethodException | SecurityException | IOException e) {
+			e.printStackTrace();
 		}
-
-		for (int i = 0; i < 4; i++)
-			textBuffer.peek(inStrm, i);
-
-		String peekS = textBuffer.getHeadString(4);
-		switch (peekS.charAt(0)) {
-		case '=':
-			if (peekS.charAt(1) == '=') {
-				textBuffer.erase(index, index + 2);
-				return new EqualOperatorToken(beg, beg + 2);
-			}
-			
-			textBuffer.erase(index, index + 1);
-			return new AssignmentOperatorToken(beg, beg + 1);
-
-		case '>':
-			switch (peekS.charAt(1)) {
-			case '=':
-				textBuffer.erase(index, index + 2);
-				return new GreaterThanEqualOperatorToken(beg, beg + 2);
-			case '>':
-				switch (peekS.charAt(2)) {
-				case '>':
-					if (peekS.charAt(3) == '=') {
-						textBuffer.erase(index, index + 4);
-						return new UnsignedRightShiftAssignmentOperatorToken(beg, beg + 4);
-					}
-					
-					textBuffer.erase(index, index + 3);
-					return new UnsignedRightShiftOperatorToken(beg, beg + 3);
-				case '=':
-					
-					textBuffer.erase(index, index + 3);
-					return new RightShiftAssignmentOperatorToken(beg, beg + 3);
-				}
-				
-				textBuffer.erase(index, index + 2);
-				return new RightShiftOperatorToken(beg, beg + 2);
-			}
-			
-			textBuffer.erase(index, index + 1);
-			return new GreaterThanOperatorToken(beg, beg + 1);
-
-		case '<':
-			switch (peekS.charAt(1)) {
-			case '=':
-				// '<='
-				textBuffer.erase(index, index + 2);
-				return new LessThanEqualOperatorToken(beg, beg + 2);
-
-			case '<':
-				if (peekS.charAt(2) == '=') {
-					// '<<='
-					textBuffer.erase(index, index + 3);
-					return new LeftShiftAssignmentOperatorToken(beg, beg + 3);;
-				}
-				
-				// '<<'
-				textBuffer.erase(index, index + 2);
-				return new LeftShiftOperatorToken(beg, beg + 2);
-			}
-
-			// '<'
-			textBuffer.erase(index, index + 1);
-			return new LessThanOperatorToken(beg, beg + 1);
-
-		case '!':
-			if (peekS.charAt(1) == '=') {
-				// '!='
-				textBuffer.erase(index, index + 2);
-				return new NotEqualOperatorToken(beg, beg + 2);
-			}
-
-			// '!'
-			textBuffer.erase(index, index + 1);
-			return new LogicalNotOperatorToken(beg, beg + 1);
-
-		case '~':
-			// '~'
-			textBuffer.erase(index, index + 1);
-			return new BitwiseNotOperatorToken(beg, beg + 1);
-
-		case '?':
-			// '?'
-			textBuffer.erase(index, index + 1);
-			return new ConditionalOperatorToken(index, index + 1);
-
-		case ':':
-			// ':'
-			textBuffer.erase(index, index + 1);
-			return new ColonOperatorToken(beg, beg + 1);
-
-		case '&':
-			switch (peekS.charAt(1)) {
-			case '&':
-				// '&&'
-				textBuffer.erase(index, index + 2);
-				return new LogicalAndOperatorToken(beg, beg + 2);
-
-			case '=':
-				// '&='
-				textBuffer.erase(index, index + 2);
-				return new BitwiseAndAssignmentOperatorToken(beg, beg + 2);
-			}
-			
-			// '&'
-			textBuffer.erase(index, index + 1);
-			return new BitwiseAndOperatorToken(beg, beg + 1);
-
-		case '|':
-			switch (peekS.charAt(1)) {
-			case '|':
-				// '||'
-				textBuffer.erase(index, index + 2);
-				return new LogicalOrOperatorToken(beg, beg + 2);
-
-			case '=':
-				// '|='
-				textBuffer.erase(index, index + 2);
-				return new BitwiseOrAssignmentOperatorToken(beg, beg + 2);
-			}
-
-			// '|'
-			textBuffer.erase(index, index + 1);
-			return new BitwiseOrOperatorToken(beg, beg + 1);
-
-		case '+':
-			switch (peekS.charAt(1)) {
-			case '+':
-				// '++'
-				textBuffer.erase(index, index + 2);
-				return new IncrementOperatorToken(beg, beg + 2);
-
-			case '=':
-				// '+='
-				textBuffer.erase(index, index + 2);
-				return new AdditionAssignmentOperatorToken(beg, beg + 2);
-			}
-			
-			// '+'
-			textBuffer.erase(index, index + 1);
-			return new AdditionOperatorToken(beg, beg + 1);
-
-		case '-':
-			switch (peekS.charAt(1)) {
-			case '-':
-				return eatOperatorToken(2);
-
-			case '=':
-				return eatOperatorToken(2);
-			}
-
-			return eatOperatorToken(1);
-
-		case '*':
-			if (peekS.charAt(1) == '=')
-				return eatOperatorToken(2);
-
-			return eatOperatorToken(1);
-
-		case '/':
-			if (peekS.charAt(1) == '=')
-				return eatOperatorToken(2);
-
-			return eatOperatorToken(1);
-
-		case '^':
-			if (peekS.charAt(1) == '=')
-				return eatOperatorToken(2);
-			return eatOperatorToken(1);
-
-		case '%':
-			if (peekS.charAt(1) == '=')
-				return eatOperatorToken(2);
-
-			return eatOperatorToken(1);
-		}
-
 		return null;
+//		
+//		
+//		int beg = textBuffer.getFirstByteCount();
+//		int index = textBuffer.getIndex();
+//		
+//		int ch = textBuffer.peek(inStrm);
+//		String symbols;
+//
+//		switch (ch) {
+//		case '(': return new RoundBracketOpenSeparatorToken(beg, beg + 1);
+//		case ')': return new RoundBracketCloseSeparatorToken(beg, beg + 1);
+//		case '{': return new CurlyBracketOpenSeparatorToken(beg, beg + 1);
+//		case '}': return new CurlyBracketCloseSeparatorToken(beg, beg + 1);
+//		case '[': return new SquareBracketOpenSeparatorToken(beg, beg + 1);
+//		case ']': return new SquareBracketCloseSeparatorToken(beg, beg + 1);
+//		case ';': return new SemicolonSeparatorToken(beg, beg + 1);
+//		case ',': return new CommaSeparatorToken(beg, beg + 1);
+//		case '.': return new PeriodSeparatorToken(beg, beg + 1);
+//		}
+//
+//		for (int i = 0; i < 4; i++)
+//			textBuffer.peek(inStrm, i);
+//
+//		String peekS = textBuffer.getHeadString(4);
+//		switch (peekS.charAt(0)) {
+//		case '=':
+//			if (peekS.charAt(1) == '=') {
+//				textBuffer.erase(index, index + 2);
+//				return new EqualOperatorToken(beg, beg + 2);
+//			}
+//			
+//			textBuffer.erase(index, index + 1);
+//			return new AssignmentOperatorToken(beg, beg + 1);
+//
+//		case '>':
+//			switch (peekS.charAt(1)) {
+//			case '=':
+//				textBuffer.erase(index, index + 2);
+//				return new GreaterThanEqualOperatorToken(beg, beg + 2);
+//			case '>':
+//				switch (peekS.charAt(2)) {
+//				case '>':
+//					if (peekS.charAt(3) == '=') {
+//						textBuffer.erase(index, index + 4);
+//						return new UnsignedRightShiftAssignmentOperatorToken(beg, beg + 4);
+//					}
+//					
+//					textBuffer.erase(index, index + 3);
+//					return new UnsignedRightShiftOperatorToken(beg, beg + 3);
+//				case '=':
+//					
+//					textBuffer.erase(index, index + 3);
+//					return new RightShiftAssignmentOperatorToken(beg, beg + 3);
+//				}
+//				
+//				textBuffer.erase(index, index + 2);
+//				return new RightShiftOperatorToken(beg, beg + 2);
+//			}
+//			
+//			textBuffer.erase(index, index + 1);
+//			return new GreaterThanOperatorToken(beg, beg + 1);
+//
+//		case '<':
+//			switch (peekS.charAt(1)) {
+//			case '=':
+//				// '<='
+//				textBuffer.erase(index, index + 2);
+//				return new LessThanEqualOperatorToken(beg, beg + 2);
+//
+//			case '<':
+//				if (peekS.charAt(2) == '=') {
+//					// '<<='
+//					textBuffer.erase(index, index + 3);
+//					return new LeftShiftAssignmentOperatorToken(beg, beg + 3);
+//				}
+//				
+//				// '<<'
+//				textBuffer.erase(index, index + 2);
+//				return new LeftShiftOperatorToken(beg, beg + 2);
+//			}
+//
+//			// '<'
+//			textBuffer.erase(index, index + 1);
+//			return new LessThanOperatorToken(beg, beg + 1);
+//
+//		case '!':
+//			if (peekS.charAt(1) == '=') {
+//				// '!='
+//				textBuffer.erase(index, index + 2);
+//				return new NotEqualOperatorToken(beg, beg + 2);
+//			}
+//
+//			// '!'
+//			textBuffer.erase(index, index + 1);
+//			return new LogicalNotOperatorToken(beg, beg + 1);
+//
+//		case '~':
+//			// '~'
+//			textBuffer.erase(index, index + 1);
+//			return new BitwiseNotOperatorToken(beg, beg + 1);
+//
+//		case '?':
+//			// '?'
+//			textBuffer.erase(index, index + 1);
+//			return new ConditionalOperatorToken(index, index + 1);
+//
+//		case ':':
+//			// ':'
+//			textBuffer.erase(index, index + 1);
+//			return new ColonOperatorToken(beg, beg + 1);
+//
+//		case '&':
+//			switch (peekS.charAt(1)) {
+//			case '&':
+//				// '&&'
+//				textBuffer.erase(index, index + 2);
+//				return new LogicalAndOperatorToken(beg, beg + 2);
+//
+//			case '=':
+//				// '&='
+//				textBuffer.erase(index, index + 2);
+//				return new BitwiseAndAssignmentOperatorToken(beg, beg + 2);
+//			}
+//			
+//			// '&'
+//			textBuffer.erase(index, index + 1);
+//			return new BitwiseAndOperatorToken(beg, beg + 1);
+//
+//		case '|':
+//			switch (peekS.charAt(1)) {
+//			case '|':
+//				// '||'
+//				textBuffer.erase(index, index + 2);
+//				return new LogicalOrOperatorToken(beg, beg + 2);
+//
+//			case '=':
+//				// '|='
+//				textBuffer.erase(index, index + 2);
+//				return new BitwiseOrAssignmentOperatorToken(beg, beg + 2);
+//			}
+//
+//			// '|'
+//			textBuffer.erase(index, index + 1);
+//			return new BitwiseOrOperatorToken(beg, beg + 1);
+//
+//		case '+':
+//			switch (peekS.charAt(1)) {
+//			case '+':
+//				// '++'
+//				textBuffer.erase(index, index + 2);
+//				return new IncrementOperatorToken(beg, beg + 2);
+//
+//			case '=':
+//				// '+='
+//				textBuffer.erase(index, index + 2);
+//				return new AdditionAssignmentOperatorToken(beg, beg + 2);
+//			}
+//			
+//			// '+'
+//			textBuffer.erase(index, index + 1);
+//			return new AdditionOperatorToken(beg, beg + 1);
+//
+//		case '-':
+//			switch (peekS.charAt(1)) {
+//			case '-':
+//				// '--'
+//				textBuffer.erase(index, index + 2);
+//				return new DecrementOperatorToken(beg, beg + 2);
+//
+//			case '=':
+//				// '-='
+//				textBuffer.erase(index, index + 2);
+//				return new SubtractionAssignmentOperatorToken(beg, beg + 2);
+//			}
+//			// '-'
+//			textBuffer.erase(index, index + 1);
+//			return new SubtractionOperatorToken(beg, beg + 1);
+//
+//		case '*':
+//			if (peekS.charAt(1) == '=') {
+//				// '*='
+//				textBuffer.erase(index, index + 2);
+//				return new MultiplicationAssignmentOperatorToken(beg, beg + 2);
+//			}
+//
+//			// '*'
+//			textBuffer.erase(index, index + 1);
+//			return new MultiplicationOperatorToken(beg, beg + 1);
+//
+//		case '/':
+//			if (peekS.charAt(1) == '=') {
+//				// '/='
+//				textBuffer.erase(index, index + 2);
+//				return new DivisionAssignmentOperatorToken(beg, beg + 2);
+//			}
+//
+//			// '/'
+//			textBuffer.erase(index, index + 1);
+//			return new DivisionOperatorToken(beg, beg + 1);
+//
+//		case '^':
+//			if (peekS.charAt(1) == '=') {
+//				// '^='
+//				textBuffer.erase(index, index + 2);
+//				return new BitwiseXorAssignmentOperatorToken(beg, beg + 2);
+//			}
+//			
+//			// '^'
+//			textBuffer.erase(index, index + 1);
+//			return new BitwiseXorOperatorToken(beg, beg + 1);
+//
+//		case '%':
+//			if (peekS.charAt(1) == '=') {
+//				// '%='
+//				textBuffer.erase(index, index + 2);
+//				return new ModuloAssignmentOperatorToken(beg, beg + 2);
+//			}
+//
+//			// '%'
+//			textBuffer.erase(index, index + 1);
+//			return new ModuloOperatorToken(beg, beg + 1);
+//		}
+//
+//		return null;
 	}
 
 	public boolean isJavaLetter(int ch) {
@@ -618,7 +618,7 @@ public class Tokenizer {
 			if (isJavaLetter(ch))
 				return extractAfterJavaLetter(inStrm);
 
-			if (Character.isDigit(ch) || ch == '.') // Digit or FloatingPoint
+			if (Character.isDigit(ch) || (ch == '.' && Character.isDigit(textBuffer.peek(inStrm, 1)))) // Digit or FloatingPoint
 				return extractAfterDigit(inStrm);
 
 			String s = "";

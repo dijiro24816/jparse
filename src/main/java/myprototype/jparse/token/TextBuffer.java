@@ -79,7 +79,7 @@ public class TextBuffer {
 	}
 	
 	public int pullCharacter(InputStream inStrm) throws IOException {
-		int start = length();
+		int begIndex = length();
 		
 		int ch = pullByteCharacter(inStrm);
 		
@@ -92,8 +92,8 @@ public class TextBuffer {
 		for (int i = 0; i < 4; i++)
 			pullByteCharacter(inStrm);
 		
-		ch = (int) Util.parseHexDecimalDigits(copy(start + 2, start + 6));
-		replaceAsCharacter(start, start + 6, ch);
+		ch = (int) Util.parseHexDecimalDigits(copy(begIndex + 2, begIndex + 6));
+		replaceAsCharacter(begIndex, begIndex + 6, ch);
 		
 		return ch;
 	}
@@ -193,14 +193,14 @@ public class TextBuffer {
 		return getByteCount(0);
 	}
 	
-	public StringBuilder delete(int start, int end) {
-		return stringBuilder.delete(start, end);
+	public StringBuilder delete(int begIndex, int endIndex) {
+		return stringBuilder.delete(begIndex, endIndex);
 	}
 
-	public int getRawLength(int start, int end) {
-		return end - start +
+	public int getRawLength(int begIndex, int endIndex) {
+		return endIndex - begIndex +
 				erasedStrings.stream()
-						.filter(es -> (es.index > start && es.index < end))
+						.filter(es -> (es.index > begIndex && es.index < endIndex))
 						.mapToInt(es -> {
 							return es.length - es.getResizedLength();
 						})
@@ -215,23 +215,23 @@ public class TextBuffer {
 		return stringBuilder.length();
 	}
 	
-	public ErasedString erase(int start, int end) {
+	public ErasedString erase(int begIndex, int endIndex) {
 //		System.out.println("Before: \"" + stringBuilder.toString() + "\"");
 		
-		stringBuilder.delete(start, end);
+		stringBuilder.delete(begIndex, endIndex);
 		
 		int length = erasedStrings.stream()
-				.filter(es -> (es.index > start && es.index < end))
+				.filter(es -> (es.index > begIndex && es.index < endIndex))
 				.mapToInt(es -> { return es.getLength() - es.getResizedLength(); })
 				.sum();
-		ErasedString erasedString = new ErasedString(start, end - start + length);
+		ErasedString erasedString = new ErasedString(begIndex, endIndex - begIndex + length);
 
-		erasedStrings.removeIf(es -> (es.index > start && es.index < end));
+		erasedStrings.removeIf(es -> (es.index > begIndex && es.index < endIndex));
 
-		if (start > 0)
+		if (begIndex > 0)
 			erasedStrings.add(erasedString);
 		
-		index = start;
+		index = begIndex;
 		
 //		System.out.println(" -> After: \"" + stringBuilder.toString() + "\"");
 		return erasedString;
@@ -245,13 +245,13 @@ public class TextBuffer {
 		return stringBuilder.substring(0, length);
 	}
 
-	public String copy(int start, int end) {
-		return stringBuilder.substring(start, end);
+	public String copy(int begIndex, int endIndex) {
+		return stringBuilder.substring(begIndex, endIndex);
 	}
 
-	public String extract(int start, int end) {
-		String s = copy(start, end);
-		erase(start, end);
+	public String extract(int begIndex, int endIndex) {
+		String s = copy(begIndex, endIndex);
+		erase(begIndex, endIndex);
 		return s;
 	}
 
@@ -260,9 +260,9 @@ public class TextBuffer {
 		return extract(0, length);
 	}
 	
-	public void replaceAsCharacter(int start, int end, int ch) {
-		erase(start, end).setResizedLength(1);
-		stringBuilder.insert(start, (char)ch);
+	public void replaceAsCharacter(int begIndex, int endIndex, int ch) {
+		erase(begIndex, endIndex).setResizedLength(1);
+		stringBuilder.insert(begIndex, (char)ch);
 	}
 
 	public int length() {
