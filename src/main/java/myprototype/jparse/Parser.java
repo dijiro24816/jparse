@@ -4,21 +4,21 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import myprototype.jparse.syntax.CompilationUnit;
-import myprototype.jparse.token.InvalidTokenException;
-import myprototype.jparse.token.Token;
-import myprototype.jparse.token.Tokenizer;
+import myprototype.jparse.syntax.symbol.terminal.InvalidTokenException;
+import myprototype.jparse.syntax.symbol.terminal.Terminal;
+import myprototype.jparse.syntax.symbol.terminal.Lexer;
 
 public class Parser {
 	
-	public Tokenizer tokenizer;
+	public Lexer tokenizer;
 
-	public Parser(Tokenizer tokenizer) {
+	public Parser(Lexer tokenizer) {
 		super();
 		this.tokenizer = tokenizer;
 	}
 	
 	public CompilationUnit parse(InputStream inStrm) throws IOException {
-		Token token;
+		Terminal token;
 		
 		try {
 			while ((token = this.tokenizer.tokenize(inStrm)) != null) {

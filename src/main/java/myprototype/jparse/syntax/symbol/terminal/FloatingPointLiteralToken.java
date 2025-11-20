@@ -1,0 +1,25 @@
+package myprototype.jparse.syntax.symbol.terminal;
+
+public final class FloatingPointLiteralToken extends LiteralToken {
+	
+	public double value;
+
+	public FloatingPointLiteralToken(int beg, int end, double value) {
+		super(beg, end);
+		
+		this.value = value;
+	}
+
+	@Override
+	public String toString() {
+		return "FloatingPointLiteralToken [beg=" + beg + " end=" + end + " value=" + value + "]";
+	}
+	
+	@Override
+	public boolean equals(Object obj) {
+		if (obj instanceof FloatingPointLiteralToken tok) {
+			return super.equals(obj) && this.value == tok.value;
+		}
+		return false;
+	}
+}

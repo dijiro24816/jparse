@@ -8,109 +8,113 @@ import java.io.InputStream;
 
 import org.junit.jupiter.api.Test;
 
-import myprototype.jparse.token.keyword.AbstractKeywordToken;
-import myprototype.jparse.token.keyword.AssertKeywordToken;
-import myprototype.jparse.token.keyword.BooleanKeywordToken;
-import myprototype.jparse.token.keyword.BreakKeywordToken;
-import myprototype.jparse.token.keyword.ByteKeywordToken;
-import myprototype.jparse.token.keyword.CaseKeywordToken;
-import myprototype.jparse.token.keyword.CatchKeywordToken;
-import myprototype.jparse.token.keyword.CharKeywordToken;
-import myprototype.jparse.token.keyword.ClassKeywordToken;
-import myprototype.jparse.token.keyword.ConstKeywordToken;
-import myprototype.jparse.token.keyword.ContinueKeywordToken;
-import myprototype.jparse.token.keyword.DefaultKeywordToken;
-import myprototype.jparse.token.keyword.DoKeywordToken;
-import myprototype.jparse.token.keyword.DoubleKeywordToken;
-import myprototype.jparse.token.keyword.ElseKeywordToken;
-import myprototype.jparse.token.keyword.EnumKeywordToken;
-import myprototype.jparse.token.keyword.ExtendsKeywordToken;
-import myprototype.jparse.token.keyword.FinalKeywordToken;
-import myprototype.jparse.token.keyword.FinallyKeywordToken;
-import myprototype.jparse.token.keyword.FloatKeywordToken;
-import myprototype.jparse.token.keyword.ForKeywordToken;
-import myprototype.jparse.token.keyword.GotoKeywordToken;
-import myprototype.jparse.token.keyword.IfKeywordToken;
-import myprototype.jparse.token.keyword.ImplementsKeywordToken;
-import myprototype.jparse.token.keyword.ImportKeywordToken;
-import myprototype.jparse.token.keyword.InstanceofKeywordToken;
-import myprototype.jparse.token.keyword.IntKeywordToken;
-import myprototype.jparse.token.keyword.InterfaceKeywordToken;
-import myprototype.jparse.token.keyword.LongKeywordToken;
-import myprototype.jparse.token.keyword.NativeKeywordToken;
-import myprototype.jparse.token.keyword.NewKeywordToken;
-import myprototype.jparse.token.keyword.PackageKeywordToken;
-import myprototype.jparse.token.keyword.PrivateKeywordToken;
-import myprototype.jparse.token.keyword.ProtectedKeywordToken;
-import myprototype.jparse.token.keyword.PublicKeywordToken;
-import myprototype.jparse.token.keyword.ReturnKeywordToken;
-import myprototype.jparse.token.keyword.ShortKeywordToken;
-import myprototype.jparse.token.keyword.StaticKeywordToken;
-import myprototype.jparse.token.keyword.StrictfpKeywordToken;
-import myprototype.jparse.token.keyword.SuperKeywordToken;
-import myprototype.jparse.token.keyword.SwitchKeywordToken;
-import myprototype.jparse.token.keyword.SynchronizedKeywordToken;
-import myprototype.jparse.token.keyword.ThisKeywordToken;
-import myprototype.jparse.token.keyword.ThrowKeywordToken;
-import myprototype.jparse.token.keyword.ThrowsKeywordToken;
-import myprototype.jparse.token.keyword.TransientKeywordToken;
-import myprototype.jparse.token.keyword.TryKeywordToken;
-import myprototype.jparse.token.keyword.VoidKeywordToken;
-import myprototype.jparse.token.keyword.VolatileKeywordToken;
-import myprototype.jparse.token.keyword.WhileKeywordToken;
-import myprototype.jparse.token.operator.AdditionAssignmentOperatorToken;
-import myprototype.jparse.token.operator.AdditionOperatorToken;
-import myprototype.jparse.token.operator.AssignmentOperatorToken;
-import myprototype.jparse.token.operator.BitwiseAndAssignmentOperatorToken;
-import myprototype.jparse.token.operator.BitwiseAndOperatorToken;
-import myprototype.jparse.token.operator.BitwiseNotOperatorToken;
-import myprototype.jparse.token.operator.BitwiseOrAssignmentOperatorToken;
-import myprototype.jparse.token.operator.BitwiseOrOperatorToken;
-import myprototype.jparse.token.operator.BitwiseXorAssignmentOperatorToken;
-import myprototype.jparse.token.operator.BitwiseXorOperatorToken;
-import myprototype.jparse.token.operator.ColonOperatorToken;
-import myprototype.jparse.token.operator.ConditionalOperatorToken;
-import myprototype.jparse.token.operator.DecrementOperatorToken;
-import myprototype.jparse.token.operator.DivisionAssignmentOperatorToken;
-import myprototype.jparse.token.operator.DivisionOperatorToken;
-import myprototype.jparse.token.operator.EqualOperatorToken;
-import myprototype.jparse.token.operator.GreaterThanEqualOperatorToken;
-import myprototype.jparse.token.operator.GreaterThanOperatorToken;
-import myprototype.jparse.token.operator.IncrementOperatorToken;
-import myprototype.jparse.token.operator.LeftShiftAssignmentOperatorToken;
-import myprototype.jparse.token.operator.LeftShiftOperatorToken;
-import myprototype.jparse.token.operator.LessThanEqualOperatorToken;
-import myprototype.jparse.token.operator.LessThanOperatorToken;
-import myprototype.jparse.token.operator.LogicalAndOperatorToken;
-import myprototype.jparse.token.operator.LogicalNotOperatorToken;
-import myprototype.jparse.token.operator.LogicalOrOperatorToken;
-import myprototype.jparse.token.operator.ModuloAssignmentOperatorToken;
-import myprototype.jparse.token.operator.ModuloOperatorToken;
-import myprototype.jparse.token.operator.MultiplicationAssignmentOperatorToken;
-import myprototype.jparse.token.operator.MultiplicationOperatorToken;
-import myprototype.jparse.token.operator.NotEqualOperatorToken;
-import myprototype.jparse.token.operator.RightShiftAssignmentOperatorToken;
-import myprototype.jparse.token.operator.RightShiftOperatorToken;
-import myprototype.jparse.token.operator.SubtractionAssignmentOperatorToken;
-import myprototype.jparse.token.operator.SubtractionOperatorToken;
-import myprototype.jparse.token.operator.UnsignedRightShiftOperatorToken;
-import myprototype.jparse.token.separator.CommaSeparatorToken;
-import myprototype.jparse.token.separator.CurlyBracketCloseSeparatorToken;
-import myprototype.jparse.token.separator.CurlyBracketOpenSeparatorToken;
-import myprototype.jparse.token.separator.PeriodSeparatorToken;
-import myprototype.jparse.token.separator.RoundBracketCloseSeparatorToken;
-import myprototype.jparse.token.separator.RoundBracketOpenSeparatorToken;
-import myprototype.jparse.token.separator.SemicolonSeparatorToken;
-import myprototype.jparse.token.separator.SquareBracketCloseSeparatorToken;
-import myprototype.jparse.token.separator.SquareBracketOpenSeparatorToken;
+import myprototype.jparse.syntax.symbol.terminal.IdentifierToken;
+import myprototype.jparse.syntax.symbol.terminal.InvalidTokenException;
+import myprototype.jparse.syntax.symbol.terminal.Lexer;
+import myprototype.jparse.syntax.symbol.terminal.Terminal;
+import myprototype.jparse.syntax.symbol.terminal.keyword.AbstractKeywordToken;
+import myprototype.jparse.syntax.symbol.terminal.keyword.AssertKeywordToken;
+import myprototype.jparse.syntax.symbol.terminal.keyword.BooleanKeywordToken;
+import myprototype.jparse.syntax.symbol.terminal.keyword.BreakKeywordToken;
+import myprototype.jparse.syntax.symbol.terminal.keyword.ByteKeywordToken;
+import myprototype.jparse.syntax.symbol.terminal.keyword.CaseKeywordToken;
+import myprototype.jparse.syntax.symbol.terminal.keyword.CatchKeywordToken;
+import myprototype.jparse.syntax.symbol.terminal.keyword.CharKeywordToken;
+import myprototype.jparse.syntax.symbol.terminal.keyword.ClassKeywordToken;
+import myprototype.jparse.syntax.symbol.terminal.keyword.ConstKeywordToken;
+import myprototype.jparse.syntax.symbol.terminal.keyword.ContinueKeywordToken;
+import myprototype.jparse.syntax.symbol.terminal.keyword.DefaultKeywordToken;
+import myprototype.jparse.syntax.symbol.terminal.keyword.DoKeywordToken;
+import myprototype.jparse.syntax.symbol.terminal.keyword.DoubleKeywordToken;
+import myprototype.jparse.syntax.symbol.terminal.keyword.ElseKeywordToken;
+import myprototype.jparse.syntax.symbol.terminal.keyword.EnumKeywordToken;
+import myprototype.jparse.syntax.symbol.terminal.keyword.ExtendsKeywordToken;
+import myprototype.jparse.syntax.symbol.terminal.keyword.FinalKeywordToken;
+import myprototype.jparse.syntax.symbol.terminal.keyword.FinallyKeywordToken;
+import myprototype.jparse.syntax.symbol.terminal.keyword.FloatKeywordToken;
+import myprototype.jparse.syntax.symbol.terminal.keyword.ForKeywordToken;
+import myprototype.jparse.syntax.symbol.terminal.keyword.GotoKeywordToken;
+import myprototype.jparse.syntax.symbol.terminal.keyword.IfKeywordToken;
+import myprototype.jparse.syntax.symbol.terminal.keyword.ImplementsKeywordToken;
+import myprototype.jparse.syntax.symbol.terminal.keyword.ImportKeywordToken;
+import myprototype.jparse.syntax.symbol.terminal.keyword.InstanceofKeywordToken;
+import myprototype.jparse.syntax.symbol.terminal.keyword.IntKeywordToken;
+import myprototype.jparse.syntax.symbol.terminal.keyword.InterfaceKeywordToken;
+import myprototype.jparse.syntax.symbol.terminal.keyword.LongKeywordToken;
+import myprototype.jparse.syntax.symbol.terminal.keyword.NativeKeywordToken;
+import myprototype.jparse.syntax.symbol.terminal.keyword.NewKeywordToken;
+import myprototype.jparse.syntax.symbol.terminal.keyword.PackageKeywordToken;
+import myprototype.jparse.syntax.symbol.terminal.keyword.PrivateKeywordToken;
+import myprototype.jparse.syntax.symbol.terminal.keyword.ProtectedKeywordToken;
+import myprototype.jparse.syntax.symbol.terminal.keyword.PublicKeywordToken;
+import myprototype.jparse.syntax.symbol.terminal.keyword.ReturnKeywordToken;
+import myprototype.jparse.syntax.symbol.terminal.keyword.ShortKeywordToken;
+import myprototype.jparse.syntax.symbol.terminal.keyword.StaticKeywordToken;
+import myprototype.jparse.syntax.symbol.terminal.keyword.StrictfpKeywordToken;
+import myprototype.jparse.syntax.symbol.terminal.keyword.SuperKeywordToken;
+import myprototype.jparse.syntax.symbol.terminal.keyword.SwitchKeywordToken;
+import myprototype.jparse.syntax.symbol.terminal.keyword.SynchronizedKeywordToken;
+import myprototype.jparse.syntax.symbol.terminal.keyword.ThisKeywordToken;
+import myprototype.jparse.syntax.symbol.terminal.keyword.ThrowKeywordToken;
+import myprototype.jparse.syntax.symbol.terminal.keyword.ThrowsKeywordToken;
+import myprototype.jparse.syntax.symbol.terminal.keyword.TransientKeywordToken;
+import myprototype.jparse.syntax.symbol.terminal.keyword.TryKeywordToken;
+import myprototype.jparse.syntax.symbol.terminal.keyword.VoidKeywordToken;
+import myprototype.jparse.syntax.symbol.terminal.keyword.VolatileKeywordToken;
+import myprototype.jparse.syntax.symbol.terminal.keyword.WhileKeywordToken;
+import myprototype.jparse.syntax.symbol.terminal.operator.AdditionAssignmentOperatorToken;
+import myprototype.jparse.syntax.symbol.terminal.operator.AdditionOperatorToken;
+import myprototype.jparse.syntax.symbol.terminal.operator.AssignmentOperatorToken;
+import myprototype.jparse.syntax.symbol.terminal.operator.BitwiseAndAssignmentOperatorToken;
+import myprototype.jparse.syntax.symbol.terminal.operator.BitwiseAndOperatorToken;
+import myprototype.jparse.syntax.symbol.terminal.operator.BitwiseNotOperatorToken;
+import myprototype.jparse.syntax.symbol.terminal.operator.BitwiseOrAssignmentOperatorToken;
+import myprototype.jparse.syntax.symbol.terminal.operator.BitwiseOrOperatorToken;
+import myprototype.jparse.syntax.symbol.terminal.operator.BitwiseXorAssignmentOperatorToken;
+import myprototype.jparse.syntax.symbol.terminal.operator.BitwiseXorOperatorToken;
+import myprototype.jparse.syntax.symbol.terminal.operator.ColonOperatorToken;
+import myprototype.jparse.syntax.symbol.terminal.operator.ConditionalOperatorToken;
+import myprototype.jparse.syntax.symbol.terminal.operator.DecrementOperatorToken;
+import myprototype.jparse.syntax.symbol.terminal.operator.DivisionAssignmentOperatorToken;
+import myprototype.jparse.syntax.symbol.terminal.operator.DivisionOperatorToken;
+import myprototype.jparse.syntax.symbol.terminal.operator.EqualOperatorToken;
+import myprototype.jparse.syntax.symbol.terminal.operator.GreaterThanEqualOperatorToken;
+import myprototype.jparse.syntax.symbol.terminal.operator.GreaterThanOperatorToken;
+import myprototype.jparse.syntax.symbol.terminal.operator.IncrementOperatorToken;
+import myprototype.jparse.syntax.symbol.terminal.operator.LeftShiftAssignmentOperatorToken;
+import myprototype.jparse.syntax.symbol.terminal.operator.LeftShiftOperatorToken;
+import myprototype.jparse.syntax.symbol.terminal.operator.LessThanEqualOperatorToken;
+import myprototype.jparse.syntax.symbol.terminal.operator.LessThanOperatorToken;
+import myprototype.jparse.syntax.symbol.terminal.operator.LogicalAndOperatorToken;
+import myprototype.jparse.syntax.symbol.terminal.operator.LogicalNotOperatorToken;
+import myprototype.jparse.syntax.symbol.terminal.operator.LogicalOrOperatorToken;
+import myprototype.jparse.syntax.symbol.terminal.operator.ModuloAssignmentOperatorToken;
+import myprototype.jparse.syntax.symbol.terminal.operator.ModuloOperatorToken;
+import myprototype.jparse.syntax.symbol.terminal.operator.MultiplicationAssignmentOperatorToken;
+import myprototype.jparse.syntax.symbol.terminal.operator.MultiplicationOperatorToken;
+import myprototype.jparse.syntax.symbol.terminal.operator.NotEqualOperatorToken;
+import myprototype.jparse.syntax.symbol.terminal.operator.RightShiftAssignmentOperatorToken;
+import myprototype.jparse.syntax.symbol.terminal.operator.RightShiftOperatorToken;
+import myprototype.jparse.syntax.symbol.terminal.operator.SubtractionAssignmentOperatorToken;
+import myprototype.jparse.syntax.symbol.terminal.operator.SubtractionOperatorToken;
+import myprototype.jparse.syntax.symbol.terminal.operator.UnsignedRightShiftOperatorToken;
+import myprototype.jparse.syntax.symbol.terminal.separator.CommaSeparatorToken;
+import myprototype.jparse.syntax.symbol.terminal.separator.CurlyBracketCloseSeparatorToken;
+import myprototype.jparse.syntax.symbol.terminal.separator.CurlyBracketOpenSeparatorToken;
+import myprototype.jparse.syntax.symbol.terminal.separator.PeriodSeparatorToken;
+import myprototype.jparse.syntax.symbol.terminal.separator.RoundBracketCloseSeparatorToken;
+import myprototype.jparse.syntax.symbol.terminal.separator.RoundBracketOpenSeparatorToken;
+import myprototype.jparse.syntax.symbol.terminal.separator.SemicolonSeparatorToken;
+import myprototype.jparse.syntax.symbol.terminal.separator.SquareBracketCloseSeparatorToken;
+import myprototype.jparse.syntax.symbol.terminal.separator.SquareBracketOpenSeparatorToken;
 
 class TokenizerTest {
-	
-	Token tokenize(String src) {
+
+	Terminal tokenize(String src) {
 		try {
-			Tokenizer tokenizer = new Tokenizer();
+			Lexer lexer = new Lexer();
 			InputStream inStrm = new ByteArrayInputStream(src.getBytes());
-			return tokenizer.tokenize(inStrm);
+			return lexer.tokenize(inStrm);
 		} catch (IOException | InvalidTokenException e) {
 			System.out.println(e.getMessage());
 		}
@@ -119,9 +123,9 @@ class TokenizerTest {
 
 	@Test
 	void test() {
-//		fail("まだ実装されていません");
+		//		fail("まだ実装されていません");
 	}
-	
+
 	@Test
 	void tokenizeIdentifer() {
 		String src = """
@@ -129,66 +133,66 @@ class TokenizerTest {
 				""";
 		assertEquals(tokenize(src), new IdentifierToken(0, 5, "hello"));
 	}
-	
+
 	@Test
 	void tokenizeBooleanLiteral() {
-		
+
 	}
-	
+
 	@Test
-	void tokenizeSymbol() {
+	void tokenizePunctuation() {
 		// Separator Token
-		assertEquals(tokenize("("), new RoundBracketOpenSeparatorToken(0, 1));
-		assertEquals(tokenize(")"), new RoundBracketCloseSeparatorToken(0, 1));
-		assertEquals(tokenize("{"), new CurlyBracketOpenSeparatorToken(0, 1));
-		assertEquals(tokenize("}"), new CurlyBracketCloseSeparatorToken(0, 1));
-		assertEquals(tokenize("["), new SquareBracketOpenSeparatorToken(0, 1));
-		assertEquals(tokenize("]"), new SquareBracketCloseSeparatorToken(0, 1));
-		assertEquals(tokenize(";"), new SemicolonSeparatorToken(0, 1));
-		assertEquals(tokenize(","), new CommaSeparatorToken(0, 1));
-		assertEquals(tokenize("."), new PeriodSeparatorToken(0, 1));
-		
+		assertEquals(tokenize("("), new RoundBracketOpenSeparatorToken(0, "(".length()));
+		assertEquals(tokenize(")"), new RoundBracketCloseSeparatorToken(0, ")".length()));
+		assertEquals(tokenize("{"), new CurlyBracketOpenSeparatorToken(0, "{".length()));
+		assertEquals(tokenize("}"), new CurlyBracketCloseSeparatorToken(0, "}".length()));
+		assertEquals(tokenize("["), new SquareBracketOpenSeparatorToken(0, "[".length()));
+		assertEquals(tokenize("]"), new SquareBracketCloseSeparatorToken(0, "]".length()));
+		assertEquals(tokenize(";"), new SemicolonSeparatorToken(0, ";".length()));
+		assertEquals(tokenize(","), new CommaSeparatorToken(0, ",".length()));
+		assertEquals(tokenize("."), new PeriodSeparatorToken(0, ".".length()));
+
 		// Operator Token
-		assertEquals(tokenize("="), new AssignmentOperatorToken(0, 1));
-		assertEquals(tokenize("=="), new EqualOperatorToken(0, 2));
-		assertEquals(tokenize(">"), new GreaterThanOperatorToken(0, 1));
-		assertEquals(tokenize(">="), new GreaterThanEqualOperatorToken(0, 2));
-		assertEquals(tokenize(">>"), new RightShiftOperatorToken(0, 2));
-		assertEquals(tokenize(">>="), new RightShiftAssignmentOperatorToken(0, 3));
-		assertEquals(tokenize(">>>"), new UnsignedRightShiftOperatorToken(0, 3));
-		assertEquals(tokenize("<"), new LessThanOperatorToken(0, 1));
-		assertEquals(tokenize("<="), new LessThanEqualOperatorToken(0, 2));
-		assertEquals(tokenize("<<"), new LeftShiftOperatorToken(0, 2));
-		assertEquals(tokenize("<<="), new LeftShiftAssignmentOperatorToken(0, 3));
-		assertEquals(tokenize("!"), new LogicalNotOperatorToken(0, 1));
-		assertEquals(tokenize("!="), new NotEqualOperatorToken(0, 2));
-		assertEquals(tokenize("~"), new BitwiseNotOperatorToken(0, 1));
-		assertEquals(tokenize("?"), new ConditionalOperatorToken(0, 1));
-		assertEquals(tokenize(":"), new ColonOperatorToken(0, 1));
-		assertEquals(tokenize("&"), new BitwiseAndOperatorToken(0, 1));
-		assertEquals(tokenize("&="), new BitwiseAndAssignmentOperatorToken(0, 2));
-		assertEquals(tokenize("&&"), new LogicalAndOperatorToken(0, 2));
-		assertEquals(tokenize("|"), new BitwiseOrOperatorToken(0, 1));
-		assertEquals(tokenize("|="), new BitwiseOrAssignmentOperatorToken(0, 2));
-		assertEquals(tokenize("||"), new LogicalOrOperatorToken(0, 2));
-		assertEquals(tokenize("+"), new AdditionOperatorToken(0, 1));
-		assertEquals(tokenize("+="), new AdditionAssignmentOperatorToken(0, 2));
-		assertEquals(tokenize("++"), new IncrementOperatorToken(0, 2));
-		assertEquals(tokenize("-"), new SubtractionOperatorToken(0, 1));
-		assertEquals(tokenize("-="), new SubtractionAssignmentOperatorToken(0, 2));
-		assertEquals(tokenize("--"), new DecrementOperatorToken(0, 2));
-		assertEquals(tokenize("*"), new MultiplicationOperatorToken(0, 1));
-		assertEquals(tokenize("*="), new MultiplicationAssignmentOperatorToken(0, 2));
-		assertEquals(tokenize("/"), new DivisionOperatorToken(0, 1));
-		assertEquals(tokenize("/="), new DivisionAssignmentOperatorToken(0, 2));
-		assertEquals(tokenize("^"), new BitwiseXorOperatorToken(0, 1));
-		assertEquals(tokenize("^="), new BitwiseXorAssignmentOperatorToken(0, 2));
-		assertEquals(tokenize("%"), new ModuloOperatorToken(0, 1));
-		assertEquals(tokenize("%="), new ModuloAssignmentOperatorToken(0, 2));
+		assertEquals(tokenize("="), new AssignmentOperatorToken(0, "=".length()));
+		assertEquals(tokenize("=="), new EqualOperatorToken(0, "==".length()));
+		assertEquals(tokenize(">"), new GreaterThanOperatorToken(0, ">".length()));
+		assertEquals(tokenize(">="), new GreaterThanEqualOperatorToken(0, ">=".length()));
+		assertEquals(tokenize(">>"), new RightShiftOperatorToken(0, ">>".length()));
+		assertEquals(tokenize(">>="), new RightShiftAssignmentOperatorToken(0, ">>=".length()));
+		assertEquals(tokenize(">>>"), new UnsignedRightShiftOperatorToken(0, ">>>".length()));
+		assertEquals(tokenize("<"), new LessThanOperatorToken(0, "<".length()));
+		assertEquals(tokenize("<="), new LessThanEqualOperatorToken(0, "<=".length()));
+		assertEquals(tokenize("<<"), new LeftShiftOperatorToken(0, "<<".length()));
+		assertEquals(tokenize("<<="), new LeftShiftAssignmentOperatorToken(0, "<<=".length()));
+		assertEquals(tokenize("!"), new LogicalNotOperatorToken(0, "!".length()));
+		assertEquals(tokenize("!="), new NotEqualOperatorToken(0, "!=".length()));
+		assertEquals(tokenize("~"), new BitwiseNotOperatorToken(0, "~".length()));
+		assertEquals(tokenize("?"), new ConditionalOperatorToken(0, "?".length()));
+		assertEquals(tokenize(":"), new ColonOperatorToken(0, ":".length()));
+		assertEquals(tokenize("&"), new BitwiseAndOperatorToken(0, "&".length()));
+		assertEquals(tokenize("&="), new BitwiseAndAssignmentOperatorToken(0, "&=".length()));
+		assertEquals(tokenize("&&"), new LogicalAndOperatorToken(0, "&&".length()));
+		assertEquals(tokenize("|"), new BitwiseOrOperatorToken(0, "|".length()));
+		assertEquals(tokenize("|="), new BitwiseOrAssignmentOperatorToken(0, "|=".length()));
+		assertEquals(tokenize("||"), new LogicalOrOperatorToken(0, "||".length()));
+		assertEquals(tokenize("+"), new AdditionOperatorToken(0, "+".length()));
+		assertEquals(tokenize("+="), new AdditionAssignmentOperatorToken(0, "+=".length()));
+		assertEquals(tokenize("++"), new IncrementOperatorToken(0, "++".length()));
+		assertEquals(tokenize("-"), new SubtractionOperatorToken(0, "-".length()));
+		assertEquals(tokenize("-="), new SubtractionAssignmentOperatorToken(0, "-=".length()));
+		assertEquals(tokenize("--"), new DecrementOperatorToken(0, "--".length()));
+		assertEquals(tokenize("*"), new MultiplicationOperatorToken(0, "*".length()));
+		assertEquals(tokenize("*="), new MultiplicationAssignmentOperatorToken(0, "*=".length()));
+		assertEquals(tokenize("/"), new DivisionOperatorToken(0, "/".length()));
+		assertEquals(tokenize("/="), new DivisionAssignmentOperatorToken(0, "/=".length()));
+		assertEquals(tokenize("^"), new BitwiseXorOperatorToken(0, "^".length()));
+		assertEquals(tokenize("^="), new BitwiseXorAssignmentOperatorToken(0, "^=".length()));
+		assertEquals(tokenize("%"), new ModuloOperatorToken(0, "%".length()));
+		assertEquals(tokenize("%="), new ModuloAssignmentOperatorToken(0, "%=".length()));
 	}
-	
+
 	@Test
-	void tokenizeKeyword() { 
+	void tokenizeKeyword() {
 		assertEquals(tokenize("abstract"), new AbstractKeywordToken(0, "abstract".length()));
 		assertEquals(tokenize("continue"), new ContinueKeywordToken(0, "continue".length()));
 		assertEquals(tokenize("for"), new ForKeywordToken(0, "for".length()));

@@ -3,9 +3,23 @@ package myprototype.jparse;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.reflect.InvocationTargetException;
 
-import myprototype.jparse.token.Tokenizer;
+import myprototype.jparse.syntax.symbol.terminal.Lexer;
 
+class Sample {
+	public static int a = 0;
+	
+	public static int getA() { return a; }
+}
+
+class Sample2 extends Sample {
+	
+}
+
+class Sample3 extends Sample {
+	
+}
 
 /**
  * Hello world!
@@ -14,6 +28,18 @@ public class App {
 	
 	
 	public static void main(String[] args) {
+		Class<? extends Sample> klass2 = Sample2.class;
+		Class<? extends Sample> klass3 = Sample3.class;
+		
+		try {
+			System.out.println(klass2.getMethod("getA").invoke(null));
+		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
+			// TODO 自動生成された catch ブロック
+			e.printStackTrace();
+		}
+		
+		System.exit(0);
+		
 //		ArrayList<Sample> samples = new ArrayList<Sample>();
 //		samples.add(new Sample(1, 2));
 //		samples.add(new Sample(1, 2));
@@ -182,7 +208,7 @@ public class App {
 //			System.exit(0);
 //		}
 		try {
-			Parser parser = new Parser(new Tokenizer());
+			Parser parser = new Parser(new Lexer());
 			InputStream inStrm = new ByteArrayInputStream(src.getBytes());
 			parser.parse(inStrm);
 			System.out.println("MSG: Finished!");
