@@ -1,0 +1,10 @@
+package myprototype.jparse.symbol.terminal.keyword;
+
+import myprototype.jparse.symbol.terminal.OperatorToken;
+
+// >>>=
+public class UnsignedRightShiftAssignmentOperatorToken extends OperatorToken {
+	public UnsignedRightShiftAssignmentOperatorToken(int beg, int end) {
+		super(beg, end);
+	}
+}

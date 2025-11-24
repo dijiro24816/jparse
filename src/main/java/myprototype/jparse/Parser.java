@@ -3,10 +3,10 @@ package myprototype.jparse;
 import java.io.IOException;
 import java.io.InputStream;
 
-import myprototype.jparse.syntax.CompilationUnit;
-import myprototype.jparse.syntax.symbol.terminal.InvalidTokenException;
-import myprototype.jparse.syntax.symbol.terminal.Terminal;
-import myprototype.jparse.syntax.symbol.terminal.Lexer;
+import myprototype.jparse.symbol.nonterminal.CompilationUnit;
+import myprototype.jparse.symbol.terminal.InvalidTokenException;
+import myprototype.jparse.symbol.terminal.Lexer;
+import myprototype.jparse.symbol.terminal.Terminal;
 
 public class Parser {
 	

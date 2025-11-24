@@ -5,7 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 
-import myprototype.jparse.syntax.symbol.terminal.Lexer;
+import myprototype.jparse.symbol.terminal.Lexer;
 
 class Sample {
 	public static int a = 0;
