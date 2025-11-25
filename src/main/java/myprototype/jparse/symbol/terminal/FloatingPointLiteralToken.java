@@ -1,18 +1,20 @@
 package myprototype.jparse.symbol.terminal;
 
+import myprototype.jparse.symbol.SymbolKind;
+
 public final class FloatingPointLiteralToken extends LiteralToken {
 	
 	public double value;
 
 	public FloatingPointLiteralToken(int beg, int end, double value) {
-		super(beg, end);
+		super(SymbolKind.FLOATING_POINT_LITERAL_TOKEN, beg, end);
 		
 		this.value = value;
 	}
 
 	@Override
 	public String toString() {
-		return "FloatingPointLiteralToken [beg=" + beg + " end=" + end + " value=" + value + "]";
+		return "FloatingPointLiteralToken [beg=" + getBeg() + " end=" + getEnd() + " value=" + value + "]";
 	}
 	
 	@Override

@@ -1,9 +1,11 @@
 package myprototype.jparse.symbol.terminal;
 
+import myprototype.jparse.symbol.SymbolKind;
+
 public class NullLiteralToken extends LiteralToken {
 
 	public NullLiteralToken(int beg, int end) {
-		super(beg, end);
+		super(SymbolKind.NULL_LITERAL_TOKEN, beg, end);
 	}
 	
 	public static NullLiteralToken capture(int beg, int end, String s) {
@@ -12,7 +14,7 @@ public class NullLiteralToken extends LiteralToken {
 
 	@Override
 	public String toString() {
-		return "NullLiteralToken [beg=" + beg + " end=" + end + "]";
+		return "NullLiteralToken [beg=" + getBeg() + " end=" + getEnd() + "]";
 	}
 	
 	@Override

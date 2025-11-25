@@ -4,7 +4,7 @@ package myprototype.jparse.symbol;
 import java.util.ArrayList;
 import java.util.Stack;
 
-import myprototype.jparse.symbol.nonterminal.QuolifiedIdentifierElement;
+import myprototype.jparse.symbol.nonterminal.QuolifiedIdentifierNode;
 import myprototype.jparse.symbol.terminal.IdentifierToken;
 
 
@@ -25,13 +25,28 @@ class A {
 }
 
 public class Production<T extends Symbol> {
-	Class<T> symbol;
-	Rule<T>[] rules;
+	private Class<T> symbol;
+	private Rule<T>[] rules;
 
+	public Class<T> getSymbol() {
+		return symbol;
+	}
+
+	private void setSymbol(Class<T> symbol) {
+		this.symbol = symbol;
+	}
+
+	public Rule<T>[] getRules() {
+		return rules;
+	}
+
+	public void setRules(Rule<T>[] rules) {
+		this.rules = rules;
+	}
 	@SafeVarargs
 	public Production(Class<T> symbol, Rule<T>... rules) {
-		this.symbol = symbol;
-		this.rules = rules;
+		this.setSymbol(symbol);
+		setRules(rules);
 	}
 
 	public static void main(String[] args) {
@@ -53,8 +68,8 @@ public class Production<T extends Symbol> {
 //				(Stack<Symbol> stack) -> {
 //					return null;
 //				}, identifierTokenProduction);
-		Production<QuolifiedIdentifierElement> QuolifiedIdentifierElementProduction = new Production<>(
-				QuolifiedIdentifierElement.class,
+		Production<QuolifiedIdentifierNode> QuolifiedIdentifierElementProduction = new Production<>(
+				QuolifiedIdentifierNode.class,
 				new Rule<>(
 						(Stack<Symbol> stack) -> {
 							return null;
@@ -72,4 +87,7 @@ public class Production<T extends Symbol> {
 //						)
 //				);
 	}
+
+
+
 }

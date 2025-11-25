@@ -1,17 +1,19 @@
 package myprototype.jparse.symbol.terminal;
 
+import myprototype.jparse.symbol.SymbolKind;
+
 public final class StringLiteralToken extends LiteralToken {
 	public String value;
 	
 	public StringLiteralToken(int beg, int end, String value) {
-		super(beg, end);
+		super(SymbolKind.STRING_LITERAL_TOKEN, beg, end);
 		
 		this.value = value;
 	}
 
 	@Override
 	public String toString() {
-		return "StringLiteralToken [beg=" + beg + " end=" + end + " value=" + value + "]";
+		return "StringLiteralToken [beg=" + getBeg() + " end=" + getEnd() + " value=" + value + "]";
 	}
 	
 //	@Override

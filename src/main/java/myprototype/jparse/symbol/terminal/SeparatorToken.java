@@ -1,23 +1,27 @@
 package myprototype.jparse.symbol.terminal;
 
+import myprototype.jparse.symbol.SymbolKind;
+
 public class SeparatorToken extends Terminal {
 
 	public int symbol;
 	
-	public SeparatorToken() {}
+	public SeparatorToken(SymbolKind kind) {
+		super(kind);
+	}
 			
-	public SeparatorToken(int beg, int end) {
-		super(beg, end);
+	public SeparatorToken(SymbolKind kind, int beg, int end) {
+		this(kind, beg, end, -1);
 	}
 
-	public SeparatorToken(int beg, int end, int symbol) {
-		super(beg, end);
+	public SeparatorToken(SymbolKind kind, int beg, int end, int symbol) {
+		super(kind, beg, end);
 		this.symbol = symbol;
 	}
 
 	@Override
 	public String toString() {
-		return getClass().getName() + " [beg=" + beg + " end=" + end + "]";
+		return getClass().getName() + " [beg=" + getBeg() + " end=" + getEnd() + "]";
 	}
 
 	@Override

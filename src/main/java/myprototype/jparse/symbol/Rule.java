@@ -7,6 +7,10 @@ public class Rule<T extends Symbol> {
 	public Production<? extends Symbol>[] productions;
 	public Function<Stack<Symbol>, T> compound;
 	
+	public Production<? extends Symbol>[] getProductions() {
+		return productions;
+	}
+
 	@SafeVarargs
 	public Rule(Function<Stack<Symbol>, T> compound, Production<? extends Symbol>... productions) {
 		this.compound = compound;

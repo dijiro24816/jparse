@@ -1,18 +1,20 @@
 package myprototype.jparse.symbol.terminal;
 
+import myprototype.jparse.symbol.SymbolKind;
+
 public final class IntegerLiteralToken extends LiteralToken {
 	
 	public long value; // max value of integer
 
 	public IntegerLiteralToken(int beg, int end, long value) {
-		super(beg, end);
+		super(SymbolKind.INTEGER_LITERAL_TOKEN, beg, end);
 		
 		this.value = value;
 	}
 
 	@Override
 	public String toString() {
-		return "IntegerliteralToken [beg=" + beg + " end=" + end + " value=" + value + "]";
+		return "IntegerliteralToken [beg=" + getBeg() + " end=" + getEnd() + " value=" + value + "]";
 	}
 	
 	@Override

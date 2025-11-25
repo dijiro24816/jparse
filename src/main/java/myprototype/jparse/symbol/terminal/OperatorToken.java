@@ -1,15 +1,19 @@
 package myprototype.jparse.symbol.terminal;
 
+import myprototype.jparse.symbol.SymbolKind;
+
 public class OperatorToken extends Terminal {
-	public OperatorToken() {}
+	public OperatorToken(SymbolKind kind) {
+		super(kind);
+	}
 	
-	public OperatorToken(int beg, int end) {
-		super(beg, end);
+	public OperatorToken(SymbolKind kind, int beg, int end) {
+		super(kind, beg, end);
 	}
 
 	@Override
 	public String toString() {
-		return "OperatorToken [beg=" + beg + " end=" + end + "]";
+		return "OperatorToken [beg=" + getBeg() + " end=" + getEnd() + "]";
 	}
 
 	@Override

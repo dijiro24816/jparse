@@ -1,5 +1,6 @@
 package myprototype.jparse.symbol.terminal;
 
+import myprototype.jparse.symbol.SymbolKind;
 import myprototype.jparse.symbol.terminal.keyword.AbstractKeywordToken;
 import myprototype.jparse.symbol.terminal.keyword.AssertKeywordToken;
 import myprototype.jparse.symbol.terminal.keyword.BooleanKeywordToken;
@@ -52,11 +53,12 @@ import myprototype.jparse.symbol.terminal.keyword.VolatileKeywordToken;
 import myprototype.jparse.symbol.terminal.keyword.WhileKeywordToken;
 
 public class KeywordToken extends Terminal {
-	public KeywordToken() {
+	public KeywordToken(SymbolKind kind) {
+		super(kind);
 	}
 
-	public KeywordToken(int beg, int end) {
-		super(beg, end);
+	public KeywordToken(SymbolKind kind, int beg, int end) {
+		super(kind, beg, end);
 	}
 
 	public static KeywordToken capture(int beg, int end, String s) {
@@ -168,7 +170,7 @@ public class KeywordToken extends Terminal {
 
 	@Override
 	public String toString() {
-		return "KeywordToken [beg=" + beg + " end=" + end + "]";
+		return "KeywordToken [beg=" + getBeg() + " end=" + getEnd() + "]";
 	}
 
 	@Override

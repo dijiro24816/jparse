@@ -1,11 +1,13 @@
 package myprototype.jparse.symbol.terminal;
 
+import myprototype.jparse.symbol.SymbolKind;
+
 public class BooleanLiteralToken extends LiteralToken {
 
 	public boolean value;
 	
 	public BooleanLiteralToken(int beg, int end, boolean value) {
-		super(beg, end);
+		super(SymbolKind.BOOLEAN_LITERAL_TOKEN, beg, end);
 		this.value = value;
 	}
 	
@@ -28,7 +30,7 @@ public class BooleanLiteralToken extends LiteralToken {
 
 	@Override
 	public String toString() {
-		return "BooleanLiteralToken [beg=" + beg + " end=" + end + " value=" + (value ? "true" : "false") + "]";
+		return "BooleanLiteralToken [beg=" + getBeg() + " end=" + getEnd() + " value=" + (value ? "true" : "false") + "]";
 	}
 	
 	@Override

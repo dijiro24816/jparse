@@ -1,15 +1,17 @@
 package myprototype.jparse.symbol.terminal;
 
-public final class IdentifierToken extends Terminal {
+import myprototype.jparse.symbol.SymbolKind;
+
+public class IdentifierToken extends Terminal {
 	public String value;
 	
 	@Override
 	public String toString() {
-		return "IdentifierToken [beg=" + beg + " end=" + end + " value=" + value + "]";
+		return "IdentifierToken [beg=" + getBeg() + " end=" + getEnd() + " value=" + value + "]";
 	}
 
 	public IdentifierToken(int beg, int end, String value) {
-		super(beg, end);
+		super(SymbolKind.IDENTIFIER_TOKEN, beg, end);
 		this.value = value;
 	}
 
