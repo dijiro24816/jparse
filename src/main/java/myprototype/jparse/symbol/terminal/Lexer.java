@@ -211,13 +211,6 @@ public class Lexer {
 		}
 	}
 
-	public Terminal eatSeparatorToken() {
-		int beg = textBuffer.getFirstByteCount();
-		int symbol = textBuffer.extract(1).charAt(0);
-		int end = beg + 1;
-		return new SeparatorToken(beg, end, symbol);
-	}
-
 	public int extractEscapeSequence(InputStream inStrm) throws IOException, InvalidTokenException {
 		int beg = textBuffer.getFirstByteCount();
 		int offset = textBuffer.getIndex();

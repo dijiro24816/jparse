@@ -1,10 +1,11 @@
 package myprototype.jparse.symbol.terminal.operator;
 
+import myprototype.jparse.symbol.SymbolKind;
 import myprototype.jparse.symbol.terminal.OperatorToken;
 
 // '^='
 public class BitwiseXorOperatorToken extends OperatorToken {
 	public BitwiseXorOperatorToken(int beg, int end) {
-		super(beg, end);
+		super(SymbolKind.BITWISE_XOR_OPERATOR_TOKEN, beg, end);
 	}
 }

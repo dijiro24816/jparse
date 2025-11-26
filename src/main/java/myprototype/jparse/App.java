@@ -21,6 +21,16 @@ class Sample3 extends Sample {
 	
 }
 
+enum Somple {
+	A,
+	B,
+	LAST;
+	
+	public int length() {
+		return LAST.ordinal();
+	}
+}
+
 /**
  * Hello world!
  */
@@ -28,6 +38,11 @@ public class App {
 	
 	
 	public static void main(String[] args) {
+		Somple s = Somple.A;
+		System.out.println(s.length());
+		System.exit(0);
+		
+		
 		Class<? extends Sample> klass2 = Sample2.class;
 		Class<? extends Sample> klass3 = Sample3.class;
 		

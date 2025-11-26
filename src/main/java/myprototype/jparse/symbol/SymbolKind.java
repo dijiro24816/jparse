@@ -114,5 +114,12 @@ public enum SymbolKind {
 	WHILE_KEYWORD_TOKEN,
 	
 	// * Nonterminal Symbols
+	EXPRESSION_NODE
 	
+	;
+	
+	
+	public int size() {
+		return vlaues().length;
+	}
 }
