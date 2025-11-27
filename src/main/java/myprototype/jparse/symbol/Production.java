@@ -1,52 +1,36 @@
 
 package myprototype.jparse.symbol;
 
-import java.util.ArrayList;
-import java.util.Stack;
+import myprototype.jparse.symbol.terminal.Terminal;
 
-import myprototype.jparse.symbol.nonterminal.QuolifiedIdentifierNode;
-import myprototype.jparse.symbol.terminal.IdentifierToken;
+public class Production {
+	private Class<? extends Symbol> symbol;
+	private Rule[] rules;
 
-
-class B {
-
-	@Override
-	public String toString() {
-		return "B []";
-	}
-}
-
-class A {
-	ArrayList<?>[] arrayLists;
-	
-	public A(ArrayList<?>... arrayLists) {
-		this.arrayLists = arrayLists;
-	}
-}
-
-public class Production<T extends Symbol> {
-	private Class<T> symbol;
-	private Rule<T>[] rules;
-
-	public Class<T> getSymbol() {
+	public Class<? extends Symbol> getSymbol() {
 		return symbol;
 	}
 
-	private void setSymbol(Class<T> symbol) {
+	private void setSymbol(Class<? extends Symbol> symbol) {
 		this.symbol = symbol;
 	}
 
-	public Rule<T>[] getRules() {
+	public Rule[] getRules() {
 		return rules;
 	}
 
-	public void setRules(Rule<T>[] rules) {
+	public void setRules(Rule[] rules) {
 		this.rules = rules;
 	}
+	
 	@SafeVarargs
-	public Production(Class<T> symbol, Rule<T>... rules) {
+	public Production(Class<? extends Symbol> symbol, Rule... rules) {
 		this.setSymbol(symbol);
 		setRules(rules);
+	}
+	
+	public boolean isTerminal() {
+		return getSymbol().isAssignableFrom(Terminal.class);
 	}
 
 	public static void main(String[] args) {
@@ -60,7 +44,7 @@ public class Production<T extends Symbol> {
 		System.exit(0);
 		
 		
-		Production<IdentifierToken> identifierTokenProduction = new Production<>(IdentifierToken.class);
+//		Production<IdentifierToken> identifierTokenProduction = new Production<>(IdentifierToken.class);
 //		Function<Stack<Symbol>, QuolifiedIdentifierElement> compound = ;
 		
 		// QuolifiedIdentifierElement ::= IdentifierToken
@@ -68,13 +52,13 @@ public class Production<T extends Symbol> {
 //				(Stack<Symbol> stack) -> {
 //					return null;
 //				}, identifierTokenProduction);
-		Production<QuolifiedIdentifierNode> QuolifiedIdentifierElementProduction = new Production<>(
-				QuolifiedIdentifierNode.class,
-				new Rule<>(
-						(Stack<Symbol> stack) -> {
-							return null;
-						}, identifierTokenProduction)
-				);
+//		Production<QuolifiedIdentifierNode> QuolifiedIdentifierElementProduction = new Production<>(
+//				QuolifiedIdentifierNode.class,
+//				new Rule<>(
+//						(Stack<Symbol> stack) -> {
+//							return null;
+//						}, identifierTokenProduction)
+//				);
 		
 		
 //		Production<QuolifiedIdentifierElement> product = new Production<QuolifiedIdentifierElement>(

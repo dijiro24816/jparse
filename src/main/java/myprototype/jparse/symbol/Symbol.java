@@ -7,7 +7,7 @@ public class Symbol {
 		return kind.ordinal();
 	}
 
-	public SymbolKind getKind() {
+	private SymbolKind getKind() {
 		return kind;
 	}
 

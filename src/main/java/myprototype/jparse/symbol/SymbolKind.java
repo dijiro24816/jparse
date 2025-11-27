@@ -119,7 +119,7 @@ public enum SymbolKind {
 	;
 	
 	
-	public int size() {
-		return vlaues().length;
+	public static int size() {
+		return values().length;
 	}
 }

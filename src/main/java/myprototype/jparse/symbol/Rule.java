@@ -3,21 +3,22 @@ package myprototype.jparse.symbol;
 import java.util.Stack;
 import java.util.function.Function;
 
-public class Rule<T extends Symbol> {
-	public Production<? extends Symbol>[] productions;
-	public Function<Stack<Symbol>, T> compound;
+import myprototype.jparse.symbol.nonterminal.Nonterminal;
+
+public class Rule {
+	public Production[] productions;
+	public Function<Stack<Symbol>, ? extends Nonterminal> compound;
 	
-	public Production<? extends Symbol>[] getProductions() {
+	public Production[] getProductions() {
 		return productions;
 	}
 
-	@SafeVarargs
-	public Rule(Function<Stack<Symbol>, T> compound, Production<? extends Symbol>... productions) {
+	public Rule(Function<Stack<Symbol>, ? extends Nonterminal> compound, Production... productions) {
 		this.compound = compound;
 		this.productions = productions;
 	}
 	
-	public T compound(Stack<Symbol> stack) {
-		return compound.apply(stack);
-	}
+//	public Nonterminal compound(Stack<Symbol> stack) {
+//		return compound.apply(stack);
+//	}
 }
