@@ -1,15 +1,12 @@
 package myprototype.jparse;
 
 import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.List;
 import java.util.Stack;
 
 import myprototype.jparse.symbol.Production;
 import myprototype.jparse.symbol.Rule;
 import myprototype.jparse.symbol.Symbol;
 import myprototype.jparse.symbol.nonterminal.ExpressionNode;
-import myprototype.jparse.symbol.nonterminal.Nonterminal;
 import myprototype.jparse.symbol.terminal.BooleanLiteralToken;
 import myprototype.jparse.symbol.terminal.CharacterLiteralToken;
 import myprototype.jparse.symbol.terminal.FloatingPointLiteralToken;
@@ -135,35 +132,7 @@ public class LRParser {
 
 	//	private Class<? extends Symbol> getNextDot()
 
-	private void completeCurrentDotsOnTerminal(RuleScenario ruleScenario) {
-
-	}
-
-	private void completeDots(List<RuleScenario> ruleScenarios) {
-		ruleScenarios = ruleScenarios.stream()
-				.sorted(
-						Comparator.comparing(
-								(ruleScenario) -> ((RuleScenario) ruleScenario).getDotProductionSymbol().getName()))
-				.toList();
-
-		int begIndex, endIndex;
-		for (begIndex = 0, endIndex = 1; endIndex < ruleScenarios.size(); endIndex++) {
-			if (ruleScenarios.get(begIndex).getDotProductionSymbol() != ruleScenarios.get(endIndex)
-					.getDotProductionSymbol()) {
-				List<RuleScenario> derivativeRuleScenarios = ruleScenarios.subList(begIndex, endIndex);
-				if (ruleScenarios.get(begIndex).getDotProductionSymbol().isAssignableFrom(Nonterminal.class)) {
-					// TODO: do for nonterminal
-//					completeDots(ruleScenarios.get(begIndex).getDotProduction().getRules());
-				} else {
-
-				}
-
-				begIndex = endIndex;
-			}
-		}
-		// TODO: move dot to next
-		completeDots(ruleScenarios.subList(begIndex, endIndex));
-	}
+	
 
 	private void apply(GrammarScenario grammarScenario) {
 
