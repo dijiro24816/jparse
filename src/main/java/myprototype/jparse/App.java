@@ -42,44 +42,7 @@ public class App {
 //	public int get
 	
 	public static void main(String[] args) {
-		class A {
-			public String key;
-			
-			public A(String key) {
-				this.key = key;
-			}
 
-			@Override
-			public String toString() {
-				return "A [key=" + key + "]";
-			}
-			
-			public static A[] from(String[] strings) {
-				A[] as = new A[strings.length];
-				
-				for (int i = 0; i < strings.length; i++) {
-					as[i] = new A(strings[i]);
-				}
-				
-				return as;
-			}
-		}
-		ArrayList<A> arr = new ArrayList<>();
-		arr.add(new A("ahello"));
-		arr.add(new A("bworld"));
-		arr.add(new A("aworld is great"));
-		
-		
-		int addition = 10;
-		Function<Integer, Integer> func = (Integer i) -> {
-			return i + addition;
-		};
-		
-		String[] strings = {"hello", "world", "world is great", "foo", "bar", "baz"};
-		System.out.println(Arrays.toString(A.from(strings)));
-		
-		System.out.println(arr.stream().sorted(Comparator.comparing(e -> e.key)).toList());
-		
 		
 		System.exit(0);
 		
