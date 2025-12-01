@@ -6,109 +6,8 @@ import java.util.Stack;
 import myprototype.jparse.symbol.Production;
 import myprototype.jparse.symbol.Rule;
 import myprototype.jparse.symbol.Symbol;
+import myprototype.jparse.symbol.SymbolEnum;
 import myprototype.jparse.symbol.nonterminal.ExpressionNode;
-import myprototype.jparse.symbol.terminal.BooleanLiteralToken;
-import myprototype.jparse.symbol.terminal.CharacterLiteralToken;
-import myprototype.jparse.symbol.terminal.FloatingPointLiteralToken;
-import myprototype.jparse.symbol.terminal.IdentifierToken;
-import myprototype.jparse.symbol.terminal.IntegerLiteralToken;
-import myprototype.jparse.symbol.terminal.NullLiteralToken;
-import myprototype.jparse.symbol.terminal.StringLiteralToken;
-import myprototype.jparse.symbol.terminal.keyword.AbstractKeywordToken;
-import myprototype.jparse.symbol.terminal.keyword.AssertKeywordToken;
-import myprototype.jparse.symbol.terminal.keyword.BooleanKeywordToken;
-import myprototype.jparse.symbol.terminal.keyword.BreakKeywordToken;
-import myprototype.jparse.symbol.terminal.keyword.ByteKeywordToken;
-import myprototype.jparse.symbol.terminal.keyword.CaseKeywordToken;
-import myprototype.jparse.symbol.terminal.keyword.CatchKeywordToken;
-import myprototype.jparse.symbol.terminal.keyword.CharKeywordToken;
-import myprototype.jparse.symbol.terminal.keyword.ClassKeywordToken;
-import myprototype.jparse.symbol.terminal.keyword.ConstKeywordToken;
-import myprototype.jparse.symbol.terminal.keyword.ContinueKeywordToken;
-import myprototype.jparse.symbol.terminal.keyword.DefaultKeywordToken;
-import myprototype.jparse.symbol.terminal.keyword.DoKeywordToken;
-import myprototype.jparse.symbol.terminal.keyword.DoubleKeywordToken;
-import myprototype.jparse.symbol.terminal.keyword.ElseKeywordToken;
-import myprototype.jparse.symbol.terminal.keyword.EnumKeywordToken;
-import myprototype.jparse.symbol.terminal.keyword.ExtendsKeywordToken;
-import myprototype.jparse.symbol.terminal.keyword.FinalKeywordToken;
-import myprototype.jparse.symbol.terminal.keyword.FinallyKeywordToken;
-import myprototype.jparse.symbol.terminal.keyword.FloatKeywordToken;
-import myprototype.jparse.symbol.terminal.keyword.ForKeywordToken;
-import myprototype.jparse.symbol.terminal.keyword.GotoKeywordToken;
-import myprototype.jparse.symbol.terminal.keyword.IfKeywordToken;
-import myprototype.jparse.symbol.terminal.keyword.ImplementsKeywordToken;
-import myprototype.jparse.symbol.terminal.keyword.ImportKeywordToken;
-import myprototype.jparse.symbol.terminal.keyword.InstanceofKeywordToken;
-import myprototype.jparse.symbol.terminal.keyword.IntKeywordToken;
-import myprototype.jparse.symbol.terminal.keyword.InterfaceKeywordToken;
-import myprototype.jparse.symbol.terminal.keyword.LongKeywordToken;
-import myprototype.jparse.symbol.terminal.keyword.NativeKeywordToken;
-import myprototype.jparse.symbol.terminal.keyword.NewKeywordToken;
-import myprototype.jparse.symbol.terminal.keyword.PackageKeywordToken;
-import myprototype.jparse.symbol.terminal.keyword.PrivateKeywordToken;
-import myprototype.jparse.symbol.terminal.keyword.ProtectedKeywordToken;
-import myprototype.jparse.symbol.terminal.keyword.PublicKeywordToken;
-import myprototype.jparse.symbol.terminal.keyword.ReturnKeywordToken;
-import myprototype.jparse.symbol.terminal.keyword.ShortKeywordToken;
-import myprototype.jparse.symbol.terminal.keyword.StaticKeywordToken;
-import myprototype.jparse.symbol.terminal.keyword.StrictfpKeywordToken;
-import myprototype.jparse.symbol.terminal.keyword.SuperKeywordToken;
-import myprototype.jparse.symbol.terminal.keyword.SwitchKeywordToken;
-import myprototype.jparse.symbol.terminal.keyword.SynchronizedKeywordToken;
-import myprototype.jparse.symbol.terminal.keyword.ThisKeywordToken;
-import myprototype.jparse.symbol.terminal.keyword.ThrowKeywordToken;
-import myprototype.jparse.symbol.terminal.keyword.ThrowsKeywordToken;
-import myprototype.jparse.symbol.terminal.keyword.TransientKeywordToken;
-import myprototype.jparse.symbol.terminal.keyword.TryKeywordToken;
-import myprototype.jparse.symbol.terminal.keyword.VoidKeywordToken;
-import myprototype.jparse.symbol.terminal.keyword.VolatileKeywordToken;
-import myprototype.jparse.symbol.terminal.keyword.WhileKeywordToken;
-import myprototype.jparse.symbol.terminal.operator.AdditionAssignmentOperatorToken;
-import myprototype.jparse.symbol.terminal.operator.AdditionOperatorToken;
-import myprototype.jparse.symbol.terminal.operator.AssignmentOperatorToken;
-import myprototype.jparse.symbol.terminal.operator.BitwiseAndAssignmentOperatorToken;
-import myprototype.jparse.symbol.terminal.operator.BitwiseAndOperatorToken;
-import myprototype.jparse.symbol.terminal.operator.BitwiseNotOperatorToken;
-import myprototype.jparse.symbol.terminal.operator.BitwiseOrAssignmentOperatorToken;
-import myprototype.jparse.symbol.terminal.operator.BitwiseOrOperatorToken;
-import myprototype.jparse.symbol.terminal.operator.BitwiseXorAssignmentOperatorToken;
-import myprototype.jparse.symbol.terminal.operator.BitwiseXorOperatorToken;
-import myprototype.jparse.symbol.terminal.operator.ColonOperatorToken;
-import myprototype.jparse.symbol.terminal.operator.ConditionalOperatorToken;
-import myprototype.jparse.symbol.terminal.operator.DecrementOperatorToken;
-import myprototype.jparse.symbol.terminal.operator.DivisionAssignmentOperatorToken;
-import myprototype.jparse.symbol.terminal.operator.DivisionOperatorToken;
-import myprototype.jparse.symbol.terminal.operator.EqualOperatorToken;
-import myprototype.jparse.symbol.terminal.operator.GreaterThanEqualOperatorToken;
-import myprototype.jparse.symbol.terminal.operator.GreaterThanOperatorToken;
-import myprototype.jparse.symbol.terminal.operator.IncrementOperatorToken;
-import myprototype.jparse.symbol.terminal.operator.LeftShiftAssignmentOperatorToken;
-import myprototype.jparse.symbol.terminal.operator.LeftShiftOperatorToken;
-import myprototype.jparse.symbol.terminal.operator.LessThanEqualOperatorToken;
-import myprototype.jparse.symbol.terminal.operator.LessThanOperatorToken;
-import myprototype.jparse.symbol.terminal.operator.LogicalAndOperatorToken;
-import myprototype.jparse.symbol.terminal.operator.LogicalNotOperatorToken;
-import myprototype.jparse.symbol.terminal.operator.LogicalOrOperatorToken;
-import myprototype.jparse.symbol.terminal.operator.ModuloAssignmentOperatorToken;
-import myprototype.jparse.symbol.terminal.operator.ModuloOperatorToken;
-import myprototype.jparse.symbol.terminal.operator.MultiplicationAssignmentOperatorToken;
-import myprototype.jparse.symbol.terminal.operator.MultiplicationOperatorToken;
-import myprototype.jparse.symbol.terminal.operator.NotEqualOperatorToken;
-import myprototype.jparse.symbol.terminal.operator.RightShiftAssignmentOperatorToken;
-import myprototype.jparse.symbol.terminal.operator.RightShiftOperatorToken;
-import myprototype.jparse.symbol.terminal.operator.SubtractionAssignmentOperatorToken;
-import myprototype.jparse.symbol.terminal.operator.SubtractionOperatorToken;
-import myprototype.jparse.symbol.terminal.operator.UnsignedRightShiftOperatorToken;
-import myprototype.jparse.symbol.terminal.separator.CommaSeparatorToken;
-import myprototype.jparse.symbol.terminal.separator.CurlyBracketCloseSeparatorToken;
-import myprototype.jparse.symbol.terminal.separator.CurlyBracketOpenSeparatorToken;
-import myprototype.jparse.symbol.terminal.separator.PeriodSeparatorToken;
-import myprototype.jparse.symbol.terminal.separator.RoundBracketCloseSeparatorToken;
-import myprototype.jparse.symbol.terminal.separator.RoundBracketOpenSeparatorToken;
-import myprototype.jparse.symbol.terminal.separator.SemicolonSeparatorToken;
-import myprototype.jparse.symbol.terminal.separator.SquareBracketCloseSeparatorToken;
-import myprototype.jparse.symbol.terminal.separator.SquareBracketOpenSeparatorToken;
 
 public class LRParser {
 	// lookahead-set
@@ -140,165 +39,111 @@ public class LRParser {
 
 	public static void main(String[] args) {
 
-		Production booleanLiteralTokenProduction = new Production(BooleanLiteralToken.class);
-		Production characterLiteralTokenProduction = new Production(
-				CharacterLiteralToken.class);
-		Production floatingPointLiteralTokenProduction = new Production(
-				FloatingPointLiteralToken.class);
-		Production identifierTokenProduction = new Production(IdentifierToken.class);
-		Production integerLiteralTokenProduction = new Production(IntegerLiteralToken.class);
-		Production nullLiteralTokenProduction = new Production(NullLiteralToken.class);
-		Production stringLiteralTokenProduction = new Production(StringLiteralToken.class);
-
-		// Separator Token
-		Production roundBracketOpenSeparatorTokenProduction = new Production(
-				RoundBracketOpenSeparatorToken.class);
-		Production roundBracketCloseSeparatorTokenProduction = new Production(
-				RoundBracketCloseSeparatorToken.class);
-		Production curlyBracketOpenSeparatorTokenProduction = new Production(
-				CurlyBracketOpenSeparatorToken.class);
-		Production curlyBracketCloseSeparatorTokenProduction = new Production(
-				CurlyBracketCloseSeparatorToken.class);
-		Production squareBracketOpenSeparatorTokenProduction = new Production(
-				SquareBracketOpenSeparatorToken.class);
-		Production squareBracketCloseSeparatorTokenProduction = new Production(
-				SquareBracketCloseSeparatorToken.class);
-		Production semicolonSeparatorTokenProduction = new Production(
-				SemicolonSeparatorToken.class);
-		Production commaSeparatorTokenProduction = new Production(CommaSeparatorToken.class);
-		Production periodSeparatorTokenProduction = new Production(PeriodSeparatorToken.class);
-
-		// Operator Token
-		Production assignmentOperatorTokenProduction = new Production(
-				AssignmentOperatorToken.class);
-		Production equalOperatorTokenProduction = new Production(EqualOperatorToken.class);
-		Production greaterThanOperatorTokenProduction = new Production(
-				GreaterThanOperatorToken.class);
-		Production greaterThanEqualOperatorTokenProduction = new Production(
-				GreaterThanEqualOperatorToken.class);
-		Production rightShiftOperatorTokenProduction = new Production(
-				RightShiftOperatorToken.class);
-		Production rightShiftAssignmentOperatorTokenProduction = new Production(
-				RightShiftAssignmentOperatorToken.class);
-		Production unsignedRightShiftOperatorTokenProduction = new Production(
-				UnsignedRightShiftOperatorToken.class);
-		Production lessThanOperatorTokenProduction = new Production(
-				LessThanOperatorToken.class);
-		Production lessThanEqualOperatorTokenProduction = new Production(
-				LessThanEqualOperatorToken.class);
-		Production leftShiftOperatorTokenProduction = new Production(
-				LeftShiftOperatorToken.class);
-		Production leftShiftAssignmentOperatorTokenProduction = new Production(
-				LeftShiftAssignmentOperatorToken.class);
-		Production logicalNotOperatorTokenProduction = new Production(
-				LogicalNotOperatorToken.class);
-		Production notEqualOperatorTokenProduction = new Production(
-				NotEqualOperatorToken.class);
-		Production bitwiseNotOperatorTokenProduction = new Production(
-				BitwiseNotOperatorToken.class);
-		Production conditionalOperatorTokenProduction = new Production(
-				ConditionalOperatorToken.class);
-		Production colonOperatorTokenProduction = new Production(ColonOperatorToken.class);
-		Production bitwiseAndOperatorTokenProduction = new Production(
-				BitwiseAndOperatorToken.class);
-		Production bitwiseAndAssignmentOperatorTokenProduction = new Production(
-				BitwiseAndAssignmentOperatorToken.class);
-		Production logicalAndOperatorTokenProduction = new Production(
-				LogicalAndOperatorToken.class);
-		Production bitwiseOrOperatorTokenProduction = new Production(
-				BitwiseOrOperatorToken.class);
-		Production bitwiseOrAssignmentOperatorTokenProduction = new Production(
-				BitwiseOrAssignmentOperatorToken.class);
-		Production logicalOrOperatorTokenProduction = new Production(
-				LogicalOrOperatorToken.class);
-		Production additionOperatorTokenProduction = new Production(
-				AdditionOperatorToken.class);
-		Production additionAssignmentOperatorTokenProduction = new Production(
-				AdditionAssignmentOperatorToken.class);
-		Production incrementOperatorTokenProduction = new Production(
-				IncrementOperatorToken.class);
-		Production subtractionOperatorTokenProduction = new Production(
-				SubtractionOperatorToken.class);
-		Production subtractionAssignmentOperatorTokenProduction = new Production(
-				SubtractionAssignmentOperatorToken.class);
-		Production decrementOperatorTokenProduction = new Production(
-				DecrementOperatorToken.class);
-		Production multiplicationOperatorTokenProduction = new Production(
-				MultiplicationOperatorToken.class);
-		Production multiplicationAssignmentOperatorTokenProduction = new Production(
-				MultiplicationAssignmentOperatorToken.class);
-		Production divisionOperatorTokenProduction = new Production(
-				DivisionOperatorToken.class);
-		Production divisionAssignmentOperatorTokenProduction = new Production(
-				DivisionAssignmentOperatorToken.class);
-		Production bitwiseXorOperatorTokenProduction = new Production(
-				BitwiseXorOperatorToken.class);
-		Production bitwiseXorAssignmentOperatorTokenProduction = new Production(
-				BitwiseXorAssignmentOperatorToken.class);
-		Production moduloOperatorTokenProduction = new Production(ModuloOperatorToken.class);
-		Production moduloAssignmentOperatorTokenProduction = new Production(
-				ModuloAssignmentOperatorToken.class);
-
-		// Keyword Token
-		Production abstractKeywordTokenProduction = new Production(AbstractKeywordToken.class);
-		Production continueKeywordTokenProduction = new Production(ContinueKeywordToken.class);
-		Production forKeywordTokenProduction = new Production(ForKeywordToken.class);
-		Production newKeywordTokenProduction = new Production(NewKeywordToken.class);
-		Production switchKeywordTokenProduction = new Production(SwitchKeywordToken.class);
-		Production assertKeywordTokenProduction = new Production(AssertKeywordToken.class);
-		Production defaultKeywordTokenProduction = new Production(DefaultKeywordToken.class);
-		Production ifKeywordTokenProduction = new Production(IfKeywordToken.class);
-		Production packageKeywordTokenProduction = new Production(PackageKeywordToken.class);
-		Production synchronizedKeywordTokenProduction = new Production(
-				SynchronizedKeywordToken.class);
-		Production booleanKeywordTokenProduction = new Production(BooleanKeywordToken.class);
-		Production doKeywordTokenProduction = new Production(DoKeywordToken.class);
-		Production gotoKeywordTokenProduction = new Production(GotoKeywordToken.class);
-		Production privateKeywordTokenProduction = new Production(PrivateKeywordToken.class);
-		Production thisKeywordTokenProduction = new Production(ThisKeywordToken.class);
-		Production breakKeywordTokenProduction = new Production(BreakKeywordToken.class);
-		Production doubleKeywordTokenProduction = new Production(DoubleKeywordToken.class);
-		Production implementsKeywordTokenProduction = new Production(
-				ImplementsKeywordToken.class);
-		Production protectedKeywordTokenProduction = new Production(
-				ProtectedKeywordToken.class);
-		Production throwKeywordTokenProduction = new Production(ThrowKeywordToken.class);
-		Production byteKeywordTokenProduction = new Production(ByteKeywordToken.class);
-		Production elseKeywordTokenProduction = new Production(ElseKeywordToken.class);
-		Production importKeywordTokenProduction = new Production(ImportKeywordToken.class);
-		Production publicKeywordTokenProduction = new Production(PublicKeywordToken.class);
-		Production throwsKeywordTokenProduction = new Production(ThrowsKeywordToken.class);
-		Production caseKeywordTokenProduction = new Production(CaseKeywordToken.class);
-		Production enumKeywordTokenProduction = new Production(EnumKeywordToken.class);
-		Production instanceofKeywordTokenProduction = new Production(
-				InstanceofKeywordToken.class);
-		Production returnKeywordTokenProduction = new Production(ReturnKeywordToken.class);
-		Production transientKeywordTokenProduction = new Production(
-				TransientKeywordToken.class);
-		Production catchKeywordTokenProduction = new Production(CatchKeywordToken.class);
-		Production extendsKeywordTokenProduction = new Production(ExtendsKeywordToken.class);
-		Production intKeywordTokenProduction = new Production(IntKeywordToken.class);
-		Production shortKeywordTokenProduction = new Production(ShortKeywordToken.class);
-		Production tryKeywordTokenProduction = new Production(TryKeywordToken.class);
-		Production charKeywordTokenProduction = new Production(CharKeywordToken.class);
-		Production finalKeywordTokenProduction = new Production(FinalKeywordToken.class);
-		Production interfaceKeywordTokenProduction = new Production(
-				InterfaceKeywordToken.class);
-		Production staticKeywordTokenProduction = new Production(StaticKeywordToken.class);
-		Production voidKeywordTokenProduction = new Production(VoidKeywordToken.class);
-		Production classKeywordTokenProduction = new Production(ClassKeywordToken.class);
-		Production finallyKeywordTokenProduction = new Production(FinallyKeywordToken.class);
-		Production longKeywordTokenProduction = new Production(LongKeywordToken.class);
-		Production strictfpKeywordTokenProduction = new Production(StrictfpKeywordToken.class);
-		Production volatileKeywordTokenProduction = new Production(VolatileKeywordToken.class);
-		Production constKeywordTokenProduction = new Production(ConstKeywordToken.class);
-		Production floatKeywordTokenProduction = new Production(FloatKeywordToken.class);
-		Production nativeKeywordTokenProduction = new Production(NativeKeywordToken.class);
-		Production superKeywordTokenProduction = new Production(SuperKeywordToken.class);
-		Production whileKeywordTokenProduction = new Production(WhileKeywordToken.class);
-
+		Production booleanLiteralTokenProduction = new Production(SymbolEnum.BOOLEAN_LITERAL_TOKEN);
+		Production characterLiteralTokenProduction = new Production(SymbolEnum.CHARACTER_LITERAL_TOKEN);
+		Production floatingPointLiteralTokenProduction = new Production(SymbolEnum.FLOATING_POINT_LITERAL_TOKEN);
+		Production identifierTokenProduction = new Production(SymbolEnum.IDENTIFIER_TOKEN);
+		Production integerLiteralTokenProduction = new Production(SymbolEnum.INTEGER_LITERAL_TOKEN);
+		Production nullLiteralTokenProduction = new Production(SymbolEnum.NULL_LITERAL_TOKEN);
+		Production stringLiteralTokenProduction = new Production(SymbolEnum.STRING_LITERAL_TOKEN);
+		Production roundBracketOpenSeparatorTokenProduction = new Production(SymbolEnum.ROUND_BRACKET_OPEN_SEPARATOR_TOKEN);
+		Production roundBracketCloseSeparatorTokenProduction = new Production(SymbolEnum.ROUND_BRACKET_CLOSE_SEPARATOR_TOKEN);
+		Production curlyBracketOpenSeparatorTokenProduction = new Production(SymbolEnum.CURLY_BRACKET_OPEN_SEPARATOR_TOKEN);
+		Production curlyBracketCloseSeparatorTokenProduction = new Production(SymbolEnum.CURLY_BRACKET_CLOSE_SEPARATOR_TOKEN);
+		Production squareBracketOpenSeparatorTokenProduction = new Production(SymbolEnum.SQUARE_BRACKET_OPEN_SEPARATOR_TOKEN);
+		Production squareBracketCloseSeparatorTokenProduction = new Production(SymbolEnum.SQUARE_BRACKET_CLOSE_SEPARATOR_TOKEN);
+		Production semicolonSeparatorTokenProduction = new Production(SymbolEnum.SEMICOLON_SEPARATOR_TOKEN);
+		Production commaSeparatorTokenProduction = new Production(SymbolEnum.COMMA_SEPARATOR_TOKEN);
+		Production periodSeparatorTokenProduction = new Production(SymbolEnum.PERIOD_SEPARATOR_TOKEN);
+		Production assignmentOperatorTokenProduction = new Production(SymbolEnum.ASSIGNMENT_OPERATOR_TOKEN);
+		Production equalOperatorTokenProduction = new Production(SymbolEnum.EQUAL_OPERATOR_TOKEN);
+		Production greaterThanOperatorTokenProduction = new Production(SymbolEnum.GREATER_THAN_OPERATOR_TOKEN);
+		Production greaterThanEqualOperatorTokenProduction = new Production(SymbolEnum.GREATER_THAN_EQUAL_OPERATOR_TOKEN);
+		Production rightShiftOperatorTokenProduction = new Production(SymbolEnum.RIGHT_SHIFT_OPERATOR_TOKEN);
+		Production rightShiftAssignmentOperatorTokenProduction = new Production(SymbolEnum.RIGHT_SHIFT_ASSIGNMENT_OPERATOR_TOKEN);
+		Production unsignedRightShiftOperatorTokenProduction = new Production(SymbolEnum.UNSIGNED_RIGHT_SHIFT_OPERATOR_TOKEN);
+		Production lessThanOperatorTokenProduction = new Production(SymbolEnum.LESS_THAN_OPERATOR_TOKEN);
+		Production lessThanEqualOperatorTokenProduction = new Production(SymbolEnum.LESS_THAN_EQUAL_OPERATOR_TOKEN);
+		Production leftShiftOperatorTokenProduction = new Production(SymbolEnum.LEFT_SHIFT_OPERATOR_TOKEN);
+		Production leftShiftAssignmentOperatorTokenProduction = new Production(SymbolEnum.LEFT_SHIFT_ASSIGNMENT_OPERATOR_TOKEN);
+		Production logicalNotOperatorTokenProduction = new Production(SymbolEnum.LOGICAL_NOT_OPERATOR_TOKEN);
+		Production notEqualOperatorTokenProduction = new Production(SymbolEnum.NOT_EQUAL_OPERATOR_TOKEN);
+		Production bitwiseNotOperatorTokenProduction = new Production(SymbolEnum.BITWISE_NOT_OPERATOR_TOKEN);
+		Production conditionalOperatorTokenProduction = new Production(SymbolEnum.CONDITIONAL_OPERATOR_TOKEN);
+		Production colonOperatorTokenProduction = new Production(SymbolEnum.COLON_OPERATOR_TOKEN);
+		Production bitwiseAndOperatorTokenProduction = new Production(SymbolEnum.BITWISE_AND_OPERATOR_TOKEN);
+		Production bitwiseAndAssignmentOperatorTokenProduction = new Production(SymbolEnum.BITWISE_AND_ASSIGNMENT_OPERATOR_TOKEN);
+		Production logicalAndOperatorTokenProduction = new Production(SymbolEnum.LOGICAL_AND_OPERATOR_TOKEN);
+		Production bitwiseOrOperatorTokenProduction = new Production(SymbolEnum.BITWISE_OR_OPERATOR_TOKEN);
+		Production bitwiseOrAssignmentOperatorTokenProduction = new Production(SymbolEnum.BITWISE_OR_ASSIGNMENT_OPERATOR_TOKEN);
+		Production logicalOrOperatorTokenProduction = new Production(SymbolEnum.LOGICAL_OR_OPERATOR_TOKEN);
+		Production additionOperatorTokenProduction = new Production(SymbolEnum.ADDITION_OPERATOR_TOKEN);
+		Production additionAssignmentOperatorTokenProduction = new Production(SymbolEnum.ADDITION_ASSIGNMENT_OPERATOR_TOKEN);
+		Production incrementOperatorTokenProduction = new Production(SymbolEnum.INCREMENT_OPERATOR_TOKEN);
+		Production subtractionOperatorTokenProduction = new Production(SymbolEnum.SUBTRACTION_OPERATOR_TOKEN);
+		Production subtractionAssignmentOperatorTokenProduction = new Production(SymbolEnum.SUBTRACTION_ASSIGNMENT_OPERATOR_TOKEN);
+		Production decrementOperatorTokenProduction = new Production(SymbolEnum.DECREMENT_OPERATOR_TOKEN);
+		Production multiplicationOperatorTokenProduction = new Production(SymbolEnum.MULTIPLICATION_OPERATOR_TOKEN);
+		Production multiplicationAssignmentOperatorTokenProduction = new Production(SymbolEnum.MULTIPLICATION_ASSIGNMENT_OPERATOR_TOKEN);
+		Production divisionOperatorTokenProduction = new Production(SymbolEnum.DIVISION_OPERATOR_TOKEN);
+		Production divisionAssignmentOperatorTokenProduction = new Production(SymbolEnum.DIVISION_ASSIGNMENT_OPERATOR_TOKEN);
+		Production bitwiseXorOperatorTokenProduction = new Production(SymbolEnum.BITWISE_XOR_OPERATOR_TOKEN);
+		Production bitwiseXorAssignmentOperatorTokenProduction = new Production(SymbolEnum.BITWISE_XOR_ASSIGNMENT_OPERATOR_TOKEN);
+		Production moduloOperatorTokenProduction = new Production(SymbolEnum.MODULO_OPERATOR_TOKEN);
+		Production moduloAssignmentOperatorTokenProduction = new Production(SymbolEnum.MODULO_ASSIGNMENT_OPERATOR_TOKEN);
+		Production abstractKeywordTokenProduction = new Production(SymbolEnum.ABSTRACT_KEYWORD_TOKEN);
+		Production continueKeywordTokenProduction = new Production(SymbolEnum.CONTINUE_KEYWORD_TOKEN);
+		Production forKeywordTokenProduction = new Production(SymbolEnum.FOR_KEYWORD_TOKEN);
+		Production newKeywordTokenProduction = new Production(SymbolEnum.NEW_KEYWORD_TOKEN);
+		Production switchKeywordTokenProduction = new Production(SymbolEnum.SWITCH_KEYWORD_TOKEN);
+		Production assertKeywordTokenProduction = new Production(SymbolEnum.ASSERT_KEYWORD_TOKEN);
+		Production defaultKeywordTokenProduction = new Production(SymbolEnum.DEFAULT_KEYWORD_TOKEN);
+		Production ifKeywordTokenProduction = new Production(SymbolEnum.IF_KEYWORD_TOKEN);
+		Production packageKeywordTokenProduction = new Production(SymbolEnum.PACKAGE_KEYWORD_TOKEN);
+		Production synchronizedKeywordTokenProduction = new Production(SymbolEnum.SYNCHRONIZED_KEYWORD_TOKEN);
+		Production booleanKeywordTokenProduction = new Production(SymbolEnum.BOOLEAN_KEYWORD_TOKEN);
+		Production doKeywordTokenProduction = new Production(SymbolEnum.DO_KEYWORD_TOKEN);
+		Production gotoKeywordTokenProduction = new Production(SymbolEnum.GOTO_KEYWORD_TOKEN);
+		Production privateKeywordTokenProduction = new Production(SymbolEnum.PRIVATE_KEYWORD_TOKEN);
+		Production thisKeywordTokenProduction = new Production(SymbolEnum.THIS_KEYWORD_TOKEN);
+		Production breakKeywordTokenProduction = new Production(SymbolEnum.BREAK_KEYWORD_TOKEN);
+		Production doubleKeywordTokenProduction = new Production(SymbolEnum.DOUBLE_KEYWORD_TOKEN);
+		Production implementsKeywordTokenProduction = new Production(SymbolEnum.IMPLEMENTS_KEYWORD_TOKEN);
+		Production protectedKeywordTokenProduction = new Production(SymbolEnum.PROTECTED_KEYWORD_TOKEN);
+		Production throwKeywordTokenProduction = new Production(SymbolEnum.THROW_KEYWORD_TOKEN);
+		Production byteKeywordTokenProduction = new Production(SymbolEnum.BYTE_KEYWORD_TOKEN);
+		Production elseKeywordTokenProduction = new Production(SymbolEnum.ELSE_KEYWORD_TOKEN);
+		Production importKeywordTokenProduction = new Production(SymbolEnum.IMPORT_KEYWORD_TOKEN);
+		Production publicKeywordTokenProduction = new Production(SymbolEnum.PUBLIC_KEYWORD_TOKEN);
+		Production throwsKeywordTokenProduction = new Production(SymbolEnum.THROWS_KEYWORD_TOKEN);
+		Production caseKeywordTokenProduction = new Production(SymbolEnum.CASE_KEYWORD_TOKEN);
+		Production enumKeywordTokenProduction = new Production(SymbolEnum.ENUM_KEYWORD_TOKEN);
+		Production instanceofKeywordTokenProduction = new Production(SymbolEnum.INSTANCEOF_KEYWORD_TOKEN);
+		Production returnKeywordTokenProduction = new Production(SymbolEnum.RETURN_KEYWORD_TOKEN);
+		Production transientKeywordTokenProduction = new Production(SymbolEnum.TRANSIENT_KEYWORD_TOKEN);
+		Production catchKeywordTokenProduction = new Production(SymbolEnum.CATCH_KEYWORD_TOKEN);
+		Production extendsKeywordTokenProduction = new Production(SymbolEnum.EXTENDS_KEYWORD_TOKEN);
+		Production intKeywordTokenProduction = new Production(SymbolEnum.INT_KEYWORD_TOKEN);
+		Production shortKeywordTokenProduction = new Production(SymbolEnum.SHORT_KEYWORD_TOKEN);
+		Production tryKeywordTokenProduction = new Production(SymbolEnum.TRY_KEYWORD_TOKEN);
+		Production charKeywordTokenProduction = new Production(SymbolEnum.CHAR_KEYWORD_TOKEN);
+		Production finalKeywordTokenProduction = new Production(SymbolEnum.FINAL_KEYWORD_TOKEN);
+		Production interfaceKeywordTokenProduction = new Production(SymbolEnum.INTERFACE_KEYWORD_TOKEN);
+		Production staticKeywordTokenProduction = new Production(SymbolEnum.STATIC_KEYWORD_TOKEN);
+		Production voidKeywordTokenProduction = new Production(SymbolEnum.VOID_KEYWORD_TOKEN);
+		Production classKeywordTokenProduction = new Production(SymbolEnum.CLASS_KEYWORD_TOKEN);
+		Production finallyKeywordTokenProduction = new Production(SymbolEnum.FINALLY_KEYWORD_TOKEN);
+		Production longKeywordTokenProduction = new Production(SymbolEnum.LONG_KEYWORD_TOKEN);
+		Production strictfpKeywordTokenProduction = new Production(SymbolEnum.STRICTFP_KEYWORD_TOKEN);
+		Production volatileKeywordTokenProduction = new Production(SymbolEnum.VOLATILE_KEYWORD_TOKEN);
+		Production constKeywordTokenProduction = new Production(SymbolEnum.CONST_KEYWORD_TOKEN);
+		Production floatKeywordTokenProduction = new Production(SymbolEnum.FLOAT_KEYWORD_TOKEN);
+		Production nativeKeywordTokenProduction = new Production(SymbolEnum.NATIVE_KEYWORD_TOKEN);
+		Production superKeywordTokenProduction = new Production(SymbolEnum.SUPER_KEYWORD_TOKEN);
+		Production whileKeywordTokenProduction = new Production(SymbolEnum.WHILE_KEYWORD_TOKEN);
+				
 		Production expressionNodeProduction = new Production(
-				ExpressionNode.class,
+				SymbolEnum.EXPRESSION_NODE,
 				new Rule((Stack<Symbol> stack) -> {
 					return new ExpressionNode();
 				}, additionOperatorTokenProduction, integerLiteralTokenProduction, integerLiteralTokenProduction));

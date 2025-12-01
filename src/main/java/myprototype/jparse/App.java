@@ -4,10 +4,6 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
-import java.util.function.Function;
 
 import myprototype.jparse.symbol.terminal.Lexer;
 
@@ -41,8 +37,21 @@ enum Somple {
 public class App {
 //	public int get
 	
+	enum Asdf {
+		HELLO("hello"),
+		SAMPLE("sample");
+		
+		private final String src;
+		
+		Asdf(String src) {
+			this.src = src;
+		}
+	}
+	
 	public static void main(String[] args) {
-
+		System.out.println(Asdf.valueOf("HELLO"));
+//		a.setSrc("he");
+//		System.out.println(a);
 		
 		System.exit(0);
 		

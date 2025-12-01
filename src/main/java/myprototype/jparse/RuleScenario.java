@@ -4,11 +4,11 @@ import java.util.ArrayList;
 
 import myprototype.jparse.symbol.Production;
 import myprototype.jparse.symbol.Rule;
-import myprototype.jparse.symbol.Symbol;
-import myprototype.jparse.symbol.nonterminal.Nonterminal;
+import myprototype.jparse.symbol.SymbolEnum;
+import myprototype.jparse.symbol.SymbolKindEnum;
 
 public class RuleScenario {
-	private Class<? extends Nonterminal> nonterminal;
+	private SymbolEnum nonterminal;
 	private Rule rule;
 	private int dot;
 
@@ -28,21 +28,21 @@ public class RuleScenario {
 		this.dot = dot;
 	}
 
-	private void setNonterminal(Class<? extends Nonterminal> nonterminal) {
+	private void setNonterminal(SymbolEnum nonterminal) {
 		this.nonterminal = nonterminal;
 	}
 
-	public Class<? extends Nonterminal> getNonterminal() {
+	public SymbolEnum getNonterminal() {
 		return nonterminal;
 	}
 
-	public RuleScenario(Class<? extends Nonterminal> nonterminal, Rule rule, int dot) {
-		setNonterminal(nonterminal);
+	public RuleScenario(SymbolEnum nonterminal, Rule rule, int dot) {
+		this.nonterminal = nonterminal;
 		setRule(rule);
 		setDot(dot);
 	}
 
-	public RuleScenario(Class<? extends Nonterminal> nonterminal, Rule rule) {
+	public RuleScenario(SymbolEnum nonterminal, Rule rule) {
 		this(nonterminal, rule, 0);
 	}
 
@@ -55,14 +55,14 @@ public class RuleScenario {
 	}
 
 	public boolean isDotNonterminal() {
-		return getDotProduction().getSymbol().isAssignableFrom(Nonterminal.class);
+		return getDotProduction().getSymbol().getKind() == SymbolKindEnum.NONTERMINAL;
 	}
 
 	public Rule[] getDotProductionRules() {
 		return getDotProduction().getRules();
 	}
 
-	public Class<? extends Symbol> getDotProductionSymbol() {
+	public SymbolEnum getDotProductionSymbol() {
 		return getDotProduction().getSymbol();
 	}
 
@@ -72,7 +72,7 @@ public class RuleScenario {
 
 	public ArrayList<RuleScenario> newDotRuleScenarios() {
 		ArrayList<RuleScenario> newRuleScenarios = new ArrayList<>();
-		Class<? extends Nonterminal> nonterminal = (Class<? extends Nonterminal>) getDotProductionSymbol();
+		SymbolEnum nonterminalSymbol = getDotProductionSymbol();
 		for (Rule rule : getDotProductionRules())
 			newRuleScenarios.add(new RuleScenario(nonterminal, rule));
 

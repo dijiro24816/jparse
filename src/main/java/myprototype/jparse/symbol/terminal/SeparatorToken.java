@@ -1,20 +1,20 @@
 package myprototype.jparse.symbol.terminal;
 
-import myprototype.jparse.symbol.SymbolKind;
+import myprototype.jparse.symbol.SymbolEnum;
 
 public class SeparatorToken extends Terminal {
 
 	public int symbol;
 	
-	public SeparatorToken(SymbolKind kind) {
+	public SeparatorToken(SymbolEnum kind) {
 		super(kind);
 	}
 			
-	public SeparatorToken(SymbolKind kind, int beg, int end) {
+	public SeparatorToken(SymbolEnum kind, int beg, int end) {
 		this(kind, beg, end, -1);
 	}
 
-	public SeparatorToken(SymbolKind kind, int beg, int end, int symbol) {
+	public SeparatorToken(SymbolEnum kind, int beg, int end, int symbol) {
 		super(kind, beg, end);
 		this.symbol = symbol;
 	}

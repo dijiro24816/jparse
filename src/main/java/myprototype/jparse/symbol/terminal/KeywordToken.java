@@ -1,6 +1,6 @@
 package myprototype.jparse.symbol.terminal;
 
-import myprototype.jparse.symbol.SymbolKind;
+import myprototype.jparse.symbol.SymbolEnum;
 import myprototype.jparse.symbol.terminal.keyword.AbstractKeywordToken;
 import myprototype.jparse.symbol.terminal.keyword.AssertKeywordToken;
 import myprototype.jparse.symbol.terminal.keyword.BooleanKeywordToken;
@@ -53,11 +53,11 @@ import myprototype.jparse.symbol.terminal.keyword.VolatileKeywordToken;
 import myprototype.jparse.symbol.terminal.keyword.WhileKeywordToken;
 
 public class KeywordToken extends Terminal {
-	public KeywordToken(SymbolKind kind) {
+	public KeywordToken(SymbolEnum kind) {
 		super(kind);
 	}
 
-	public KeywordToken(SymbolKind kind, int beg, int end) {
+	public KeywordToken(SymbolEnum kind, int beg, int end) {
 		super(kind, beg, end);
 	}
 

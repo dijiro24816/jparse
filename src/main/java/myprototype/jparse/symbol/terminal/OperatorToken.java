@@ -1,13 +1,13 @@
 package myprototype.jparse.symbol.terminal;
 
-import myprototype.jparse.symbol.SymbolKind;
+import myprototype.jparse.symbol.SymbolEnum;
 
 public class OperatorToken extends Terminal {
-	public OperatorToken(SymbolKind kind) {
+	public OperatorToken(SymbolEnum kind) {
 		super(kind);
 	}
 	
-	public OperatorToken(SymbolKind kind, int beg, int end) {
+	public OperatorToken(SymbolEnum kind, int beg, int end) {
 		super(kind, beg, end);
 	}
 

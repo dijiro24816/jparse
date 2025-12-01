@@ -14,6 +14,10 @@ public class SyntaticsParserTable {
 		this.data = new ArrayList<int[]>();
 	}
 	
+	private List<int[]> getData() {
+		return data;
+	}
+
 	public List<int[]> getSyntaticsParserTable() {
 		return Collections.unmodifiableList(this.data);
 	}
@@ -33,5 +37,9 @@ public class SyntaticsParserTable {
 		data.add(new int[getColumnLength()]);
 		
 		return newState;
+	}
+	
+	public void put(int row, int column, int value) {
+		getData().get(row)[column] = value;
 	}
 }

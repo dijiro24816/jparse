@@ -1,19 +1,18 @@
 
 package myprototype.jparse.symbol;
 
-import myprototype.jparse.symbol.terminal.Terminal;
-
 public class Production {
-	private Class<? extends Symbol> symbol;
+//	private Class<? extends Symbol> symbol;
+	private SymbolEnum symbol;
 	private Rule[] rules;
 
-	public Class<? extends Symbol> getSymbol() {
+	public SymbolEnum getSymbol() {
 		return symbol;
 	}
 
-	private void setSymbol(Class<? extends Symbol> symbol) {
-		this.symbol = symbol;
-	}
+//	private void setSymbol(Class<? extends Symbol> symbol) {
+//		this.symbol = symbol;
+//	}
 
 	public Rule[] getRules() {
 		return rules;
@@ -24,14 +23,14 @@ public class Production {
 	}
 	
 	@SafeVarargs
-	public Production(Class<? extends Symbol> symbol, Rule... rules) {
-		this.setSymbol(symbol);
+	public Production(SymbolEnum symbol, Rule... rules) {
+		this.symbol = symbol;
 		setRules(rules);
 	}
 	
-	public boolean isTerminal() {
-		return getSymbol().isAssignableFrom(Terminal.class);
-	}
+//	public boolean isTerminal() {
+//		return getSymbol().isAssignableFrom(Terminal.class);
+//	}
 
 	public static void main(String[] args) {
 

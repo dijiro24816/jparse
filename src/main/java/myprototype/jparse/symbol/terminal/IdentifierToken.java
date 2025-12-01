@@ -1,6 +1,6 @@
 package myprototype.jparse.symbol.terminal;
 
-import myprototype.jparse.symbol.SymbolKind;
+import myprototype.jparse.symbol.SymbolEnum;
 
 public class IdentifierToken extends Terminal {
 	public String value;
@@ -11,7 +11,7 @@ public class IdentifierToken extends Terminal {
 	}
 
 	public IdentifierToken(int beg, int end, String value) {
-		super(SymbolKind.IDENTIFIER_TOKEN, beg, end);
+		super(SymbolEnum.IDENTIFIER_TOKEN, beg, end);
 		this.value = value;
 	}
 

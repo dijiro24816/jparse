@@ -1,10 +1,10 @@
 package myprototype.jparse.symbol.terminal;
 
-import myprototype.jparse.symbol.SymbolKind;
+import myprototype.jparse.symbol.SymbolEnum;
 
 public class LiteralToken extends Terminal {
 
-	public LiteralToken(SymbolKind kind, int beg, int end) {
+	public LiteralToken(SymbolEnum kind, int beg, int end) {
 		super(kind, beg, end);
 	}
 	

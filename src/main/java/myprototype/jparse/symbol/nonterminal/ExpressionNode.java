@@ -1,9 +1,9 @@
 package myprototype.jparse.symbol.nonterminal;
 
-import myprototype.jparse.symbol.SymbolKind;
+import myprototype.jparse.symbol.SymbolEnum;
 
 public class ExpressionNode extends Nonterminal {
 	public ExpressionNode() {
-		super(SymbolKind.EXPRESSION_NODE);
+		super(SymbolEnum.EXPRESSION_NODE);
 	}
 }

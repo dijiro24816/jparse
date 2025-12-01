@@ -1,13 +1,13 @@
 package myprototype.jparse.symbol.terminal;
 
-import myprototype.jparse.symbol.SymbolKind;
+import myprototype.jparse.symbol.SymbolEnum;
 
 public final class FloatingPointLiteralToken extends LiteralToken {
 	
 	public double value;
 
 	public FloatingPointLiteralToken(int beg, int end, double value) {
-		super(SymbolKind.FLOATING_POINT_LITERAL_TOKEN, beg, end);
+		super(SymbolEnum.FLOATING_POINT_LITERAL_TOKEN, beg, end);
 		
 		this.value = value;
 	}

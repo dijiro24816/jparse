@@ -1,10 +1,10 @@
 package myprototype.jparse.symbol.nonterminal;
 
 import myprototype.jparse.symbol.Symbol;
-import myprototype.jparse.symbol.SymbolKind;
+import myprototype.jparse.symbol.SymbolEnum;
 
 public class Nonterminal extends Symbol {
-	public Nonterminal(SymbolKind kind) {
+	public Nonterminal(SymbolEnum kind) {
 		super(kind);
 	}
 }

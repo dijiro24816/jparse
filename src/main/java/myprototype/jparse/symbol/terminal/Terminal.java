@@ -1,19 +1,19 @@
 package myprototype.jparse.symbol.terminal;
 
 import myprototype.jparse.symbol.Symbol;
-import myprototype.jparse.symbol.SymbolKind;
+import myprototype.jparse.symbol.SymbolEnum;
 
 public class Terminal extends Symbol {
 	private int beg;
 	private int end;
 
-	public Terminal(SymbolKind kind, int beg, int end) {
+	public Terminal(SymbolEnum kind, int beg, int end) {
 		super(kind);
 		this.beg = beg;
 		this.end = end;
 	}
 	
-	public Terminal(SymbolKind kind) {
+	public Terminal(SymbolEnum kind) {
 		this(kind, -1, -1);
 	}
 	

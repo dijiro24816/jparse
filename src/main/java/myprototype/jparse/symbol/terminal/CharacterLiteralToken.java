@@ -1,13 +1,13 @@
 package myprototype.jparse.symbol.terminal;
 
-import myprototype.jparse.symbol.SymbolKind;
+import myprototype.jparse.symbol.SymbolEnum;
 
 public final class CharacterLiteralToken extends LiteralToken {
 
 	public int value;
 	
 	public CharacterLiteralToken(int beg, int end, int value) {
-		super(SymbolKind.CHARACTER_LITERAL_TOKEN, beg, end);
+		super(SymbolEnum.CHARACTER_LITERAL_TOKEN, beg, end);
 		
 		this.value = value;
 		
