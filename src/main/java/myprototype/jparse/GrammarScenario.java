@@ -2,6 +2,7 @@ package myprototype.jparse;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 import myprototype.jparse.symbol.Production;
@@ -10,6 +11,9 @@ import myprototype.jparse.symbol.SymbolEnum;
 import myprototype.jparse.symbol.SymbolKindEnum;
 
 public class GrammarScenario {
+	
+	
+	
 
 	//	public HashMap<Class<? extends Nonterminal>, Integer> getRuleStates() {
 	//		return ruleStates;
@@ -59,9 +63,28 @@ public class GrammarScenario {
 
 		return currentState;
 	}
+	
+	private ArrayList<RuleScenario> expandRuleContextsDot(ArrayList<RuleScenario> ruleScenarios) {
+		
+	}
+	
+	private int getNextState(HashMap<HashSet<RuleScenario>, Integer> ruleScenarioStates, SyntaticsParserTable syntaticsParserTable,
+			ArrayList<RuleScenario> ruleScenarios) {
+		HashSet<RuleScenario> ruleScenarioStatesKey = new HashSet<>();
+		for (RuleScenario ruleScenario : ruleScenarios)
+			ruleScenarioStatesKey.add(ruleScenario.clone());
+		
+		// return states if already existing
+		if (ruleScenarioStates.containsKey(ruleScenarioStatesKey))
+			return ruleScenarioStates.get(ruleScenarioStatesKey);
+		
+		
+		
+		return 0;
+	}
 
 	private int finiteEachRuleScenarios(HashMap<SymbolEnum, Integer> ruleStates,
-			SyntaticsParserTable syntaticsParserTable, List<RuleScenario> ruleScenarios) {
+			SyntaticsParserTable syntaticsParserTable, List<RuleScenario> dotRules) {
 		
 		// TODO: We should expand all Nonterminal symbol
 		
@@ -69,17 +92,17 @@ public class GrammarScenario {
 		int currentState = syntaticsParserTable.getNewState();
 
 		int begIndex = 0, endIndex = 0;
-		SymbolEnum symbol = ruleScenarios.get(begIndex).getDotProductionSymbol();
-		while (endIndex++ < ruleScenarios.size()) {
-			if ((begIndex != endIndex && endIndex == ruleScenarios.size()) || symbol != ruleScenarios.get(endIndex).getDotProductionSymbol()) {
-				List<RuleScenario> partOfRuleScenarios = ruleScenarios.subList(begIndex, endIndex);
+		SymbolEnum symbol = dotRules.get(begIndex).getDotProductionSymbol();
+		while (endIndex++ < dotRules.size()) {
+			if ((begIndex != endIndex && endIndex == dotRules.size()) || symbol != dotRules.get(endIndex).getDotProductionSymbol()) {
+				List<RuleScenario> partOfRuleScenarios = dotRules.subList(begIndex, endIndex);
 
 				if (symbol.getKind() == SymbolKindEnum.TERMINAL) {
 					for (RuleScenario ruleScenario : partOfRuleScenarios)
 						ruleScenario.increaseDot();
 					
 					syntaticsParserTable.put(currentState, symbol.ordinal(),
-							finiteEachRuleScenarios(ruleStates, syntaticsParserTable, ruleScenarios));
+							finiteEachRuleScenarios(ruleStates, syntaticsParserTable, dotRules));
 				} else {
 					
 				}
@@ -119,7 +142,7 @@ public class GrammarScenario {
 
 		List<RuleScenario> ruleScenarios = new ArrayList<RuleScenario>();
 		for (Rule rule : production.getRules())
-			ruleScenarios.add(new RuleScenario(nonterminalSymbol, rule));
+			ruleScenarios.add(new RuleScenario(rule));
 
 		int newState = finiteEachRuleScenarios(ruleStates, syntaticsParserTable, ruleScenarios);
 		ruleStates.put(nonterminalSymbol, newState);
@@ -127,7 +150,7 @@ public class GrammarScenario {
 		return newState;
 	}
 
-	private int getDot
+//	private int getDot
 
 	//	
 	//	private int getNewStateFromDotOnNonterminal(RuleScenario orgRuleScenario) {

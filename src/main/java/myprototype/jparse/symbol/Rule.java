@@ -7,13 +7,13 @@ import myprototype.jparse.symbol.nonterminal.Nonterminal;
 
 public class Rule {
 	public Production[] productions;
-	public Function<Stack<Symbol>, ? extends Nonterminal> compound;
+	public Function<Stack<? extends Symbol>, ? extends Nonterminal> compound;
 	
 	public Production[] getProductions() {
 		return productions;
 	}
 
-	public Rule(Function<Stack<Symbol>, ? extends Nonterminal> compound, Production... productions) {
+	public Rule(Function<Stack<? extends Symbol>, ? extends Nonterminal> compound, Production... productions) {
 		this.compound = compound;
 		this.productions = productions;
 	}

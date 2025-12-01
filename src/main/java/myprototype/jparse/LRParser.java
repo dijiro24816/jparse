@@ -144,7 +144,7 @@ public class LRParser {
 				
 		Production expressionNodeProduction = new Production(
 				SymbolEnum.EXPRESSION_NODE,
-				new Rule((Stack<Symbol> stack) -> {
+				new Rule((Stack<? extends Symbol> stack) -> {
 					return new ExpressionNode();
 				}, additionOperatorTokenProduction, integerLiteralTokenProduction, integerLiteralTokenProduction));
 

@@ -4,7 +4,20 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.Stack;
+import java.util.TreeSet;
 
+import myprototype.jparse.symbol.Production;
+import myprototype.jparse.symbol.Rule;
+import myprototype.jparse.symbol.Symbol;
+import myprototype.jparse.symbol.SymbolEnum;
 import myprototype.jparse.symbol.terminal.Lexer;
 
 class Sample {
@@ -30,28 +43,65 @@ enum Somple {
 		return LAST.ordinal();
 	}
 }
+class Asdf implements Cloneable {
+	public int number;
+
+	public void setNumber(int number) {
+		this.number = number;
+	}
+	
+	@Override
+	public int hashCode() {
+		return Objects.hash(number);
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Asdf other = (Asdf) obj;
+		return number == other.number;
+	}
+	
+	@Override
+	protected Asdf clone() throws CloneNotSupportedException {
+		return (Asdf)super.clone();
+	}
+
+	public int getNumber() {
+		return number;
+	}
+
+	public Asdf(int number) {
+		this.number = number;
+	}
+}
 
 /**
  * Hello world!
  */
 public class App {
-//	public int get
-	
-	enum Asdf {
-		HELLO("hello"),
-		SAMPLE("sample");
+	public static void main(String[] args) throws CloneNotSupportedException {
+		ArrayList<Integer> list = new ArrayList<>();
 		
-		private final String src;
+		list.add(1);
 		
-		Asdf(String src) {
-			this.src = src;
+		int count = 10;
+		Iterator<Integer> iter = list.iterator();
+		while (iter.hasNext()) {
+			int i = iter.next();
+			System.out.println(i);
+			if (count > 0) {
+				list.add(1)
+				count--;
+			}
 		}
-	}
-	
-	public static void main(String[] args) {
-		System.out.println(Asdf.valueOf("HELLO"));
-//		a.setSrc("he");
-//		System.out.println(a);
+		
+
 		
 		System.exit(0);
 		

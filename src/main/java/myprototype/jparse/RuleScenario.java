@@ -1,14 +1,14 @@
 package myprototype.jparse;
 
 import java.util.ArrayList;
+import java.util.Objects;
 
 import myprototype.jparse.symbol.Production;
 import myprototype.jparse.symbol.Rule;
 import myprototype.jparse.symbol.SymbolEnum;
 import myprototype.jparse.symbol.SymbolKindEnum;
 
-public class RuleScenario {
-	private SymbolEnum nonterminal;
+public class RuleScenario implements Cloneable {
 	private Rule rule;
 	private int dot;
 
@@ -20,7 +20,7 @@ public class RuleScenario {
 		this.rule = rule;
 	}
 
-	private int getDot() {
+	public int getDot() {
 		return dot;
 	}
 
@@ -28,22 +28,13 @@ public class RuleScenario {
 		this.dot = dot;
 	}
 
-	private void setNonterminal(SymbolEnum nonterminal) {
-		this.nonterminal = nonterminal;
-	}
-
-	public SymbolEnum getNonterminal() {
-		return nonterminal;
-	}
-
-	public RuleScenario(SymbolEnum nonterminal, Rule rule, int dot) {
-		this.nonterminal = nonterminal;
+	public RuleScenario(Rule rule, int dot) {
 		setRule(rule);
 		setDot(dot);
 	}
 
-	public RuleScenario(SymbolEnum nonterminal, Rule rule) {
-		this(nonterminal, rule, 0);
+	public RuleScenario(Rule rule) {
+		this(rule, 0);
 	}
 
 	public boolean isTakingTheClosure() {
@@ -67,16 +58,36 @@ public class RuleScenario {
 	}
 
 	public void increaseDot() {
-		setDot(getDot() + 1);
+		this.dot++;
+	}
+	
+	
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(this.dot) + this.rule.hashCode();
 	}
 
-	public ArrayList<RuleScenario> newDotRuleScenarios() {
-		ArrayList<RuleScenario> newRuleScenarios = new ArrayList<>();
-		SymbolEnum nonterminalSymbol = getDotProductionSymbol();
-		for (Rule rule : getDotProductionRules())
-			newRuleScenarios.add(new RuleScenario(nonterminal, rule));
-
-		return newRuleScenarios;
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		
+		if (obj == null)
+			return false;
+		
+		if (getClass() != obj.getClass())
+			return false;
+		
+		RuleScenario other = (RuleScenario) obj;
+		return this.dot == other.getDot() && this.rule.equals(other.getRule());
 	}
+
+	@Override
+	protected RuleScenario clone() {
+		return new RuleScenario(this.rule, this.dot);
+	}
+	
+	
 
 }
