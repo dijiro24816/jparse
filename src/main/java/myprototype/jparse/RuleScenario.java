@@ -1,6 +1,7 @@
 package myprototype.jparse;
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import myprototype.jparse.symbol.Production;
@@ -49,7 +50,7 @@ public class RuleScenario implements Cloneable {
 		return getDotProduction().getSymbol().getKind() == SymbolKindEnum.NONTERMINAL;
 	}
 
-	public Rule[] getDotProductionRules() {
+	public List<Rule> getDotProductionRules() {
 		return getDotProduction().getRules();
 	}
 
@@ -60,8 +61,6 @@ public class RuleScenario implements Cloneable {
 	public void increaseDot() {
 		this.dot++;
 	}
-	
-	
 
 	@Override
 	public int hashCode() {
@@ -72,13 +71,13 @@ public class RuleScenario implements Cloneable {
 	public boolean equals(Object obj) {
 		if (this == obj)
 			return true;
-		
+
 		if (obj == null)
 			return false;
-		
+
 		if (getClass() != obj.getClass())
 			return false;
-		
+
 		RuleScenario other = (RuleScenario) obj;
 		return this.dot == other.getDot() && this.rule.equals(other.getRule());
 	}
@@ -87,7 +86,34 @@ public class RuleScenario implements Cloneable {
 	protected RuleScenario clone() {
 		return new RuleScenario(this.rule, this.dot);
 	}
-	
-	
 
+	@Override
+	public String toString() {
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append("RuleScenario [");
+
+		if (this.dot == 0)
+			stringBuilder.append(". ");
+		
+		Production[] productions = this.rule.getProductions();
+		if (productions.length > 0) {
+			int i = 0;
+			for (;;) {
+				stringBuilder.append(productions[i].getSymbol());
+
+				i++;
+
+				if (i == this.dot)
+					stringBuilder.append(" .");
+
+				if (i == productions.length)
+					break;
+
+				stringBuilder.append(" ");
+			}
+		}
+
+		stringBuilder.append("]");
+		return stringBuilder.toString();
+	}
 }

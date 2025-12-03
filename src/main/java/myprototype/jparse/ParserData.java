@@ -19,6 +19,10 @@ public class ParserData {
 	private List<Rule> ruleTable;
 
 	private HashMap<Rule, Integer> ruleTableIndex;
+	
+	public List<Rule> getRuleTable() {
+		return ruleTable;
+	}
 
 	public ParserData(Class<? extends Enum<?>> symbolEnum, Production begProduction) {
 		try {
@@ -29,15 +33,17 @@ public class ParserData {
 		}
 		this.syntaticsTable = new ArrayList<int[]>();
 		this.ruleTable = getRuleSet(begProduction).stream().toList();
+		this.ruleTableIndex = new HashMap<>();
 		for (int i = 0; i < this.ruleTable.size(); i++)
 			this.ruleTableIndex.put(this.ruleTable.get(i), i);
 	}
 
 	private HashSet<Rule> getRuleSet(Production orgProduction) {
 		HashSet<Rule> ruleSet = new HashSet<>();
+		ruleSet.addAll(orgProduction.getRules());
 		ArrayDeque<Rule> queue = new ArrayDeque<>();
 
-		queue.addAll(Arrays.asList(orgProduction.getRules()));
+		queue.addAll(orgProduction.getRules());
 		Rule rule;
 		while ((rule = queue.poll()) != null)
 			for (Production production : rule.getProductions())

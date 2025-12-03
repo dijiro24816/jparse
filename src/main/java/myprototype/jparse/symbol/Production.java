@@ -1,10 +1,12 @@
 
 package myprototype.jparse.symbol;
 
+import java.util.ArrayList;
+
 public class Production {
 //	private Class<? extends Symbol> symbol;
 	private SymbolEnum symbol;
-	private Rule[] rules;
+	private ArrayList<Rule> rules;
 
 	public SymbolEnum getSymbol() {
 		return symbol;
@@ -14,38 +16,35 @@ public class Production {
 //		this.symbol = symbol;
 //	}
 
-	public Rule[] getRules() {
+	public ArrayList<Rule> getRules() {
 		return rules;
 	}
 
-	public void setRules(Rule[] rules) {
-		this.rules = rules;
-	}
-	
-	@SafeVarargs
-	public Production(SymbolEnum symbol, Rule... rules) {
+	public Production(SymbolEnum symbol) {
 		this.symbol = symbol;
-		setRules(rules);
+		this.rules = new ArrayList<>();
 	}
-	
+
+	public boolean addRule(Rule rule) {
+		return rules.add(rule);
+	}
+
 //	public boolean isTerminal() {
 //		return getSymbol().isAssignableFrom(Terminal.class);
 //	}
 
 	public static void main(String[] args) {
 
-		
 //		List l = new ArrayList<Number>();
 //		List<String> ls = l; // 型の不一致
 //		l.add(0, new Integer(42)); // Integerオブジェクトを追加
 //		String s = ls.get(0); // ここでClassCastExceptionが発生する
-		
+
 		System.exit(0);
-		
-		
+
 //		Production<IdentifierToken> identifierTokenProduction = new Production<>(IdentifierToken.class);
 //		Function<Stack<Symbol>, QuolifiedIdentifierElement> compound = ;
-		
+
 		// QuolifiedIdentifierElement ::= IdentifierToken
 //		Rule<QuolifiedIdentifierElement> quolifiedIdentifierElementRule = new Rule<QuolifiedIdentifierElement>(
 //				(Stack<Symbol> stack) -> {
@@ -58,8 +57,7 @@ public class Production {
 //							return null;
 //						}, identifierTokenProduction)
 //				);
-		
-		
+
 //		Production<QuolifiedIdentifierElement> product = new Production<QuolifiedIdentifierElement>(
 //				QuolifiedIdentifierElement.class,
 //				new Rule<QuolifiedIdentifierElement>(
@@ -70,7 +68,5 @@ public class Production {
 //						)
 //				);
 	}
-
-
 
 }

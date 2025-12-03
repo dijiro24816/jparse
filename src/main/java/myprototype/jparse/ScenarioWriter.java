@@ -18,7 +18,7 @@ public class ScenarioWriter {
 	private List<RuleScenario> excludeClosure(Collection<RuleScenario> ruleScenarios) {
 		return ruleScenarios.stream().filter(ruleScenario -> !ruleScenario.isTakingTheClosure()).toList();
 	}
-	
+
 	private ArrayList<RuleScenario> expandRuleScenariosDot(Collection<RuleScenario> orgRuleScenarios) {
 		ArrayList<RuleScenario> ruleScenarios = new ArrayList<>();
 		HashSet<SymbolEnum> expandedNonterminals = new HashSet<>();
@@ -32,7 +32,8 @@ public class ScenarioWriter {
 			ruleScenarios.add(ruleScenario);
 			if (ruleScenario.getDotProductionSymbol().getKind() == SymbolKindEnum.NONTERMINAL
 					&& !expandedNonterminals.contains(ruleScenario.getDotProductionSymbol())) {
-				// Get all of derivative rules fromd dot production, and convert Rule to RuleScenario, and then push it on queue
+				// Get all of derivative rules fromd dot production, and convert Rule to
+				// RuleScenario, and then push it on queue
 				for (Rule rule : ruleScenario.getDotProductionRules())
 					queue.offer(new RuleScenario(rule));
 			}
@@ -44,19 +45,20 @@ public class ScenarioWriter {
 	public ParserData getParserData(Production begProduction, Class<? extends Enum<?>> symbolEnum) {
 		ParserData parserData = new ParserData(symbolEnum, begProduction);
 		HashSet<RuleScenario> ruleScenarioStatesKey = new HashSet<>(
-				Arrays.asList(begProduction.getRules()).stream().map(rule -> new RuleScenario(rule)).toList());
+				begProduction.getRules().stream().map(rule -> new RuleScenario(rule)).toList());
 
 		takeState(ruleScenarioStatesKey, new HashMap<HashSet<RuleScenario>, Integer>(), parserData);
 		return parserData;
 	}
 
 	private int takeState(HashSet<RuleScenario> ruleScenarioStatesKey,
-			HashMap<HashSet<RuleScenario>, Integer> ruleScenarioStates,
-			ParserData parserData) {
+			HashMap<HashSet<RuleScenario>, Integer> ruleScenarioStates, ParserData parserData) {
 		// return states if already existing
+		System.out.println("Key: " + ruleScenarioStatesKey.toString());
+		
 		if (ruleScenarioStates.containsKey(ruleScenarioStatesKey))
 			return ruleScenarioStates.get(ruleScenarioStatesKey);
-
+		
 		int currentState = parserData.getNewState();
 
 		// Make rule scenario set that has not moveable dot
@@ -64,7 +66,7 @@ public class ScenarioWriter {
 		for (RuleScenario ruleScenario : ruleScenarioStatesKey)
 			ruleScenarioStatesKeyClone.add(ruleScenario.clone());
 
-		ruleScenarioStates.put(ruleScenarioStatesKey, currentState);
+		ruleScenarioStates.put(ruleScenarioStatesKeyClone, currentState);
 
 		// Taking the closure
 		List<RuleScenario> closures = ruleScenarioStatesKey.stream()
@@ -81,28 +83,35 @@ public class ScenarioWriter {
 		}
 
 		ArrayList<RuleScenario> ruleScenarios = expandRuleScenariosDot(excludeClosure(ruleScenarioStatesKey));
-
+		if (ruleScenarios.size() == 0)
+			return currentState;
+		
+		System.out.println("State: " + ruleScenarios.toString());
+		
 		ruleScenarios
 				.sort(Comparator.comparing(ruleScenario -> ((RuleScenario) ruleScenario).getDotProductionSymbol()));
+		if (ruleScenarios.size() == 0)
+			return currentState;
+		
 		int begIndex = 0, endIndex = 0;
-		SymbolEnum symbol = ruleScenarios.get(begIndex).getDotProductionSymbol();
-		while (endIndex++ < ruleScenarios.size()) {
-			if ((endIndex == ruleScenarios.size())
-					|| symbol != ruleScenarios.get(endIndex).getDotProductionSymbol()) {
+		SymbolEnum begSymbol = ruleScenarios.get(begIndex).getDotProductionSymbol();
+		for (;;) {
+			endIndex++;
+			if ((endIndex == ruleScenarios.size()) || begSymbol != ruleScenarios.get(endIndex).getDotProductionSymbol()) {
 				HashSet<RuleScenario> partOfRuleScenarios = new HashSet<>(ruleScenarios.subList(begIndex, endIndex));
 
 				for (RuleScenario ruleScenario : partOfRuleScenarios)
 					ruleScenario.increaseDot();
 
 				// Store next state for the symbol from the current state
-				parserData.setBehavior(currentState, symbol.ordinal(),
+				parserData.setBehavior(currentState, begSymbol.ordinal(),
 						takeState(partOfRuleScenarios, ruleScenarioStates, parserData));
 
 				// postfix processing
 				if (endIndex == ruleScenarios.size())
 					break;
 				begIndex = endIndex;
-				symbol = ruleScenarios.get(begIndex).getDotProductionSymbol();
+				begSymbol = ruleScenarios.get(begIndex).getDotProductionSymbol();
 			}
 		}
 

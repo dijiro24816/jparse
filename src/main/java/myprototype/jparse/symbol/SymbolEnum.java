@@ -1,6 +1,22 @@
 package myprototype.jparse.symbol;
 
-public enum SymbolEnum {
+public enum SymbolEnum implements SymbolEnumProtocol {
+	// * My Test Nonterminal Symbols
+	// S -> Exp
+	// Exp -> + Exp Exp
+	// Exp -> - Exp Exp
+	// Exp -> * Exp Exp
+	// Exp -> / Exp Exp
+	// Exp -> ( Exp )
+	// Exp -> DIGIT
+
+	S(SymbolKindEnum.NONTERMINAL),
+	EXP(SymbolKindEnum.NONTERMINAL),
+	// DIGIT -> INTEGER_LITERAL_TOKEN
+	
+	
+	
+	
 	// * Nonterminal Symbols
 	EXPRESSION_NODE(SymbolKindEnum.NONTERMINAL),
 	
@@ -119,7 +135,8 @@ public enum SymbolEnum {
 	;
 	
 	private SymbolKindEnum kind;
-	
+
+	@Override
 	public SymbolKindEnum getKind() {
 		return this.kind;
 	}
@@ -127,17 +144,4 @@ public enum SymbolEnum {
 	private SymbolEnum(SymbolKindEnum kind) {
 		this.kind = kind;
 	}
-	
-	public static int size() {
-		return values().length;
-	}
-	
-//	private Class<? extends Symbol> symbol;
-//	
-//	
-//	
-//	private SymbolKind(Class<? extends Symbol> symbol) {
-//		
-//	}
-	
 }
