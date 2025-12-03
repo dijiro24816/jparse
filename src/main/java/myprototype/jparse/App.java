@@ -3,21 +3,9 @@ package myprototype.jparse;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.InvocationTargetException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.List;
+import java.lang.reflect.Method;
 import java.util.Objects;
-import java.util.Set;
-import java.util.Stack;
-import java.util.TreeSet;
 
-import myprototype.jparse.symbol.Production;
-import myprototype.jparse.symbol.Rule;
-import myprototype.jparse.symbol.Symbol;
-import myprototype.jparse.symbol.SymbolEnum;
 import myprototype.jparse.symbol.terminal.Lexer;
 
 class Sample {
@@ -85,38 +73,31 @@ class Asdf implements Cloneable {
  * Hello world!
  */
 public class App {
+	enum Sample {
+		A,
+		B
+		
+		;
+	}
 	public static void main(String[] args) throws CloneNotSupportedException {
-		ArrayList<Integer> list = new ArrayList<>();
-		
-		list.add(1);
-		
-		int count = 10;
-		Iterator<Integer> iter = list.iterator();
-		while (iter.hasNext()) {
-			int i = iter.next();
-			System.out.println(i);
-			if (count > 0) {
-				list.add(1)
-				count--;
-			}
+	System.out.println("hello");
+		Class<? extends Enum<?>> s = Sample.class;
+		try {
+			Method m = s.getMethod("values");
+			System.out.println(m);
+			System.out.println(((Object[]) m.invoke(null)).length);
+			System.out.println("oh no");
+		} catch (Exception e) {
+			System.out.println("oh no");
+			e.printStackTrace();
+			System.out.println("oh no");
 		}
-		
+		System.out.println("oh no");
 
 		
 		System.exit(0);
 		
 		
-		Class<? extends Sample> klass2 = Sample2.class;
-		Class<? extends Sample> klass3 = Sample3.class;
-		
-		try {
-			System.out.println(klass2.getMethod("getA").invoke(null));
-		} catch (NoSuchMethodException | SecurityException | IllegalAccessException | IllegalArgumentException | InvocationTargetException e) {
-			// TODO 自動生成された catch ブロック
-			e.printStackTrace();
-		}
-		
-		System.exit(0);
 		
 //		ArrayList<Sample> samples = new ArrayList<Sample>();
 //		samples.add(new Sample(1, 2));

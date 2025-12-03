@@ -1,0 +1,111 @@
+package myprototype.jparse;
+
+import java.util.ArrayDeque;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+
+import myprototype.jparse.symbol.Production;
+import myprototype.jparse.symbol.Rule;
+import myprototype.jparse.symbol.SymbolEnum;
+import myprototype.jparse.symbol.SymbolKindEnum;
+
+public class ScenarioWriter {
+	private List<RuleScenario> excludeClosure(Collection<RuleScenario> ruleScenarios) {
+		return ruleScenarios.stream().filter(ruleScenario -> !ruleScenario.isTakingTheClosure()).toList();
+	}
+	
+	private ArrayList<RuleScenario> expandRuleScenariosDot(Collection<RuleScenario> orgRuleScenarios) {
+		ArrayList<RuleScenario> ruleScenarios = new ArrayList<>();
+		HashSet<SymbolEnum> expandedNonterminals = new HashSet<>();
+		ArrayDeque<RuleScenario> queue = new ArrayDeque<>();
+
+		for (RuleScenario ruleScenario : orgRuleScenarios)
+			queue.offer(ruleScenario);
+
+		RuleScenario ruleScenario;
+		while ((ruleScenario = queue.poll()) != null) {
+			ruleScenarios.add(ruleScenario);
+			if (ruleScenario.getDotProductionSymbol().getKind() == SymbolKindEnum.NONTERMINAL
+					&& !expandedNonterminals.contains(ruleScenario.getDotProductionSymbol())) {
+				// Get all of derivative rules fromd dot production, and convert Rule to RuleScenario, and then push it on queue
+				for (Rule rule : ruleScenario.getDotProductionRules())
+					queue.offer(new RuleScenario(rule));
+			}
+		}
+
+		return ruleScenarios;
+	}
+
+	public ParserData getParserData(Production begProduction, Class<? extends Enum<?>> symbolEnum) {
+		ParserData parserData = new ParserData(symbolEnum, begProduction);
+		HashSet<RuleScenario> ruleScenarioStatesKey = new HashSet<>(
+				Arrays.asList(begProduction.getRules()).stream().map(rule -> new RuleScenario(rule)).toList());
+
+		takeState(ruleScenarioStatesKey, new HashMap<HashSet<RuleScenario>, Integer>(), parserData);
+		return parserData;
+	}
+
+	private int takeState(HashSet<RuleScenario> ruleScenarioStatesKey,
+			HashMap<HashSet<RuleScenario>, Integer> ruleScenarioStates,
+			ParserData parserData) {
+		// return states if already existing
+		if (ruleScenarioStates.containsKey(ruleScenarioStatesKey))
+			return ruleScenarioStates.get(ruleScenarioStatesKey);
+
+		int currentState = parserData.getNewState();
+
+		// Make rule scenario set that has not moveable dot
+		HashSet<RuleScenario> ruleScenarioStatesKeyClone = new HashSet<>();
+		for (RuleScenario ruleScenario : ruleScenarioStatesKey)
+			ruleScenarioStatesKeyClone.add(ruleScenario.clone());
+
+		ruleScenarioStates.put(ruleScenarioStatesKey, currentState);
+
+		// Taking the closure
+		List<RuleScenario> closures = ruleScenarioStatesKey.stream()
+				.filter(ruleScenario -> ruleScenario.isTakingTheClosure()).toList();
+		if (closures.size() > 0) {
+			// Check reduce-reduce problem
+			if (closures.size() > 1)
+				throw new RuntimeException("The Grammar has reduce-reduce problem!");
+
+			// Set reduce action as default
+			// The value is rule index with negative sign
+			// TODO: Use follow-set or lookahead-set
+			parserData.setBehavior(currentState, -parserData.getRuleIndex(closures.get(0).getRule()));
+		}
+
+		ArrayList<RuleScenario> ruleScenarios = expandRuleScenariosDot(excludeClosure(ruleScenarioStatesKey));
+
+		ruleScenarios
+				.sort(Comparator.comparing(ruleScenario -> ((RuleScenario) ruleScenario).getDotProductionSymbol()));
+		int begIndex = 0, endIndex = 0;
+		SymbolEnum symbol = ruleScenarios.get(begIndex).getDotProductionSymbol();
+		while (endIndex++ < ruleScenarios.size()) {
+			if ((endIndex == ruleScenarios.size())
+					|| symbol != ruleScenarios.get(endIndex).getDotProductionSymbol()) {
+				HashSet<RuleScenario> partOfRuleScenarios = new HashSet<>(ruleScenarios.subList(begIndex, endIndex));
+
+				for (RuleScenario ruleScenario : partOfRuleScenarios)
+					ruleScenario.increaseDot();
+
+				// Store next state for the symbol from the current state
+				parserData.setBehavior(currentState, symbol.ordinal(),
+						takeState(partOfRuleScenarios, ruleScenarioStates, parserData));
+
+				// postfix processing
+				if (endIndex == ruleScenarios.size())
+					break;
+				begIndex = endIndex;
+				symbol = ruleScenarios.get(begIndex).getDotProductionSymbol();
+			}
+		}
+
+		return currentState;
+	}
+}
