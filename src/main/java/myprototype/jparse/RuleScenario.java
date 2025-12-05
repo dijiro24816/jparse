@@ -1,6 +1,8 @@
 package myprototype.jparse;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -50,7 +52,7 @@ public class RuleScenario implements Cloneable {
 		return getDotProduction().getSymbol().getKind() == SymbolKindEnum.NONTERMINAL;
 	}
 
-	public List<Rule> getDotProductionRules() {
+	public Collection<Rule> getDotProductionRules() {
 		return getDotProduction().getRules();
 	}
 
@@ -67,6 +69,8 @@ public class RuleScenario implements Cloneable {
 		return Objects.hash(this.dot) + this.rule.hashCode();
 	}
 
+	
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -81,6 +85,7 @@ public class RuleScenario implements Cloneable {
 		RuleScenario other = (RuleScenario) obj;
 		return this.dot == other.getDot() && this.rule.equals(other.getRule());
 	}
+
 
 	@Override
 	protected RuleScenario clone() {

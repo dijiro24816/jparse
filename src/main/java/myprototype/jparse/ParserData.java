@@ -4,6 +4,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -11,6 +12,7 @@ import java.util.List;
 
 import myprototype.jparse.symbol.Production;
 import myprototype.jparse.symbol.Rule;
+import myprototype.jparse.symbol.SymbolEnum;
 
 public class ParserData {
 	private int columnLength;
@@ -74,7 +76,12 @@ public class ParserData {
 	public int getNewState() {
 		int newState = getRowLength();
 
-		syntaticsTable.add(new int[getColumnLength()]);
+		int[] stateLine = new int[getColumnLength()];
+		for (int i = 0; i < stateLine.length; i++) {
+			// FIXME: This is very bad implementation
+			stateLine[i] = 2147483647;
+		}
+		syntaticsTable.add(stateLine);
 
 		return newState;
 	}
@@ -90,5 +97,79 @@ public class ParserData {
 	
 	public int getRuleIndex(Rule rule) {
 		return this.ruleTableIndex.get(rule);
+	}
+	
+	public String getRuleTableString() {
+		StringBuilder stringBuilder = new StringBuilder();
+		
+		for (int i = 0; i < this.ruleTable.size(); i++) {
+			Rule rule = this.ruleTable.get(i);
+			stringBuilder.append("Rule " + i + ": " + SymbolEnumToString(rule.getOwner().getSymbol()) + " -> " + String.join(" ", Arrays.asList(rule.getProductions()).stream().map(p -> SymbolEnumToString(p.getSymbol())).toList()));
+			stringBuilder.append(System.lineSeparator());
+		}
+		
+		return stringBuilder.toString();
+	}
+	
+	public String SymbolEnumToString(SymbolEnum symbolEnum) {
+		switch (symbolEnum) {
+		case S:
+			return "S";
+		case EXP:
+			return "Exp";
+		case ADDITION_OPERATOR_TOKEN:
+			return "+";
+		case SUBTRACTION_OPERATOR_TOKEN:
+			return "-";
+		case MULTIPLICATION_OPERATOR_TOKEN:
+			return "*";
+		case DIVISION_OPERATOR_TOKEN:
+			return "/";
+		case INTEGER_LITERAL_TOKEN:
+			return "DIGIT";
+		case ROUND_BRACKET_OPEN_SEPARATOR_TOKEN:
+			return "(";
+		case ROUND_BRACKET_CLOSE_SEPARATOR_TOKEN:
+			return ")";
+		default:
+			return "UNDEFINED";
+		}
+	}
+	
+	public String getSyntaticsTableString() {
+		StringBuilder stringBuilder = new StringBuilder();
+		
+		for (int i = 0; i < this.syntaticsTable.size(); i++) {
+			stringBuilder.append("State " + i + ": [");
+			if (this.columnLength > 0) {
+				int j = 0;
+				for (;;) {
+					if (j != SymbolEnum.EXP.ordinal() && j != SymbolEnum.ADDITION_OPERATOR_TOKEN.ordinal() && j != SymbolEnum.SUBTRACTION_OPERATOR_TOKEN.ordinal() && j != SymbolEnum.MULTIPLICATION_OPERATOR_TOKEN.ordinal() && j != SymbolEnum.DIVISION_OPERATOR_TOKEN.ordinal()
+							&& j != SymbolEnum.INTEGER_LITERAL_TOKEN.ordinal()) {
+						j++;
+						if (j == this.columnLength)
+							break;
+						continue;
+					}
+					
+					String symbolStamp = SymbolEnumToString(SymbolEnum.values()[j]);
+					int a = this.syntaticsTable.get(i)[j];
+					String action = a < 0 ? "r" + -(a + 1) : "s" + a;
+					
+					stringBuilder.append(symbolStamp + "(" + action + ")");
+					
+					j++;
+					if (j == this.columnLength)
+						break;
+					stringBuilder.append(", ");
+				}
+			}
+			stringBuilder.append("]");
+			
+//			stringBuilder.append(Arrays.toString(this.syntaticsTable.get(i)));
+			stringBuilder.append(System.lineSeparator());
+		}
+		
+		return stringBuilder.toString();
 	}
 }

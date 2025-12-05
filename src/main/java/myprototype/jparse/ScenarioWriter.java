@@ -8,6 +8,7 @@ import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import myprototype.jparse.symbol.Production;
 import myprototype.jparse.symbol.Rule;
@@ -54,10 +55,18 @@ public class ScenarioWriter {
 	private int takeState(HashSet<RuleScenario> ruleScenarioStatesKey,
 			HashMap<HashSet<RuleScenario>, Integer> ruleScenarioStates, ParserData parserData) {
 		// return states if already existing
-		System.out.println("Key: " + ruleScenarioStatesKey.toString());
+		// FIXME: This is very bad implementation
+		for (Set<RuleScenario> ruleScenarioSet : ruleScenarioStates.keySet()) {
+			if (ruleScenarioSet.equals(ruleScenarioStatesKey)) {
+				return ruleScenarioStates.get(ruleScenarioSet);
+			}
+		}
+		
+		
 		
 		if (ruleScenarioStates.containsKey(ruleScenarioStatesKey))
 			return ruleScenarioStates.get(ruleScenarioStatesKey);
+
 		
 		int currentState = parserData.getNewState();
 
@@ -85,8 +94,6 @@ public class ScenarioWriter {
 		ArrayList<RuleScenario> ruleScenarios = expandRuleScenariosDot(excludeClosure(ruleScenarioStatesKey));
 		if (ruleScenarios.size() == 0)
 			return currentState;
-		
-		System.out.println("State: " + ruleScenarios.toString());
 		
 		ruleScenarios
 				.sort(Comparator.comparing(ruleScenario -> ((RuleScenario) ruleScenario).getDotProductionSymbol()));

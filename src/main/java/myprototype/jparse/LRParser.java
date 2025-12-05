@@ -54,25 +54,29 @@ public class LRParser {
 		exp.addRule(new Rule(stack -> { return null; }, mul, exp, exp));
 		exp.addRule(new Rule(stack -> { return null; }, div, exp, exp));
 		exp.addRule(new Rule(stack -> { return null; }, bOpen, exp, bClose));
+		exp.addRule(new Rule(stack -> { return null; }, digit));
 		
 //		ParserData parserData = new ParserData(SymbolEnum.class, s);
 //		System.out.println(parserData.getRuleTable());
 		
-		HashSet<RuleScenario> ruleScenariosStatesKey = new HashSet<>();
-		ruleScenariosStatesKey.add(new RuleScenario(exp.getRules().get(0)));
+//		HashSet<RuleScenario> ruleScenariosStatesKey = new HashSet<>();
+//		ruleScenariosStatesKey.add(new RuleScenario(exp.getRules().get(0)));
+//		
+//		HashMap<HashSet<RuleScenario>, Integer> ruleScenariosStates = new HashMap<>();
+//		ruleScenariosStates.put(ruleScenariosStatesKey, 0);
+//		
+//		HashSet<RuleScenario> ruleScenariosStatesKeyClone = new HashSet<>();
+//		for (RuleScenario ruleScenario : ruleScenariosStatesKey) {
+//			ruleScenariosStatesKeyClone.add(ruleScenario.clone());
+//		}
+//		
+//		System.out.println(ruleScenariosStates.containsKey(ruleScenariosStatesKeyClone));
 		
-		HashMap<HashSet<RuleScenario>, Integer> ruleScenariosStates = new HashMap<>();
-		ruleScenariosStates.put(ruleScenariosStatesKey, 0);
-		
-		HashSet<RuleScenario> ruleScenariosStatesKeyClone = new HashSet<>();
-		for (RuleScenario ruleScenario : ruleScenariosStatesKey) {
-			ruleScenariosStatesKeyClone.add(ruleScenario.clone());
-		}
-		
-		System.out.println(ruleScenariosStates.containsKey(ruleScenariosStatesKeyClone));
-		
-		System.exit(0);
 		ParserData parserData = new ScenarioWriter().getParserData(s, SymbolEnum.class);
+		
+		System.out.println(parserData.getRuleTableString());
+		System.out.println(parserData.getSyntaticsTableString());
+		System.exit(0);
 		
 //		ParserData parserData = new ScenarioWriter().getParserData(expressionNodeProduction, SymbolEnum.class);
 		

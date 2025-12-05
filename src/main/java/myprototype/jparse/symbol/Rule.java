@@ -8,9 +8,24 @@ import java.util.function.Function;
 import myprototype.jparse.symbol.nonterminal.Nonterminal;
 
 public class Rule {
+	private Production owner;
 	public Production[] productions;
 	public Function<Stack<? extends Symbol>, ? extends Nonterminal> compound;
 	
+	public Production getOwner() {
+		return owner;
+	}
+	
+	public void setOwner(Production owner) {
+		if (owner == this.owner)
+			return;
+		
+		if (owner == null || this.owner != null)
+			this.owner.removeRule(this);
+		
+		this.owner = owner;
+	}
+
 	public Production[] getProductions() {
 		return productions;
 	}

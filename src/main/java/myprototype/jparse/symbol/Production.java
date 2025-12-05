@@ -2,11 +2,12 @@
 package myprototype.jparse.symbol;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 
 public class Production {
 //	private Class<? extends Symbol> symbol;
 	private SymbolEnum symbol;
-	private ArrayList<Rule> rules;
+	private HashSet<Rule> rules;
 
 	public SymbolEnum getSymbol() {
 		return symbol;
@@ -16,57 +17,27 @@ public class Production {
 //		this.symbol = symbol;
 //	}
 
-	public ArrayList<Rule> getRules() {
+	public HashSet<Rule> getRules() {
 		return rules;
 	}
 
 	public Production(SymbolEnum symbol) {
 		this.symbol = symbol;
-		this.rules = new ArrayList<>();
+		this.rules = new HashSet<>();
 	}
 
 	public boolean addRule(Rule rule) {
-		return rules.add(rule);
+		boolean result = this.rules.add(rule);
+		if (result)
+			rule.setOwner(this);
+		return result;
 	}
-
-//	public boolean isTerminal() {
-//		return getSymbol().isAssignableFrom(Terminal.class);
-//	}
-
-	public static void main(String[] args) {
-
-//		List l = new ArrayList<Number>();
-//		List<String> ls = l; // 型の不一致
-//		l.add(0, new Integer(42)); // Integerオブジェクトを追加
-//		String s = ls.get(0); // ここでClassCastExceptionが発生する
-
-		System.exit(0);
-
-//		Production<IdentifierToken> identifierTokenProduction = new Production<>(IdentifierToken.class);
-//		Function<Stack<Symbol>, QuolifiedIdentifierElement> compound = ;
-
-		// QuolifiedIdentifierElement ::= IdentifierToken
-//		Rule<QuolifiedIdentifierElement> quolifiedIdentifierElementRule = new Rule<QuolifiedIdentifierElement>(
-//				(Stack<Symbol> stack) -> {
-//					return null;
-//				}, identifierTokenProduction);
-//		Production<QuolifiedIdentifierNode> QuolifiedIdentifierElementProduction = new Production<>(
-//				QuolifiedIdentifierNode.class,
-//				new Rule<>(
-//						(Stack<Symbol> stack) -> {
-//							return null;
-//						}, identifierTokenProduction)
-//				);
-
-//		Production<QuolifiedIdentifierElement> product = new Production<QuolifiedIdentifierElement>(
-//				QuolifiedIdentifierElement.class,
-//				new Rule<QuolifiedIdentifierElement>(
-//						(Stack<Symbol> stack) -> {
-//							return null;
-//						},
-//						new Production<QuolifiedIdentifierElement>(IdentifierToken.class)
-//						)
-//				);
+	
+	public boolean removeRule(Rule rule) {
+		boolean result = this.rules.remove(rule);
+		if (result)
+			rule.setOwner(null);
+		return result;
 	}
 
 }
