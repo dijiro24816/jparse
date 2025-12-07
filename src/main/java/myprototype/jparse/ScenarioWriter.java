@@ -48,12 +48,12 @@ public class ScenarioWriter {
 		HashSet<RuleScenario> ruleScenarioStatesKey = new HashSet<>(
 				begProduction.getRules().stream().map(rule -> new RuleScenario(rule)).toList());
 
-		takeState(ruleScenarioStatesKey, new HashMap<HashSet<RuleScenario>, Integer>(), parserData);
+		takeAction(ruleScenarioStatesKey, new HashMap<HashSet<RuleScenario>, Action>(), parserData);
 		return parserData;
 	}
 
-	private int takeState(HashSet<RuleScenario> ruleScenarioStatesKey,
-			HashMap<HashSet<RuleScenario>, Integer> ruleScenarioStates, ParserData parserData) {
+	private Action takeAction(HashSet<RuleScenario> ruleScenarioStatesKey,
+			HashMap<HashSet<RuleScenario>, Action> ruleScenarioStates, ParserData parserData) {
 		// return states if already existing
 		// FIXME: This is very bad implementation
 		for (Set<RuleScenario> ruleScenarioSet : ruleScenarioStates.keySet()) {
@@ -69,13 +69,14 @@ public class ScenarioWriter {
 
 		
 		int currentState = parserData.getNewState();
+		Action enterAction = new Action(ActionKind.Shift, currentState);
 
 		// Make rule scenario set that has not moveable dot
 		HashSet<RuleScenario> ruleScenarioStatesKeyClone = new HashSet<>();
 		for (RuleScenario ruleScenario : ruleScenarioStatesKey)
 			ruleScenarioStatesKeyClone.add(ruleScenario.clone());
 
-		ruleScenarioStates.put(ruleScenarioStatesKeyClone, currentState);
+		ruleScenarioStates.put(ruleScenarioStatesKeyClone, enterAction);
 
 		// Taking the closure
 		List<RuleScenario> closures = ruleScenarioStatesKey.stream()
@@ -88,17 +89,17 @@ public class ScenarioWriter {
 			// Set reduce action as default
 			// The value is rule index with negative sign
 			// TODO: Use follow-set or lookahead-set
-			parserData.setBehavior(currentState, -parserData.getRuleIndex(closures.get(0).getRule()));
+			parserData.setAction(currentState, new Action(ActionKind.Reduce, parserData.getRuleIndex(closures.get(0).getRule())));
 		}
 
 		ArrayList<RuleScenario> ruleScenarios = expandRuleScenariosDot(excludeClosure(ruleScenarioStatesKey));
 		if (ruleScenarios.size() == 0)
-			return currentState;
+			return enterAction;
 		
 		ruleScenarios
 				.sort(Comparator.comparing(ruleScenario -> ((RuleScenario) ruleScenario).getDotProductionSymbol()));
 		if (ruleScenarios.size() == 0)
-			return currentState;
+			return enterAction;
 		
 		int begIndex = 0, endIndex = 0;
 		SymbolEnum begSymbol = ruleScenarios.get(begIndex).getDotProductionSymbol();
@@ -111,8 +112,8 @@ public class ScenarioWriter {
 					ruleScenario.increaseDot();
 
 				// Store next state for the symbol from the current state
-				parserData.setBehavior(currentState, begSymbol.ordinal(),
-						takeState(partOfRuleScenarios, ruleScenarioStates, parserData));
+				parserData.setAction(currentState, begSymbol.ordinal(),
+						takeAction(partOfRuleScenarios, ruleScenarioStates, parserData));
 
 				// postfix processing
 				if (endIndex == ruleScenarios.size())
@@ -122,6 +123,6 @@ public class ScenarioWriter {
 			}
 		}
 
-		return currentState;
+		return enterAction;
 	}
 }

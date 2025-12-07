@@ -1,22 +1,22 @@
 package myprototype.jparse.symbol;
 
 public class Symbol {
-	private SymbolEnum kind;
+	private SymbolEnum symbolEnum;
 
 	public final int ordinal() {
-		return kind.ordinal();
+		return symbolEnum.ordinal();
 	}
 
-	private SymbolEnum getKind() {
-		return kind;
+	private SymbolEnum getSymbolEnum() {
+		return symbolEnum;
 	}
 
-	private void setKind(SymbolEnum kind) {
-		this.kind = kind;
+	private void setSymbolEnum(SymbolEnum symbolEnum) {
+		this.symbolEnum = symbolEnum;
 	}
 
-	public Symbol(SymbolEnum kind) {
+	public Symbol(SymbolEnum symbolEnum) {
 		super();
-		setKind(kind);
+		this.symbolEnum = symbolEnum;
 	}
 }

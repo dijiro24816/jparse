@@ -11,6 +11,8 @@ public enum SymbolEnum implements SymbolEnumProtocol {
 	// Exp -> DIGIT
 
 	S(SymbolKindEnum.NONTERMINAL),
+	STMT(SymbolKindEnum.NONTERMINAL),
+	ASSG(SymbolKindEnum.NONTERMINAL),
 	EXP(SymbolKindEnum.NONTERMINAL),
 	// DIGIT -> INTEGER_LITERAL_TOKEN
 	

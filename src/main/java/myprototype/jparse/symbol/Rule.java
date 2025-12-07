@@ -5,12 +5,13 @@ import java.util.Arrays;
 import java.util.Stack;
 import java.util.function.Function;
 
+import myprototype.jparse.StateSymbol;
 import myprototype.jparse.symbol.nonterminal.Nonterminal;
 
 public class Rule {
 	private Production owner;
 	public Production[] productions;
-	public Function<Stack<? extends Symbol>, ? extends Nonterminal> compound;
+	public Function<Stack<StateSymbol>, ? extends Nonterminal> compound;
 	
 	public Production getOwner() {
 		return owner;
@@ -30,7 +31,7 @@ public class Rule {
 		return productions;
 	}
 
-	public Rule(Function<Stack<? extends Symbol>, ? extends Nonterminal> compound, Production... productions) {
+	public Rule(Function<Stack<StateSymbol>, ? extends Nonterminal> compound, Production... productions) {
 		this.compound = compound;
 		this.productions = productions;
 	}

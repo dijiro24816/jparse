@@ -40,21 +40,26 @@ public class LRParser {
 
 	public static void main(String[] args) {
 		Production s = new Production(SymbolEnum.S);
+		Production stmt = new Production(SymbolEnum.STMT);
+		Production assg = new Production(SymbolEnum.ASSG);
+		Production int_ = new Production(SymbolEnum.INT_KEYWORD_TOKEN);
 		Production exp = new Production(SymbolEnum.EXP);
-		Production bOpen = new Production(SymbolEnum.ROUND_BRACKET_OPEN_SEPARATOR_TOKEN);
-		Production bClose = new Production(SymbolEnum.ROUND_BRACKET_CLOSE_SEPARATOR_TOKEN);
+		Production digit = new Production(SymbolEnum.INTEGER_LITERAL_TOKEN);
+		Production ident = new Production(SymbolEnum.IDENTIFIER_TOKEN);
 		Production add = new Production(SymbolEnum.ADDITION_OPERATOR_TOKEN);	
 		Production sub = new Production(SymbolEnum.SUBTRACTION_OPERATOR_TOKEN);
 		Production mul = new Production(SymbolEnum.MULTIPLICATION_OPERATOR_TOKEN);
 		Production div = new Production(SymbolEnum.DIVISION_OPERATOR_TOKEN);
-		Production digit = new Production(SymbolEnum.INTEGER_LITERAL_TOKEN);
-		s.addRule(new Rule(stack -> { return null; }, exp));
+		s.addRule(new Rule(stack -> { return null; }, stmt));
+		stmt.addRule(new Rule(stack -> { return null; }, assg));
+		stmt.addRule(new Rule(stack -> { return null; }, exp));
+		assg.addRule(new Rule(stack -> { return null; }, int_, ident, exp));
 		exp.addRule(new Rule(stack -> { return null; }, add, exp, exp));
 		exp.addRule(new Rule(stack -> { return null; }, sub, exp, exp));
 		exp.addRule(new Rule(stack -> { return null; }, mul, exp, exp));
 		exp.addRule(new Rule(stack -> { return null; }, div, exp, exp));
-		exp.addRule(new Rule(stack -> { return null; }, bOpen, exp, bClose));
 		exp.addRule(new Rule(stack -> { return null; }, digit));
+		exp.addRule(new Rule(stack -> { return null; }, ident));
 		
 //		ParserData parserData = new ParserData(SymbolEnum.class, s);
 //		System.out.println(parserData.getRuleTable());

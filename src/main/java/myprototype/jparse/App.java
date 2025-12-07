@@ -6,68 +6,10 @@ import java.io.InputStream;
 import java.lang.reflect.Method;
 import java.util.Objects;
 
+import myprototype.jparse.symbol.Production;
+import myprototype.jparse.symbol.Rule;
+import myprototype.jparse.symbol.SymbolEnum;
 import myprototype.jparse.symbol.terminal.Lexer;
-
-class Sample {
-	public static int a = 0;
-	
-	public static int getA() { return a; }
-}
-
-class Sample2 extends Sample {
-	
-}
-
-class Sample3 extends Sample {
-	
-}
-
-enum Somple {
-	A,
-	B,
-	LAST;
-	
-	public int length() {
-		return LAST.ordinal();
-	}
-}
-class Asdf implements Cloneable {
-	public int number;
-
-	public void setNumber(int number) {
-		this.number = number;
-	}
-	
-	@Override
-	public int hashCode() {
-		return Objects.hash(number);
-	}
-
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-		if (obj == null)
-			return false;
-		if (getClass() != obj.getClass())
-			return false;
-		Asdf other = (Asdf) obj;
-		return number == other.number;
-	}
-	
-	@Override
-	protected Asdf clone() throws CloneNotSupportedException {
-		return (Asdf)super.clone();
-	}
-
-	public int getNumber() {
-		return number;
-	}
-
-	public Asdf(int number) {
-		this.number = number;
-	}
-}
 
 /**
  * Hello world!
@@ -80,23 +22,7 @@ public class App {
 		;
 	}
 	public static void main(String[] args) throws CloneNotSupportedException {
-	System.out.println("hello");
-		Class<? extends Enum<?>> s = Sample.class;
-		try {
-			Method m = s.getMethod("values");
-			System.out.println(m);
-			System.out.println(((Object[]) m.invoke(null)).length);
-			System.out.println("oh no");
-		} catch (Exception e) {
-			System.out.println("oh no");
-			e.printStackTrace();
-			System.out.println("oh no");
-		}
-		System.out.println("oh no");
 
-		
-		System.exit(0);
-		
 		
 		
 //		ArrayList<Sample> samples = new ArrayList<Sample>();
@@ -231,9 +157,9 @@ public class App {
 //				'\\141'
 //				""";
 		
-		String src = """
-				"hello"
-				""";
+//		String src = """
+//				"hello"
+//				""";
 //		TextBuffer tb = new TextBuffer();
 //		InputStream is = new ByteArrayInputStream(src.getBytes());
 //		try {
@@ -266,8 +192,34 @@ public class App {
 //			System.out.println(e.getMessage());
 //			System.exit(0);
 //		}
+		
+		Production s = new Production(SymbolEnum.S);
+		Production stmt = new Production(SymbolEnum.STMT);
+		Production assg = new Production(SymbolEnum.ASSG);
+		Production int_ = new Production(SymbolEnum.INT_KEYWORD_TOKEN);
+		Production exp = new Production(SymbolEnum.EXP);
+		Production digit = new Production(SymbolEnum.INTEGER_LITERAL_TOKEN);
+		Production ident = new Production(SymbolEnum.IDENTIFIER_TOKEN);
+		Production add = new Production(SymbolEnum.ADDITION_OPERATOR_TOKEN);	
+		Production sub = new Production(SymbolEnum.SUBTRACTION_OPERATOR_TOKEN);
+		Production mul = new Production(SymbolEnum.MULTIPLICATION_OPERATOR_TOKEN);
+		Production div = new Production(SymbolEnum.DIVISION_OPERATOR_TOKEN);
+		s.addRule(new Rule(stack -> { return null; }, stmt));
+		stmt.addRule(new Rule(stack -> { return null; }, assg));
+		stmt.addRule(new Rule(stack -> { return null; }, exp));
+		assg.addRule(new Rule(stack -> { return null; }, int_, ident, exp));
+		exp.addRule(new Rule(stack -> { return null; }, add, exp, exp));
+		exp.addRule(new Rule(stack -> { return null; }, sub, exp, exp));
+		exp.addRule(new Rule(stack -> { return null; }, mul, exp, exp));
+		exp.addRule(new Rule(stack -> { return null; }, div, exp, exp));
+		exp.addRule(new Rule(stack -> { return null; }, digit));
+		exp.addRule(new Rule(stack -> { return null; }, ident));
+		ParserData parserData = new ScenarioWriter().getParserData(s, SymbolEnum.class);
+		
+		String src = "+ 1 2";
+		
 		try {
-			Parser parser = new Parser(new Lexer());
+			Parser parser = new Parser(new Lexer(), parserData);
 			InputStream inStrm = new ByteArrayInputStream(src.getBytes());
 			parser.parse(inStrm);
 			System.out.println("MSG: Finished!");
