@@ -3,8 +3,6 @@ package myprototype.jparse;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.reflect.Method;
-import java.util.Objects;
 
 import myprototype.jparse.symbol.Production;
 import myprototype.jparse.symbol.Rule;
@@ -15,14 +13,76 @@ import myprototype.jparse.symbol.terminal.Lexer;
  * Hello world!
  */
 public class App {
-	enum Sample {
-		A,
-		B
+	public static void main(String[] args) {
+		Production s = new Production(SymbolEnum.S);
+		Production stmt = new Production(SymbolEnum.STMT);
+		Production assg = new Production(SymbolEnum.ASSG);
+		Production int_ = new Production(SymbolEnum.INT_KEYWORD_TOKEN);
+		Production exp = new Production(SymbolEnum.EXP);
+		Production digit = new Production(SymbolEnum.INTEGER_LITERAL_TOKEN);
+		Production ident = new Production(SymbolEnum.IDENTIFIER_TOKEN);
+		Production add = new Production(SymbolEnum.ADDITION_OPERATOR_TOKEN);	
+		Production sub = new Production(SymbolEnum.SUBTRACTION_OPERATOR_TOKEN);
+		Production mul = new Production(SymbolEnum.MULTIPLICATION_OPERATOR_TOKEN);
+		Production div = new Production(SymbolEnum.DIVISION_OPERATOR_TOKEN);
 		
-		;
+		// S    -> Stmt
+		s.addRule(new Rule(stack -> { return null; }, stmt));
+		
+		// Stmt -> Assg
+		stmt.addRule(new Rule(stack -> { return null; }, assg));
+		
+		// Stmt -> Exp
+		stmt.addRule(new Rule(stack -> { return null; }, exp));
+		
+		// Assg -> int IDENT Exp
+		assg.addRule(new Rule(stack -> { return null; }, int_, ident, exp));
+		
+		// Exp  -> + Exp Exp
+		exp.addRule(new Rule(stack -> { return null; }, add, exp, exp));
+		
+		// Exp  -> - Exp Exp
+		exp.addRule(new Rule(stack -> { return null; }, sub, exp, exp));
+		
+		// Exp  -> * Exp Exp
+		exp.addRule(new Rule(stack -> { return null; }, mul, exp, exp));
+		
+		// Exp  -> / Exp Exp
+		exp.addRule(new Rule(stack -> { return null; }, div, exp, exp));
+		
+		// Exp  -> DIGIT
+		exp.addRule(new Rule(stack -> { return null; }, digit));
+		
+		// Exp  -> IDENT
+		exp.addRule(new Rule(stack -> { return null; }, ident));
+		
+		ParserData parserData = new Grammar().getParserData(s, SymbolEnum.class);
+		
+		System.out.println(parserData.getRuleTableString());
+		System.out.println(parserData.getSyntaticsTableString());
+		System.exit(0);
+		
+		String src = "int v + + 3.14159265359 0x2p-2 ";
+		
+//		String src = "+ \\u0031 1";
+//		int v = \u0031;
+//		\u0069\u006E\u0074\u0020\u0076\u0020\u003D\u0020\u0031\u003b
+//		System.out.println(v);
+		
+		try {
+			Parser parser = new Parser(new Lexer(), parserData);
+			InputStream inStrm = new ByteArrayInputStream(src.getBytes());
+			parser.parse(inStrm);
+		} catch (IOException e) {
+			System.out.println(e.getMessage());
+			System.exit(0);
+		}
+		System.out.println("MSG: Finished!");
 	}
-	public static void main(String[] args) throws CloneNotSupportedException {
-
+	
+	public static void maina(String[] args) throws CloneNotSupportedException {
+		
+		
 		
 		
 //		ArrayList<Sample> samples = new ArrayList<Sample>();
@@ -204,25 +264,51 @@ public class App {
 		Production sub = new Production(SymbolEnum.SUBTRACTION_OPERATOR_TOKEN);
 		Production mul = new Production(SymbolEnum.MULTIPLICATION_OPERATOR_TOKEN);
 		Production div = new Production(SymbolEnum.DIVISION_OPERATOR_TOKEN);
-		s.addRule(new Rule(stack -> { return null; }, stmt));
-		stmt.addRule(new Rule(stack -> { return null; }, assg));
-		stmt.addRule(new Rule(stack -> { return null; }, exp));
-		assg.addRule(new Rule(stack -> { return null; }, int_, ident, exp));
-		exp.addRule(new Rule(stack -> { return null; }, add, exp, exp));
-		exp.addRule(new Rule(stack -> { return null; }, sub, exp, exp));
-		exp.addRule(new Rule(stack -> { return null; }, mul, exp, exp));
-		exp.addRule(new Rule(stack -> { return null; }, div, exp, exp));
-		exp.addRule(new Rule(stack -> { return null; }, digit));
-		exp.addRule(new Rule(stack -> { return null; }, ident));
-		ParserData parserData = new ScenarioWriter().getParserData(s, SymbolEnum.class);
 		
-		String src = "+ 1 2";
+		// S    -> Stmt
+		s.addRule(new Rule(stack -> { return null; }, stmt));
+		
+		// Stmt -> Assg
+		stmt.addRule(new Rule(stack -> { return null; }, assg));
+		
+		// Stmt -> Exp
+		stmt.addRule(new Rule(stack -> { return null; }, exp));
+		
+		// Assg -> int IDENT Exp
+		assg.addRule(new Rule(stack -> { return null; }, int_, ident, exp));
+		
+		// Exp  -> + Exp Exp
+		exp.addRule(new Rule(stack -> { return null; }, add, exp, exp));
+		
+		// Exp  -> - Exp Exp
+		exp.addRule(new Rule(stack -> { return null; }, sub, exp, exp));
+		
+		// Exp  -> * Exp Exp
+		exp.addRule(new Rule(stack -> { return null; }, mul, exp, exp));
+		
+		// Exp  -> / Exp Exp
+		exp.addRule(new Rule(stack -> { return null; }, div, exp, exp));
+		
+		// Exp  -> DIGIT
+		exp.addRule(new Rule(stack -> { return null; }, digit));
+		
+		// Exp  -> IDENT
+		exp.addRule(new Rule(stack -> { return null; }, ident));
+		
+		ParserData parserData = new Grammar().getParserData(s, SymbolEnum.class);
+		
+		System.out.println(parserData.getRuleTableString());
+		System.out.println(parserData.getSyntaticsTableString());
+		System.exit(0);
+		
+		
+		String src = "+ jkalsdfj klasdfj klasdfj kl 1 2";
 		
 		try {
 			Parser parser = new Parser(new Lexer(), parserData);
 			InputStream inStrm = new ByteArrayInputStream(src.getBytes());
 			parser.parse(inStrm);
-			System.out.println("MSG: Finished!");
+//			System.out.println("MSG: Finished!");
 		} catch (IOException e) {
 			System.out.println(e.getMessage());
 			System.exit(0);

@@ -170,7 +170,7 @@ public class KeywordToken extends Terminal {
 
 	@Override
 	public String toString() {
-		return "KeywordToken [beg=" + getBeg() + " end=" + getEnd() + "]";
+		return this.getClass().getSimpleName() + " [beg=" + getBeg() + " end=" + getEnd() + "]";
 	}
 
 	@Override

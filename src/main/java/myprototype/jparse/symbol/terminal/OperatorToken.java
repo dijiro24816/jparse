@@ -13,7 +13,7 @@ public class OperatorToken extends Terminal {
 
 	@Override
 	public String toString() {
-		return "OperatorToken [beg=" + getBeg() + " end=" + getEnd() + "]";
+		return this.getClass().getSimpleName() + " [beg=" + getBeg() + " end=" + getEnd() + "]";
 	}
 
 	@Override

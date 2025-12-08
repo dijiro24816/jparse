@@ -4,8 +4,8 @@ import myprototype.jparse.symbol.Symbol;
 import myprototype.jparse.symbol.SymbolEnum;
 
 public class Terminal extends Symbol {
-	private int beg;
-	private int end;
+	protected int beg;
+	protected int end;
 
 	public Terminal(SymbolEnum kind, int beg, int end) {
 		super(kind);

@@ -2,11 +2,7 @@ package myprototype.jparse;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Stack;
 
-import myprototype.jparse.symbol.Symbol;
-import myprototype.jparse.symbol.nonterminal.CompilationUnit;
-import myprototype.jparse.symbol.nonterminal.SNode;
 import myprototype.jparse.symbol.nonterminal.StmtNode;
 import myprototype.jparse.symbol.terminal.InvalidTokenException;
 import myprototype.jparse.symbol.terminal.Lexer;
@@ -26,33 +22,39 @@ public class Parser {
 	
 	public StmtNode parse(InputStream inStrm) throws IOException {
 		
-		int currentState = 0;
-		Stack<Integer> states = new Stack<>();
-		Stack<Symbol> symbols = new Stack<>();
+//		int currentState = 0;
+//		Stack<Integer> states = new Stack<>();
+//		Stack<Symbol> symbols = new Stack<>();
+//		
+//		Stack<StateSymbol> stateSymbolStack = new Stack<>();
+//		
+//		Symbol symbol = null;
 		
-		Stack<StateSymbol> stateSymbolStack = new Stack<>();
-		
-		Symbol symbol = null;
+		Terminal token;
 		
 		try {
-			while (symbol != null || (symbol = this.tokenizer.tokenize(inStrm)) != null) {
-				System.out.println(symbol);
-				
-				Action action = this.data.getAction(currentState, symbol.ordinal());
-				if (action == null)
-					throw new RuntimeException("Invalid syntax");
-				
-				switch (action.getKind()) {
-				case Reduce:
-					symbols.push(this.data.getRuleTable().get(action.getArgumentValue()).compound.apply(stateSymbolStack));
-				case Shift:
-					stateSymbolStack.push(new StateSymbol(currentState, symbol));
-					currentState = action.getArgumentValue();
-					symbol = null;
-				default:
-					break;
-				}
+			while ((token = this.tokenizer.tokenize(inStrm)) != null) {
+				System.out.println(token);
 			}
+			
+//			while (symbol != null || (symbol = this.tokenizer.tokenize(inStrm)) != null) {
+//				System.out.println(symbol);
+//				
+//				Action action = this.data.getAction(currentState, symbol.ordinal());
+//				if (action == null)
+//					throw new RuntimeException("Invalid syntax");
+//				
+//				switch (action.getKind()) {
+//				case Reduce:
+//					symbols.push(this.data.getRuleTable().get(action.getArgumentValue()).compound.apply(stateSymbolStack));
+//				case Shift:
+//					stateSymbolStack.push(new StateSymbol(currentState, symbol));
+//					currentState = action.getArgumentValue();
+//					symbol = null;
+//				default:
+//					break;
+//				}
+//			}
 		} catch (InvalidTokenException e) {
 			System.out.println(e.getMessage());
 			System.exit(0);

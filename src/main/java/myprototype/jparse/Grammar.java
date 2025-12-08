@@ -15,7 +15,7 @@ import myprototype.jparse.symbol.Rule;
 import myprototype.jparse.symbol.SymbolEnum;
 import myprototype.jparse.symbol.SymbolKindEnum;
 
-public class ScenarioWriter {
+public class Grammar {
 	private List<RuleScenario> excludeClosure(Collection<RuleScenario> ruleScenarios) {
 		return ruleScenarios.stream().filter(ruleScenario -> !ruleScenario.isTakingTheClosure()).toList();
 	}
