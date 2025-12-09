@@ -25,7 +25,7 @@ public class LRParser {
 		this.table = table;
 	}
 
-	public LRParser(Grammar grammarScenario) {
+	public LRParser(ScenarioWriter grammarScenario) {
 		setTable(new ArrayList<ArrayList<Integer>>());
 		apply(grammarScenario);
 	}
@@ -34,7 +34,7 @@ public class LRParser {
 
 	
 
-	private void apply(Grammar grammarScenario) {
+	private void apply(ScenarioWriter grammarScenario) {
 
 	}
 
@@ -77,7 +77,7 @@ public class LRParser {
 //		
 //		System.out.println(ruleScenariosStates.containsKey(ruleScenariosStatesKeyClone));
 		
-		ParserData parserData = new Grammar().getParserData(s, SymbolEnum.class);
+		ParserData parserData = new ScenarioWriter().getParserData(s, SymbolEnum.class);
 		
 		System.out.println(parserData.getRuleTableString());
 		System.out.println(parserData.getSyntaticsTableString());

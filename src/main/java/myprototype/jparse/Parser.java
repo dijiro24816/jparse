@@ -3,21 +3,29 @@ package myprototype.jparse;
 import java.io.IOException;
 import java.io.InputStream;
 
+import myprototype.jparse.lr1.SymbolCache;
+import myprototype.jparse.symbol.Symbol;
 import myprototype.jparse.symbol.nonterminal.StmtNode;
 import myprototype.jparse.symbol.terminal.InvalidTokenException;
 import myprototype.jparse.symbol.terminal.Lexer;
-import myprototype.jparse.symbol.terminal.Terminal;
 
 public class Parser {
 	
-	public Lexer tokenizer;
+	public SymbolCache source;
 	
 	private ParserData data;
 
-	public Parser(Lexer tokenizer, ParserData data) {
+	public Parser(Lexer lexer, ParserData data) {
 		super();
-		this.tokenizer = tokenizer;
+		this.source = new SymbolCache(lexer);
 		this.data = data;
+	}
+	
+	public Parser(SymbolCache source, ParserData data) {
+		super();
+		this.source = source;
+		this.data = data;
+		
 	}
 	
 	public StmtNode parse(InputStream inStrm) throws IOException {
@@ -30,12 +38,10 @@ public class Parser {
 //		
 //		Symbol symbol = null;
 		
-		Terminal token;
+		Symbol symbol;
 		
 		try {
-			while ((token = this.tokenizer.tokenize(inStrm)) != null) {
-				System.out.println(token);
-			}
+//			while (())
 			
 //			while (symbol != null || (symbol = this.tokenizer.tokenize(inStrm)) != null) {
 //				System.out.println(symbol);

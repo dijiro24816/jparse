@@ -56,7 +56,7 @@ public class App {
 		// Exp  -> IDENT
 		exp.addRule(new Rule(stack -> { return null; }, ident));
 		
-		ParserData parserData = new Grammar().getParserData(s, SymbolEnum.class);
+		ParserData parserData = new ScenarioWriter().getParserData(s, SymbolEnum.class);
 		
 		System.out.println(parserData.getRuleTableString());
 		System.out.println(parserData.getSyntaticsTableString());
@@ -295,7 +295,7 @@ public class App {
 		// Exp  -> IDENT
 		exp.addRule(new Rule(stack -> { return null; }, ident));
 		
-		ParserData parserData = new Grammar().getParserData(s, SymbolEnum.class);
+		ParserData parserData = new ScenarioWriter().getParserData(s, SymbolEnum.class);
 		
 		System.out.println(parserData.getRuleTableString());
 		System.out.println(parserData.getSyntaticsTableString());
