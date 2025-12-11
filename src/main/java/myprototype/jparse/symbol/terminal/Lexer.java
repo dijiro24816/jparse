@@ -343,7 +343,7 @@ public class Lexer {
 		return false;
 	}
 
-	public Terminal tokenize(InputStream inStrm) throws IOException, InvalidTokenException {
+	public Terminal getSymbol(InputStream inStrm) throws IOException, InvalidTokenException {
 		int ch;
 		while ((ch = textBuffer.peek(inStrm)) >= 0) {
 			if (ch != '\n' && (ch < ' ' || ch > 126)) // Invaild character

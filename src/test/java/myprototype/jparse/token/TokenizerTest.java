@@ -114,7 +114,7 @@ class TokenizerTest {
 		try {
 			Lexer lexer = new Lexer();
 			InputStream inStrm = new ByteArrayInputStream(src.getBytes());
-			return lexer.tokenize(inStrm);
+			return lexer.getSymbol(inStrm);
 		} catch (IOException | InvalidTokenException e) {
 			System.out.println(e.getMessage());
 		}

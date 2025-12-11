@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
+import myprototype.jparse.lr1.Parser;
 import myprototype.jparse.symbol.Production;
 import myprototype.jparse.symbol.Rule;
 import myprototype.jparse.symbol.SymbolEnum;
@@ -58,12 +59,12 @@ public class App {
 		
 		ParserData parserData = new ScenarioWriter().getParserData(s, SymbolEnum.class);
 		
-		System.out.println(parserData.getRuleTableString());
-		System.out.println(parserData.getSyntaticsTableString());
-		System.exit(0);
+//		System.out.println(parserData.getRuleTableString());
+//		System.out.println(parserData.getSyntaticsTableString());
+//		System.exit(0);
 		
-		String src = "int v + + 3.14159265359 0x2p-2 ";
-		
+//		String src = "int v + + 3.14159265359 0x2p-2 ";
+		String src = "int v + 1 1";
 //		String src = "+ \\u0031 1";
 //		int v = \u0031;
 //		\u0069\u006E\u0074\u0020\u0076\u0020\u003D\u0020\u0031\u003b
