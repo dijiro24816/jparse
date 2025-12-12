@@ -4,8 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 
-import myprototype.jparse.symbol.Production;
-import myprototype.jparse.symbol.Rule;
+import myprototype.jparse.symbol.ProductionO;
+import myprototype.jparse.symbol.RuleO;
 import myprototype.jparse.symbol.SymbolEnum;
 import myprototype.jparse.symbol.SymbolEnumProtocol;
 import myprototype.jparse.symbol.SymbolKindEnum;
@@ -39,27 +39,27 @@ public class LRParser {
 	}
 
 	public static void main(String[] args) {
-		Production s = new Production(SymbolEnum.S);
-		Production stmt = new Production(SymbolEnum.STMT);
-		Production assg = new Production(SymbolEnum.ASSG);
-		Production int_ = new Production(SymbolEnum.INT_KEYWORD_TOKEN);
-		Production exp = new Production(SymbolEnum.EXP);
-		Production digit = new Production(SymbolEnum.INTEGER_LITERAL_TOKEN);
-		Production ident = new Production(SymbolEnum.IDENTIFIER_TOKEN);
-		Production add = new Production(SymbolEnum.ADDITION_OPERATOR_TOKEN);	
-		Production sub = new Production(SymbolEnum.SUBTRACTION_OPERATOR_TOKEN);
-		Production mul = new Production(SymbolEnum.MULTIPLICATION_OPERATOR_TOKEN);
-		Production div = new Production(SymbolEnum.DIVISION_OPERATOR_TOKEN);
-		s.addRule(new Rule(stack -> { return null; }, stmt));
-		stmt.addRule(new Rule(stack -> { return null; }, assg));
-		stmt.addRule(new Rule(stack -> { return null; }, exp));
-		assg.addRule(new Rule(stack -> { return null; }, int_, ident, exp));
-		exp.addRule(new Rule(stack -> { return null; }, add, exp, exp));
-		exp.addRule(new Rule(stack -> { return null; }, sub, exp, exp));
-		exp.addRule(new Rule(stack -> { return null; }, mul, exp, exp));
-		exp.addRule(new Rule(stack -> { return null; }, div, exp, exp));
-		exp.addRule(new Rule(stack -> { return null; }, digit));
-		exp.addRule(new Rule(stack -> { return null; }, ident));
+		ProductionO s = new ProductionO(SymbolEnum.S);
+		ProductionO stmt = new ProductionO(SymbolEnum.STMT);
+		ProductionO assg = new ProductionO(SymbolEnum.ASSG);
+		ProductionO int_ = new ProductionO(SymbolEnum.INT_KEYWORD_TOKEN);
+		ProductionO exp = new ProductionO(SymbolEnum.EXP);
+		ProductionO digit = new ProductionO(SymbolEnum.INTEGER_LITERAL_TOKEN);
+		ProductionO ident = new ProductionO(SymbolEnum.IDENTIFIER_TOKEN);
+		ProductionO add = new ProductionO(SymbolEnum.ADDITION_OPERATOR_TOKEN);	
+		ProductionO sub = new ProductionO(SymbolEnum.SUBTRACTION_OPERATOR_TOKEN);
+		ProductionO mul = new ProductionO(SymbolEnum.MULTIPLICATION_OPERATOR_TOKEN);
+		ProductionO div = new ProductionO(SymbolEnum.DIVISION_OPERATOR_TOKEN);
+		s.addRule(new RuleO(stack -> { return null; }, stmt));
+		stmt.addRule(new RuleO(stack -> { return null; }, assg));
+		stmt.addRule(new RuleO(stack -> { return null; }, exp));
+		assg.addRule(new RuleO(stack -> { return null; }, int_, ident, exp));
+		exp.addRule(new RuleO(stack -> { return null; }, add, exp, exp));
+		exp.addRule(new RuleO(stack -> { return null; }, sub, exp, exp));
+		exp.addRule(new RuleO(stack -> { return null; }, mul, exp, exp));
+		exp.addRule(new RuleO(stack -> { return null; }, div, exp, exp));
+		exp.addRule(new RuleO(stack -> { return null; }, digit));
+		exp.addRule(new RuleO(stack -> { return null; }, ident));
 		
 //		ParserData parserData = new ParserData(SymbolEnum.class, s);
 //		System.out.println(parserData.getRuleTable());

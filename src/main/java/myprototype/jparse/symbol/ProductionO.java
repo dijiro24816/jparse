@@ -4,10 +4,10 @@ package myprototype.jparse.symbol;
 import java.util.ArrayList;
 import java.util.HashSet;
 
-public class Production {
+public class ProductionO {
 //	private Class<? extends Symbol> symbol;
 	private SymbolEnum symbol;
-	private HashSet<Rule> rules;
+	private HashSet<RuleO> rules;
 
 	public SymbolEnum getSymbol() {
 		return symbol;
@@ -17,23 +17,23 @@ public class Production {
 //		this.symbol = symbol;
 //	}
 
-	public HashSet<Rule> getRules() {
+	public HashSet<RuleO> getRules() {
 		return rules;
 	}
 
-	public Production(SymbolEnum symbol) {
+	public ProductionO(SymbolEnum symbol) {
 		this.symbol = symbol;
 		this.rules = new HashSet<>();
 	}
 
-	public boolean addRule(Rule rule) {
+	public boolean addRule(RuleO rule) {
 		boolean result = this.rules.add(rule);
 		if (result)
 			rule.setOwner(this);
 		return result;
 	}
 	
-	public boolean removeRule(Rule rule) {
+	public boolean removeRule(RuleO rule) {
 		boolean result = this.rules.remove(rule);
 		if (result)
 			rule.setOwner(null);

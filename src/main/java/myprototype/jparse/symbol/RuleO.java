@@ -8,16 +8,16 @@ import java.util.function.Function;
 import myprototype.jparse.StateSymbol;
 import myprototype.jparse.symbol.nonterminal.Nonterminal;
 
-public class Rule {
-	private Production owner;
-	public Production[] productions;
+public class RuleO {
+	private ProductionO owner;
+	public ProductionO[] productions;
 	public Function<Stack<StateSymbol>, ? extends Nonterminal> compound;
 	
-	public Production getOwner() {
+	public ProductionO getOwner() {
 		return owner;
 	}
 	
-	public void setOwner(Production owner) {
+	public void setOwner(ProductionO owner) {
 		if (owner == this.owner)
 			return;
 		
@@ -27,11 +27,11 @@ public class Rule {
 		this.owner = owner;
 	}
 
-	public Production[] getProductions() {
+	public ProductionO[] getProductions() {
 		return productions;
 	}
 
-	public Rule(Function<Stack<StateSymbol>, ? extends Nonterminal> compound, Production... productions) {
+	public RuleO(Function<Stack<StateSymbol>, ? extends Nonterminal> compound, ProductionO... productions) {
 		this.compound = compound;
 		this.productions = productions;
 	}

@@ -6,20 +6,20 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import myprototype.jparse.symbol.Production;
-import myprototype.jparse.symbol.Rule;
+import myprototype.jparse.symbol.ProductionO;
+import myprototype.jparse.symbol.RuleO;
 import myprototype.jparse.symbol.SymbolEnum;
 import myprototype.jparse.symbol.SymbolKindEnum;
 
-public class RuleScenario implements Cloneable {
-	private Rule rule;
+public class Item implements Cloneable {
+	private RuleO rule;
 	private int dot;
 
-	public Rule getRule() {
+	public RuleO getRule() {
 		return rule;
 	}
 
-	private void setRule(Rule rule) {
+	private void setRule(RuleO rule) {
 		this.rule = rule;
 	}
 
@@ -31,12 +31,12 @@ public class RuleScenario implements Cloneable {
 		this.dot = dot;
 	}
 
-	public RuleScenario(Rule rule, int dot) {
+	public Item(RuleO rule, int dot) {
 		setRule(rule);
 		setDot(dot);
 	}
 
-	public RuleScenario(Rule rule) {
+	public Item(RuleO rule) {
 		this(rule, 0);
 	}
 
@@ -44,7 +44,7 @@ public class RuleScenario implements Cloneable {
 		return getDot() == getRule().getProductions().length;
 	}
 
-	public Production getDotProduction() {
+	public ProductionO getDotProduction() {
 		return getRule().getProductions()[getDot()];
 	}
 
@@ -52,7 +52,7 @@ public class RuleScenario implements Cloneable {
 		return getDotProduction().getSymbol().getKind() == SymbolKindEnum.NONTERMINAL;
 	}
 
-	public Collection<Rule> getDotProductionRules() {
+	public Collection<RuleO> getDotProductionRules() {
 		return getDotProduction().getRules();
 	}
 
@@ -82,14 +82,14 @@ public class RuleScenario implements Cloneable {
 		if (getClass() != obj.getClass())
 			return false;
 
-		RuleScenario other = (RuleScenario) obj;
+		Item other = (Item) obj;
 		return this.dot == other.getDot() && this.rule.equals(other.getRule());
 	}
 
 
 	@Override
-	protected RuleScenario clone() {
-		return new RuleScenario(this.rule, this.dot);
+	protected Item clone() {
+		return new Item(this.rule, this.dot);
 	}
 
 	@Override
@@ -100,7 +100,7 @@ public class RuleScenario implements Cloneable {
 		if (this.dot == 0)
 			stringBuilder.append(". ");
 		
-		Production[] productions = this.rule.getProductions();
+		ProductionO[] productions = this.rule.getProductions();
 		if (productions.length > 0) {
 			int i = 0;
 			for (;;) {

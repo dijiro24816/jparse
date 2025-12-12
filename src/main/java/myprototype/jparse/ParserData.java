@@ -12,23 +12,23 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.TreeSet;
 
-import myprototype.jparse.symbol.Production;
-import myprototype.jparse.symbol.Rule;
+import myprototype.jparse.symbol.ProductionO;
+import myprototype.jparse.symbol.RuleO;
 import myprototype.jparse.symbol.SymbolEnum;
 
 public class ParserData {
 	private int columnLength;
 
 	private List<Action[]> syntaticsTable;
-	private List<Rule> ruleTable;
+	private List<RuleO> ruleTable;
 
-	private HashMap<Rule, Integer> ruleTableIndex;
+	private HashMap<RuleO, Integer> ruleTableIndex;
 
-	public List<Rule> getRuleTable() {
+	public List<RuleO> getRuleTable() {
 		return ruleTable;
 	}
 
-	public ParserData(Class<? extends Enum<?>> symbolEnum, Production begProduction) {
+	public ParserData(Class<? extends Enum<?>> symbolEnum, ProductionO begProduction) {
 		try {
 			this.columnLength = ((Object[]) symbolEnum.getMethod("values").invoke(null)).length;
 		} catch (InvocationTargetException | IllegalAccessException | NoSuchMethodException | SecurityException e) {
@@ -42,16 +42,16 @@ public class ParserData {
 			this.ruleTableIndex.put(this.ruleTable.get(i), i);
 	}
 
-	private HashSet<Rule> getRuleSet(Production orgProduction) {
-		HashSet<Rule> ruleSet = new HashSet<>();
+	private HashSet<RuleO> getRuleSet(ProductionO orgProduction) {
+		HashSet<RuleO> ruleSet = new HashSet<>();
 		ruleSet.addAll(orgProduction.getRules());
-		ArrayDeque<Rule> queue = new ArrayDeque<>();
+		ArrayDeque<RuleO> queue = new ArrayDeque<>();
 
 		queue.addAll(orgProduction.getRules());
-		Rule rule;
+		RuleO rule;
 		while ((rule = queue.poll()) != null)
-			for (Production production : rule.getProductions())
-				for (Rule derivativeRule : production.getRules())
+			for (ProductionO production : rule.getProductions())
+				for (RuleO derivativeRule : production.getRules())
 					if (ruleSet.add(derivativeRule))
 						queue.offer(derivativeRule);
 
@@ -97,7 +97,7 @@ public class ParserData {
 		return getData().get(state)[token];
 	}
 
-	public int getRuleIndex(Rule rule) {
+	public int getRuleIndex(RuleO rule) {
 		return this.ruleTableIndex.get(rule);
 	}
 
@@ -105,7 +105,7 @@ public class ParserData {
 		StringBuilder stringBuilder = new StringBuilder();
 
 		for (int i = 0; i < this.ruleTable.size(); i++) {
-			Rule rule = this.ruleTable.get(i);
+			RuleO rule = this.ruleTable.get(i);
 			stringBuilder.append("Rule " + i + ": " + SymbolEnumToString(rule.getOwner().getSymbol()) + " -> "
 					+ String.join(" ", Arrays.asList(rule.getProductions()).stream()
 							.map(p -> SymbolEnumToString(p.getSymbol())).toList()));
