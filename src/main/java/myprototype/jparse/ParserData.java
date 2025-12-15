@@ -4,13 +4,10 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.TreeSet;
 
 import myprototype.jparse.symbol.ProductionO;
 import myprototype.jparse.symbol.RuleO;
@@ -117,16 +114,16 @@ public class ParserData {
 
 	public String SymbolEnumToString(SymbolEnum symbolEnum) {
 		switch (symbolEnum) {
-		case S:
-			return "S";
-		case STMT:
-			return "Stmt";
-		case ASSG:
-			return "Assg";
-		case INT_KEYWORD_TOKEN:
-			return "int";
-		case EXP:
-			return "Exp";
+//		case S:
+//			return "S";
+//		case STMT:
+//			return "Stmt";
+//		case ASSG:
+//			return "Assg";
+//		case INT_KEYWORD_TOKEN:
+//			return "int";
+//		case EXP:
+//			return "Exp";
 		case ADDITION_OPERATOR_TOKEN:
 			return "+";
 		case SUBTRACTION_OPERATOR_TOKEN:
@@ -145,16 +142,17 @@ public class ParserData {
 	}
 
 	public boolean isTargetSymbol(int sym) {
-		return  sym == SymbolEnum.STMT.ordinal() ||
-				sym == SymbolEnum.EXP.ordinal() ||
+		//sym == SymbolEnum.STMT.ordinal() ||
+		//sym == SymbolEnum.EXP.ordinal() ||
+//		sym == SymbolEnum.ASSG.ordinal()
+		return  
 				sym == SymbolEnum.ADDITION_OPERATOR_TOKEN.ordinal() ||
 				sym == SymbolEnum.SUBTRACTION_OPERATOR_TOKEN.ordinal() ||
 				sym == SymbolEnum.MULTIPLICATION_OPERATOR_TOKEN.ordinal() ||
 				sym == SymbolEnum.DIVISION_OPERATOR_TOKEN.ordinal() ||
 				sym == SymbolEnum.INTEGER_LITERAL_TOKEN.ordinal() ||
 				sym == SymbolEnum.INT_KEYWORD_TOKEN.ordinal() ||
-				sym == SymbolEnum.IDENTIFIER_TOKEN.ordinal() ||
-				sym == SymbolEnum.ASSG.ordinal();
+				sym == SymbolEnum.IDENTIFIER_TOKEN.ordinal();
 	}
 
 	public String getSyntaticsTableString() {

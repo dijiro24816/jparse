@@ -1,65 +1,48 @@
 package myprototype.jparse;
 
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import myprototype.jparse.symbol.ProductionO;
-import myprototype.jparse.symbol.RuleO;
-import myprototype.jparse.symbol.SymbolEnum;
-import myprototype.jparse.symbol.SymbolKindEnum;
-
-public class Item implements Cloneable {
-	private RuleO rule;
+public class Item {
+	private Grammar grammar;
+	private Rule rule;
 	private int dot;
 
-	public RuleO getRule() {
+	public Rule getRule() {
 		return rule;
-	}
-
-	private void setRule(RuleO rule) {
-		this.rule = rule;
 	}
 
 	public int getDot() {
 		return dot;
 	}
 
-	private void setDot(int dot) {
+	public Item(Grammar grammar, Rule rule, int dot) {
+		this.grammar = grammar;
+		this.rule = rule;
 		this.dot = dot;
 	}
 
-	public Item(RuleO rule, int dot) {
-		setRule(rule);
-		setDot(dot);
-	}
-
-	public Item(RuleO rule) {
-		this(rule, 0);
+	public Item(Grammar grammar, Rule rule) {
+		this(grammar, rule, 0);
 	}
 
 	public boolean isTakingTheClosure() {
-		return getDot() == getRule().getProductions().length;
+		return this.dot == getRule().getSymbols().size();
 	}
 
-	public ProductionO getDotProduction() {
-		return getRule().getProductions()[getDot()];
+	public String getDotSymbol() {
+		return this.rule.getSymbols().get(this.dot);
 	}
 
 	public boolean isDotNonterminal() {
-		return getDotProduction().getSymbol().getKind() == SymbolKindEnum.NONTERMINAL;
+		return this.grammar.isNonterminalSymbol(getDotSymbol());
 	}
-
-	public Collection<RuleO> getDotProductionRules() {
-		return getDotProduction().getRules();
+	
+	public Collection<Item> generateDotSymbolItems() {
+		return Item.generate(this.grammar, getDotSymbol());
 	}
-
-	public SymbolEnum getDotProductionSymbol() {
-		return getDotProduction().getSymbol();
-	}
-
+	
 	public void increaseDot() {
 		this.dot++;
 	}
@@ -69,8 +52,6 @@ public class Item implements Cloneable {
 		return Objects.hash(this.dot) + this.rule.hashCode();
 	}
 
-	
-	
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -82,36 +63,35 @@ public class Item implements Cloneable {
 		if (getClass() != obj.getClass())
 			return false;
 
-		Item other = (Item) obj;
+		RuleScenario other = (RuleScenario) obj;
 		return this.dot == other.getDot() && this.rule.equals(other.getRule());
 	}
 
-
 	@Override
 	protected Item clone() {
-		return new Item(this.rule, this.dot);
+		return new Item(this.grammar, this.rule, this.dot);
 	}
 
 	@Override
 	public String toString() {
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.append("RuleScenario [");
+		stringBuilder.append("Item [");
 
 		if (this.dot == 0)
 			stringBuilder.append(". ");
 		
-		ProductionO[] productions = this.rule.getProductions();
-		if (productions.length > 0) {
+		List<String> symbols = this.rule.getSymbols();
+		if (symbols.size() > 0) {
 			int i = 0;
 			for (;;) {
-				stringBuilder.append(productions[i].getSymbol());
+				stringBuilder.append(symbols.get(i));
 
 				i++;
 
 				if (i == this.dot)
 					stringBuilder.append(" .");
 
-				if (i == productions.length)
+				if (i == symbols.size())
 					break;
 
 				stringBuilder.append(" ");
@@ -120,5 +100,9 @@ public class Item implements Cloneable {
 
 		stringBuilder.append("]");
 		return stringBuilder.toString();
+	}
+	
+	public static Collection<Item> generate(Grammar grammar, String nonterminalSymbol) {
+		return grammar.getRulesOf(nonterminalSymbol).stream().map(e -> new Item(grammar, e)).toList();
 	}
 }

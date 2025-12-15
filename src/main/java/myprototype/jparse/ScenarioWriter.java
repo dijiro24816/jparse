@@ -16,19 +16,19 @@ import myprototype.jparse.symbol.SymbolEnum;
 import myprototype.jparse.symbol.SymbolKindEnum;
 
 public class ScenarioWriter {
-	private List<Item> excludeClosure(Collection<Item> ruleScenarios) {
+	private List<RuleScenario> excludeClosure(Collection<RuleScenario> ruleScenarios) {
 		return ruleScenarios.stream().filter(ruleScenario -> !ruleScenario.isTakingTheClosure()).toList();
 	}
 
-	private ArrayList<Item> expandRuleScenariosDot(Collection<Item> orgRuleScenarios) {
-		ArrayList<Item> ruleScenarios = new ArrayList<>();
+	private ArrayList<RuleScenario> expandRuleScenariosDot(Collection<RuleScenario> orgRuleScenarios) {
+		ArrayList<RuleScenario> ruleScenarios = new ArrayList<>();
 		HashSet<SymbolEnum> expandedNonterminals = new HashSet<>();
-		ArrayDeque<Item> queue = new ArrayDeque<>();
+		ArrayDeque<RuleScenario> queue = new ArrayDeque<>();
 
-		for (Item ruleScenario : orgRuleScenarios)
+		for (RuleScenario ruleScenario : orgRuleScenarios)
 			queue.offer(ruleScenario);
 
-		Item ruleScenario;
+		RuleScenario ruleScenario;
 		while ((ruleScenario = queue.poll()) != null) {
 			ruleScenarios.add(ruleScenario);
 			if (ruleScenario.getDotProductionSymbol().getKind() == SymbolKindEnum.NONTERMINAL
@@ -36,7 +36,7 @@ public class ScenarioWriter {
 				// Get all of derivative rules fromd dot production, and convert Rule to
 				// RuleScenario, and then push it on queue
 				for (RuleO rule : ruleScenario.getDotProductionRules())
-					queue.offer(new Item(rule));
+					queue.offer(new RuleScenario(rule));
 			}
 		}
 
@@ -45,18 +45,18 @@ public class ScenarioWriter {
 
 	public ParserData getParserData(ProductionO begProduction, Class<? extends Enum<?>> symbolEnum) {
 		ParserData parserData = new ParserData(symbolEnum, begProduction);
-		HashSet<Item> ruleScenarioStatesKey = new HashSet<>(
-				begProduction.getRules().stream().map(rule -> new Item(rule)).toList());
+		HashSet<RuleScenario> ruleScenarioStatesKey = new HashSet<>(
+				begProduction.getRules().stream().map(rule -> new RuleScenario(rule)).toList());
 
-		takeAction(ruleScenarioStatesKey, new HashMap<HashSet<Item>, Action>(), parserData);
+		takeAction(ruleScenarioStatesKey, new HashMap<HashSet<RuleScenario>, Action>(), parserData);
 		return parserData;
 	}
 
-	private Action takeAction(HashSet<Item> ruleScenarioStatesKey,
-			HashMap<HashSet<Item>, Action> ruleScenarioStates, ParserData parserData) {
+	private Action takeAction(HashSet<RuleScenario> ruleScenarioStatesKey,
+			HashMap<HashSet<RuleScenario>, Action> ruleScenarioStates, ParserData parserData) {
 		// return states if already existing
 		// FIXME: This is very bad implementation
-		for (Set<Item> ruleScenarioSet : ruleScenarioStates.keySet()) {
+		for (Set<RuleScenario> ruleScenarioSet : ruleScenarioStates.keySet()) {
 			if (ruleScenarioSet.equals(ruleScenarioStatesKey)) {
 				return ruleScenarioStates.get(ruleScenarioSet);
 			}
@@ -72,14 +72,14 @@ public class ScenarioWriter {
 		Action enterAction = new Action(ActionKind.Shift, currentState);
 
 		// Make rule scenario set that has not moveable dot
-		HashSet<Item> ruleScenarioStatesKeyClone = new HashSet<>();
-		for (Item ruleScenario : ruleScenarioStatesKey)
+		HashSet<RuleScenario> ruleScenarioStatesKeyClone = new HashSet<>();
+		for (RuleScenario ruleScenario : ruleScenarioStatesKey)
 			ruleScenarioStatesKeyClone.add(ruleScenario.clone());
 
 		ruleScenarioStates.put(ruleScenarioStatesKeyClone, enterAction);
 
 		// Taking the closure
-		List<Item> closures = ruleScenarioStatesKey.stream()
+		List<RuleScenario> closures = ruleScenarioStatesKey.stream()
 				.filter(ruleScenario -> ruleScenario.isTakingTheClosure()).toList();
 		if (closures.size() > 0) {
 			// Check reduce-reduce problem
@@ -92,12 +92,12 @@ public class ScenarioWriter {
 			parserData.setAction(currentState, new Action(ActionKind.Reduce, parserData.getRuleIndex(closures.get(0).getRule())));
 		}
 
-		ArrayList<Item> ruleScenarios = expandRuleScenariosDot(excludeClosure(ruleScenarioStatesKey));
+		ArrayList<RuleScenario> ruleScenarios = expandRuleScenariosDot(excludeClosure(ruleScenarioStatesKey));
 		if (ruleScenarios.size() == 0)
 			return enterAction;
 		
 		ruleScenarios
-				.sort(Comparator.comparing(ruleScenario -> ((Item) ruleScenario).getDotProductionSymbol()));
+				.sort(Comparator.comparing(ruleScenario -> ((RuleScenario) ruleScenario).getDotProductionSymbol()));
 		if (ruleScenarios.size() == 0)
 			return enterAction;
 		
@@ -106,9 +106,9 @@ public class ScenarioWriter {
 		for (;;) {
 			endIndex++;
 			if ((endIndex == ruleScenarios.size()) || begSymbol != ruleScenarios.get(endIndex).getDotProductionSymbol()) {
-				HashSet<Item> partOfRuleScenarios = new HashSet<>(ruleScenarios.subList(begIndex, endIndex));
+				HashSet<RuleScenario> partOfRuleScenarios = new HashSet<>(ruleScenarios.subList(begIndex, endIndex));
 
-				for (Item ruleScenario : partOfRuleScenarios)
+				for (RuleScenario ruleScenario : partOfRuleScenarios)
 					ruleScenario.increaseDot();
 
 				// Store next state for the symbol from the current state

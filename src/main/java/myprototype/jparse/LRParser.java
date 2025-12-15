@@ -1,14 +1,6 @@
 package myprototype.jparse;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.HashSet;
-
-import myprototype.jparse.symbol.ProductionO;
-import myprototype.jparse.symbol.RuleO;
-import myprototype.jparse.symbol.SymbolEnum;
-import myprototype.jparse.symbol.SymbolEnumProtocol;
-import myprototype.jparse.symbol.SymbolKindEnum;
 
 public class LRParser {
 	// lookahead-set
@@ -39,51 +31,51 @@ public class LRParser {
 	}
 
 	public static void main(String[] args) {
-		ProductionO s = new ProductionO(SymbolEnum.S);
-		ProductionO stmt = new ProductionO(SymbolEnum.STMT);
-		ProductionO assg = new ProductionO(SymbolEnum.ASSG);
-		ProductionO int_ = new ProductionO(SymbolEnum.INT_KEYWORD_TOKEN);
-		ProductionO exp = new ProductionO(SymbolEnum.EXP);
-		ProductionO digit = new ProductionO(SymbolEnum.INTEGER_LITERAL_TOKEN);
-		ProductionO ident = new ProductionO(SymbolEnum.IDENTIFIER_TOKEN);
-		ProductionO add = new ProductionO(SymbolEnum.ADDITION_OPERATOR_TOKEN);	
-		ProductionO sub = new ProductionO(SymbolEnum.SUBTRACTION_OPERATOR_TOKEN);
-		ProductionO mul = new ProductionO(SymbolEnum.MULTIPLICATION_OPERATOR_TOKEN);
-		ProductionO div = new ProductionO(SymbolEnum.DIVISION_OPERATOR_TOKEN);
-		s.addRule(new RuleO(stack -> { return null; }, stmt));
-		stmt.addRule(new RuleO(stack -> { return null; }, assg));
-		stmt.addRule(new RuleO(stack -> { return null; }, exp));
-		assg.addRule(new RuleO(stack -> { return null; }, int_, ident, exp));
-		exp.addRule(new RuleO(stack -> { return null; }, add, exp, exp));
-		exp.addRule(new RuleO(stack -> { return null; }, sub, exp, exp));
-		exp.addRule(new RuleO(stack -> { return null; }, mul, exp, exp));
-		exp.addRule(new RuleO(stack -> { return null; }, div, exp, exp));
-		exp.addRule(new RuleO(stack -> { return null; }, digit));
-		exp.addRule(new RuleO(stack -> { return null; }, ident));
-		
-//		ParserData parserData = new ParserData(SymbolEnum.class, s);
-//		System.out.println(parserData.getRuleTable());
-		
-//		HashSet<RuleScenario> ruleScenariosStatesKey = new HashSet<>();
-//		ruleScenariosStatesKey.add(new RuleScenario(exp.getRules().get(0)));
+//		ProductionO s = new ProductionO(SymbolEnum.S);
+//		ProductionO stmt = new ProductionO(SymbolEnum.STMT);
+//		ProductionO assg = new ProductionO(SymbolEnum.ASSG);
+//		ProductionO int_ = new ProductionO(SymbolEnum.INT_KEYWORD_TOKEN);
+//		ProductionO exp = new ProductionO(SymbolEnum.EXP);
+//		ProductionO digit = new ProductionO(SymbolEnum.INTEGER_LITERAL_TOKEN);
+//		ProductionO ident = new ProductionO(SymbolEnum.IDENTIFIER_TOKEN);
+//		ProductionO add = new ProductionO(SymbolEnum.ADDITION_OPERATOR_TOKEN);	
+//		ProductionO sub = new ProductionO(SymbolEnum.SUBTRACTION_OPERATOR_TOKEN);
+//		ProductionO mul = new ProductionO(SymbolEnum.MULTIPLICATION_OPERATOR_TOKEN);
+//		ProductionO div = new ProductionO(SymbolEnum.DIVISION_OPERATOR_TOKEN);
+//		s.addRule(new RuleO(stack -> { return null; }, stmt));
+//		stmt.addRule(new RuleO(stack -> { return null; }, assg));
+//		stmt.addRule(new RuleO(stack -> { return null; }, exp));
+//		assg.addRule(new RuleO(stack -> { return null; }, int_, ident, exp));
+//		exp.addRule(new RuleO(stack -> { return null; }, add, exp, exp));
+//		exp.addRule(new RuleO(stack -> { return null; }, sub, exp, exp));
+//		exp.addRule(new RuleO(stack -> { return null; }, mul, exp, exp));
+//		exp.addRule(new RuleO(stack -> { return null; }, div, exp, exp));
+//		exp.addRule(new RuleO(stack -> { return null; }, digit));
+//		exp.addRule(new RuleO(stack -> { return null; }, ident));
 //		
-//		HashMap<HashSet<RuleScenario>, Integer> ruleScenariosStates = new HashMap<>();
-//		ruleScenariosStates.put(ruleScenariosStatesKey, 0);
+////		ParserData parserData = new ParserData(SymbolEnum.class, s);
+////		System.out.println(parserData.getRuleTable());
 //		
-//		HashSet<RuleScenario> ruleScenariosStatesKeyClone = new HashSet<>();
-//		for (RuleScenario ruleScenario : ruleScenariosStatesKey) {
-//			ruleScenariosStatesKeyClone.add(ruleScenario.clone());
-//		}
+////		HashSet<RuleScenario> ruleScenariosStatesKey = new HashSet<>();
+////		ruleScenariosStatesKey.add(new RuleScenario(exp.getRules().get(0)));
+////		
+////		HashMap<HashSet<RuleScenario>, Integer> ruleScenariosStates = new HashMap<>();
+////		ruleScenariosStates.put(ruleScenariosStatesKey, 0);
+////		
+////		HashSet<RuleScenario> ruleScenariosStatesKeyClone = new HashSet<>();
+////		for (RuleScenario ruleScenario : ruleScenariosStatesKey) {
+////			ruleScenariosStatesKeyClone.add(ruleScenario.clone());
+////		}
+////		
+////		System.out.println(ruleScenariosStates.containsKey(ruleScenariosStatesKeyClone));
 //		
-//		System.out.println(ruleScenariosStates.containsKey(ruleScenariosStatesKeyClone));
-		
-		ParserData parserData = new ScenarioWriter().getParserData(s, SymbolEnum.class);
-		
-		System.out.println(parserData.getRuleTableString());
-		System.out.println(parserData.getSyntaticsTableString());
-		System.exit(0);
-		
-//		ParserData parserData = new ScenarioWriter().getParserData(expressionNodeProduction, SymbolEnum.class);
+//		ParserData parserData = new ScenarioWriter().getParserData(s, SymbolEnum.class);
+//		
+//		System.out.println(parserData.getRuleTableString());
+//		System.out.println(parserData.getSyntaticsTableString());
+//		System.exit(0);
+//		
+////		ParserData parserData = new ScenarioWriter().getParserData(expressionNodeProduction, SymbolEnum.class);
 		
 		
 //		Production booleanLiteralTokenProduction = new Production(SymbolEnum.BOOLEAN_LITERAL_TOKEN);

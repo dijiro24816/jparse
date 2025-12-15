@@ -1,131 +1,122 @@
 package myprototype.jparse;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-
-import myprototype.jparse.lr1.Parser;
-import myprototype.jparse.symbol.ProductionO;
-import myprototype.jparse.symbol.RuleO;
-import myprototype.jparse.symbol.SymbolEnum;
-import myprototype.jparse.symbol.terminal.Lexer;
-
 /**
  * Hello world!
  */
 
 public class App {
 	public static void main(String[] args) {
-		Grammar grammar = new Grammar(
-				new Rule(SymbolEnum.S, stack -> {
-					return null;
-				}, SymbolEnum.STMT),
-				new Rule(SymbolEnum.STMT, stack -> {
-					return null;
-				}, SymbolEnum.ASSG),
-				new Rule(SymbolEnum.STMT, stack -> {
-					return null;
-				}, SymbolEnum.EXP),
-				new Rule(SymbolEnum.ASSG, stack -> {
-					return null;
-				}, "int", SymbolEnum.IDENTIFIER_TOKEN, SymbolEnum.EXP),
-				new Rule(SymbolEnum.EXP, stack -> {
-					return null;
-				}, "+", SymbolEnum.EXP, SymbolEnum.EXP),
-				new Rule(SymbolEnum.EXP, stack -> {
-					return null;
-				}, "-", SymbolEnum.EXP, SymbolEnum.EXP),
-				new Rule(SymbolEnum.EXP, stack -> {
-					return null;
-				}, "*", SymbolEnum.EXP, SymbolEnum.EXP),
-				new Rule(SymbolEnum.EXP, stack -> {
-					return null;
-				}, "/", SymbolEnum.EXP, SymbolEnum.EXP));
+//		Grammar grammar = new Grammar(SymbolEnum.class, MyNonterm.class,
+//				new Rule("S", stack -> {
+//					return null;
+//				}, "Stmt"),
+//				new Rule("Stmt", stack -> {
+//					return null;
+//				}, "Exp"),
+//				new Rule("Assg", stack -> {
+//					return null;
+//				}, "int", "IDENTIFIER_TOKEN", "Exp"),
+//				new Rule("Exp", stack -> {
+//					return null;
+//				}, "+", "Exp", "Exp"),
+//				new Rule("Exp", stack -> {
+//					return null;
+//				}, "-", "Exp", "Exp"),
+//				new Rule("Exp", stack -> {
+//					return null;
+//				}, "*", "Exp", "Exp"),
+//				new Rule("Exp", stack -> {
+//					return null;
+//				}, "/", "Exp", "Exp"));
+//
+//		if (grammar.isInvalid()) {
+//			throw new RuntimeException("Invalid Grammar Rules");
+//		}
 
-		ProductionO s = new ProductionO(SymbolEnum.S);
-		ProductionO stmt = new ProductionO(SymbolEnum.STMT);
-		ProductionO assg = new ProductionO(SymbolEnum.ASSG);
-		ProductionO int_ = new ProductionO(SymbolEnum.INT_KEYWORD_TOKEN);
-		ProductionO exp = new ProductionO(SymbolEnum.EXP);
-		ProductionO digit = new ProductionO(SymbolEnum.INTEGER_LITERAL_TOKEN);
-		ProductionO ident = new ProductionO(SymbolEnum.IDENTIFIER_TOKEN);
-		ProductionO add = new ProductionO(SymbolEnum.ADDITION_OPERATOR_TOKEN);
-		ProductionO sub = new ProductionO(SymbolEnum.SUBTRACTION_OPERATOR_TOKEN);
-		ProductionO mul = new ProductionO(SymbolEnum.MULTIPLICATION_OPERATOR_TOKEN);
-		ProductionO div = new ProductionO(SymbolEnum.DIVISION_OPERATOR_TOKEN);
-
-		// S    -> Stmt
-		s.addRule(new RuleO(stack -> {
-			return null;
-		}, stmt));
-
-		// Stmt -> Assg
-		stmt.addRule(new RuleO(stack -> {
-			return null;
-		}, assg));
-
-		// Stmt -> Exp
-		stmt.addRule(new RuleO(stack -> {
-			return null;
-		}, exp));
-
-		// Assg -> int IDENT Exp
-		assg.addRule(new RuleO(stack -> {
-			return null;
-		}, int_, ident, exp));
-
-		// Exp  -> + Exp Exp
-		exp.addRule(new RuleO(stack -> {
-			return null;
-		}, add, exp, exp));
-
-		// Exp  -> - Exp Exp
-		exp.addRule(new RuleO(stack -> {
-			return null;
-		}, sub, exp, exp));
-
-		// Exp  -> * Exp Exp
-		exp.addRule(new RuleO(stack -> {
-			return null;
-		}, mul, exp, exp));
-
-		// Exp  -> / Exp Exp
-		exp.addRule(new RuleO(stack -> {
-			return null;
-		}, div, exp, exp));
-
-		// Exp  -> DIGIT
-		exp.addRule(new RuleO(stack -> {
-			return null;
-		}, digit));
-
-		// Exp  -> IDENT
-		exp.addRule(new RuleO(stack -> {
-			return null;
-		}, ident));
-
-		ParserData parserData = new ScenarioWriter().getParserData(s, SymbolEnum.class);
-
-		//		System.out.println(parserData.getRuleTableString());
-		//		System.out.println(parserData.getSyntaticsTableString());
-		//		System.exit(0);
-
-		//		String src = "int v + + 3.14159265359 0x2p-2 ";
-		String src = "int v + 1 1";
-		//		String src = "+ \\u0031 1";
-		//		int v = \u0031;
-		//		\u0069\u006E\u0074\u0020\u0076\u0020\u003D\u0020\u0031\u003b
-		//		System.out.println(v);
-
-		try {
-			Parser parser = new Parser(new Lexer(), parserData);
-			InputStream inStrm = new ByteArrayInputStream(src.getBytes());
-			parser.parse(inStrm);
-		} catch (IOException e) {
-			System.out.println(e.getMessage());
-			System.exit(0);
-		}
-		System.out.println("MSG: Finished!");
+//		ProductionO s = new ProductionO(SymbolEnum.S);
+//		ProductionO stmt = new ProductionO(SymbolEnum.STMT);
+//		ProductionO assg = new ProductionO(SymbolEnum.ASSG);
+//		ProductionO int_ = new ProductionO(SymbolEnum.INT_KEYWORD_TOKEN);
+//		ProductionO exp = new ProductionO(SymbolEnum.EXP);
+//		ProductionO digit = new ProductionO(SymbolEnum.INTEGER_LITERAL_TOKEN);
+//		ProductionO ident = new ProductionO(SymbolEnum.IDENTIFIER_TOKEN);
+//		ProductionO add = new ProductionO(SymbolEnum.ADDITION_OPERATOR_TOKEN);
+//		ProductionO sub = new ProductionO(SymbolEnum.SUBTRACTION_OPERATOR_TOKEN);
+//		ProductionO mul = new ProductionO(SymbolEnum.MULTIPLICATION_OPERATOR_TOKEN);
+//		ProductionO div = new ProductionO(SymbolEnum.DIVISION_OPERATOR_TOKEN);
+//
+//		// S    -> Stmt
+//		s.addRule(new RuleO(stack -> {
+//			return null;
+//		}, stmt));
+//
+//		// Stmt -> Assg
+//		stmt.addRule(new RuleO(stack -> {
+//			return null;
+//		}, assg));
+//
+//		// Stmt -> Exp
+//		stmt.addRule(new RuleO(stack -> {
+//			return null;
+//		}, exp));
+//
+//		// Assg -> int IDENT Exp
+//		assg.addRule(new RuleO(stack -> {
+//			return null;
+//		}, int_, ident, exp));
+//
+//		// Exp  -> + Exp Exp
+//		exp.addRule(new RuleO(stack -> {
+//			return null;
+//		}, add, exp, exp));
+//
+//		// Exp  -> - Exp Exp
+//		exp.addRule(new RuleO(stack -> {
+//			return null;
+//		}, sub, exp, exp));
+//
+//		// Exp  -> * Exp Exp
+//		exp.addRule(new RuleO(stack -> {
+//			return null;
+//		}, mul, exp, exp));
+//
+//		// Exp  -> / Exp Exp
+//		exp.addRule(new RuleO(stack -> {
+//			return null;
+//		}, div, exp, exp));
+//
+//		// Exp  -> DIGIT
+//		exp.addRule(new RuleO(stack -> {
+//			return null;
+//		}, digit));
+//
+//		// Exp  -> IDENT
+//		exp.addRule(new RuleO(stack -> {
+//			return null;
+//		}, ident));
+//
+//		ParserData parserData = new ScenarioWriter().getParserData(s, SymbolEnum.class);
+//
+//		//		System.out.println(parserData.getRuleTableString());
+//		//		System.out.println(parserData.getSyntaticsTableString());
+//		//		System.exit(0);
+//
+//		//		String src = "int v + + 3.14159265359 0x2p-2 ";
+//		String src = "int v + 1 1";
+//		//		String src = "+ \\u0031 1";
+//		//		int v = \u0031;
+//		//		\u0069\u006E\u0074\u0020\u0076\u0020\u003D\u0020\u0031\u003b
+//		//		System.out.println(v);
+//
+//		try {
+//			Parser parser = new Parser(new Lexer(), parserData);
+//			InputStream inStrm = new ByteArrayInputStream(src.getBytes());
+//			parser.parse(inStrm);
+//		} catch (IOException e) {
+//			System.out.println(e.getMessage());
+//			System.exit(0);
+//		}
+//		System.out.println("MSG: Finished!");
 	}
 
 	public static void maina(String[] args) throws CloneNotSupportedException {
@@ -294,84 +285,23 @@ public class App {
 		//			System.exit(0);
 		//		}
 
-		ProductionO s = new ProductionO(SymbolEnum.S);
-		ProductionO stmt = new ProductionO(SymbolEnum.STMT);
-		ProductionO assg = new ProductionO(SymbolEnum.ASSG);
-		ProductionO int_ = new ProductionO(SymbolEnum.INT_KEYWORD_TOKEN);
-		ProductionO exp = new ProductionO(SymbolEnum.EXP);
-		ProductionO digit = new ProductionO(SymbolEnum.INTEGER_LITERAL_TOKEN);
-		ProductionO ident = new ProductionO(SymbolEnum.IDENTIFIER_TOKEN);
-		ProductionO add = new ProductionO(SymbolEnum.ADDITION_OPERATOR_TOKEN);
-		ProductionO sub = new ProductionO(SymbolEnum.SUBTRACTION_OPERATOR_TOKEN);
-		ProductionO mul = new ProductionO(SymbolEnum.MULTIPLICATION_OPERATOR_TOKEN);
-		ProductionO div = new ProductionO(SymbolEnum.DIVISION_OPERATOR_TOKEN);
 
-		// S    -> Stmt
-		s.addRule(new RuleO(stack -> {
-			return null;
-		}, stmt));
-
-		// Stmt -> Assg
-		stmt.addRule(new RuleO(stack -> {
-			return null;
-		}, assg));
-
-		// Stmt -> Exp
-		stmt.addRule(new RuleO(stack -> {
-			return null;
-		}, exp));
-
-		// Assg -> int IDENT Exp
-		assg.addRule(new RuleO(stack -> {
-			return null;
-		}, int_, ident, exp));
-
-		// Exp  -> + Exp Exp
-		exp.addRule(new RuleO(stack -> {
-			return null;
-		}, add, exp, exp));
-
-		// Exp  -> - Exp Exp
-		exp.addRule(new RuleO(stack -> {
-			return null;
-		}, sub, exp, exp));
-
-		// Exp  -> * Exp Exp
-		exp.addRule(new RuleO(stack -> {
-			return null;
-		}, mul, exp, exp));
-
-		// Exp  -> / Exp Exp
-		exp.addRule(new RuleO(stack -> {
-			return null;
-		}, div, exp, exp));
-
-		// Exp  -> DIGIT
-		exp.addRule(new RuleO(stack -> {
-			return null;
-		}, digit));
-
-		// Exp  -> IDENT
-		exp.addRule(new RuleO(stack -> {
-			return null;
-		}, ident));
-
-		ParserData parserData = new ScenarioWriter().getParserData(s, SymbolEnum.class);
-
-		System.out.println(parserData.getRuleTableString());
-		System.out.println(parserData.getSyntaticsTableString());
-		System.exit(0);
-
-		String src = "+ jkalsdfj klasdfj klasdfj kl 1 2";
-
-		try {
-			Parser parser = new Parser(new Lexer(), parserData);
-			InputStream inStrm = new ByteArrayInputStream(src.getBytes());
-			parser.parse(inStrm);
-			//			System.out.println("MSG: Finished!");
-		} catch (IOException e) {
-			System.out.println(e.getMessage());
-			System.exit(0);
-		}
+//		ParserData parserData = new ScenarioWriter().getParserData(s, SymbolEnum.class);
+//
+//		System.out.println(parserData.getRuleTableString());
+//		System.out.println(parserData.getSyntaticsTableString());
+//		System.exit(0);
+//
+//		String src = "+ jkalsdfj klasdfj klasdfj kl 1 2";
+//
+//		try {
+//			Parser parser = new Parser(new Lexer(), parserData);
+//			InputStream inStrm = new ByteArrayInputStream(src.getBytes());
+//			parser.parse(inStrm);
+//			//			System.out.println("MSG: Finished!");
+//		} catch (IOException e) {
+//			System.out.println(e.getMessage());
+//			System.exit(0);
+//		}
 	}
 }
