@@ -2,28 +2,27 @@ package myprototype.jparse;
 
 import java.util.Arrays;
 import java.util.List;
-import java.util.function.Function;
 
 public class Rule {
 	private String productSymbol;
-	private Function<StateSymbolStack, Object> compounder;
+//	private Function<StateSymbolStack, Object> compounder;
 	private List<String> symbols;
 	
 	public String getProductSymbol() {
 		return productSymbol;
 	}
 
-	public Function<StateSymbolStack, Object> getCompounder() {
-		return compounder;
-	}
+//	public Function<StateSymbolStack, Object> getCompounder() {
+//		return compounder;
+//	}
 
 	public List<String> getSymbols() {
 		return symbols;
 	}
 
-	public Rule(String productSymbol, Function<StateSymbolStack, Object> compounder, String...symbols) {
+	public Rule(String productSymbol, String...symbols) {
 		this.productSymbol = productSymbol;
-		this.compounder = compounder;
+//		this.compounder = compounder;
 		this.symbols = Arrays.asList(symbols);
 	}
 
@@ -40,7 +39,7 @@ public class Rule {
 		if (obj == this)
 			return true;
 		
-		if (obj.getClass().getName() != this.getClass().getName())
+		if (obj.getClass() != this.getClass())
 			return false;
 		
 		Rule otherRule = (Rule)obj;
@@ -54,7 +53,7 @@ public class Rule {
 	}
 
 	public static void main(String[] args) {
-		Rule rule = new Rule("Stmt", stack -> { return null; }, "+", "Exp", "Exp");
+		Rule rule = new Rule("Stmt", "+", "Exp", "Exp");
 		System.out.println(rule);
 	}
 }

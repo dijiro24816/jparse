@@ -5,7 +5,6 @@ import java.util.List;
 import java.util.Objects;
 
 public class Item {
-	private Grammar grammar;
 	private Rule rule;
 	private int dot;
 
@@ -17,32 +16,31 @@ public class Item {
 		return dot;
 	}
 
-	public Item(Grammar grammar, Rule rule, int dot) {
-		this.grammar = grammar;
+	public Item(Rule rule, int dot) {
 		this.rule = rule;
 		this.dot = dot;
 	}
 
-	public Item(Grammar grammar, Rule rule) {
-		this(grammar, rule, 0);
+	public Item(Rule rule) {
+		this(rule, 0);
 	}
 
 	public boolean isTakingTheClosure() {
-		return this.dot == getRule().getSymbols().size();
+		return this.dot == this.rule.getSymbols().size();
 	}
 
 	public String getDotSymbol() {
 		return this.rule.getSymbols().get(this.dot);
 	}
+	
+	public boolean isDotNonterminal(Grammar grammar) {
+		return grammar.isNonterminalSymbol(getDotSymbol());
+	}
 
-	public boolean isDotNonterminal() {
-		return this.grammar.isNonterminalSymbol(getDotSymbol());
+	public HashSet<Item> generateDotItemsOf(Grammar grammar) {
+		return grammar.getRulesOf(getDotSymbol()).stream().map(e -> new Item(e)).toList();
 	}
-	
-	public Collection<Item> generateDotSymbolItems() {
-		return Item.generate(this.grammar, getDotSymbol());
-	}
-	
+
 	public void increaseDot() {
 		this.dot++;
 	}
@@ -51,7 +49,7 @@ public class Item {
 	public int hashCode() {
 		return Objects.hash(this.dot) + this.rule.hashCode();
 	}
-
+	
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -63,19 +61,20 @@ public class Item {
 		if (getClass() != obj.getClass())
 			return false;
 
-		RuleScenario other = (RuleScenario) obj;
+		Item other = (Item) obj;
 		return this.dot == other.getDot() && this.rule.equals(other.getRule());
 	}
 
+
 	@Override
 	protected Item clone() {
-		return new Item(this.grammar, this.rule, this.dot);
+		return new Item(this.rule, this.dot);
 	}
 
 	@Override
 	public String toString() {
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.append("Item [");
+		stringBuilder.append("DottedRule [");
 
 		if (this.dot == 0)
 			stringBuilder.append(". ");
@@ -100,9 +99,5 @@ public class Item {
 
 		stringBuilder.append("]");
 		return stringBuilder.toString();
-	}
-	
-	public static Collection<Item> generate(Grammar grammar, String nonterminalSymbol) {
-		return grammar.getRulesOf(nonterminalSymbol).stream().map(e -> new Item(grammar, e)).toList();
 	}
 }
