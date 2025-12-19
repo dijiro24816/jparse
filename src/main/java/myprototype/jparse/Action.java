@@ -16,4 +16,9 @@ public class Action {
 		this.kind = kind;
 		this.argumentValue = argumentValue;
 	}
+
+	@Override
+	public String toString() {
+		return "[" + getClass().getSimpleName() + " " + this.kind + "(" + this.argumentValue + ")]";
+	}
 }

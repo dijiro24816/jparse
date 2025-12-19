@@ -1,12 +1,15 @@
 package myprototype.jparse;
 
-import java.util.Collection;
 import java.util.List;
 import java.util.Objects;
 
 public class Item {
 	private Rule rule;
 	private int dot;
+	
+	public String getProductSymbol() {
+		return rule.getProductSymbol();
+	}
 
 	public Rule getRule() {
 		return rule;
@@ -37,10 +40,18 @@ public class Item {
 		return grammar.isNonterminalSymbol(getDotSymbol());
 	}
 
-	public HashSet<Item> generateDotItemsOf(Grammar grammar) {
-		return grammar.getRulesOf(getDotSymbol()).stream().map(e -> new Item(e)).toList();
+	public List<Item> generateDotItemsOf(Grammar grammar) {
+		return Item.generateItemsOf(grammar, getDotSymbol());
+	}
+	
+	public static List<Item> generateItemsOf(Grammar grammar) {
+		return Item.generateItemsOf(grammar, grammar.getStartSymbol());
 	}
 
+	public static List<Item> generateItemsOf(Grammar grammar, String symbol) {
+		return grammar.getRulesOf(symbol).stream().map(e -> new Item(e)).toList();
+	}
+	
 	public void increaseDot() {
 		this.dot++;
 	}
