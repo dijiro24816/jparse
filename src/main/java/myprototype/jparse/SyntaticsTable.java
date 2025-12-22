@@ -29,14 +29,27 @@ public class SyntaticsTable {
 
 		return newState;
 	}
+	
+	private int getNormalOrTerminalSymbolIndexOf(Grammar grammar, String symbol) {
+		return grammar.isTerminalSymbol(symbol) ? grammar.getTerminalSymbolIndexOf(symbol)
+				: grammar.getNormalSymbolIndexOf(symbol);
+	}
 
-	public void setAction(int row, int column, Action action) {
+	private int getNonterminalSymbolIndexOf(Grammar grammar, String symbol) {
+		return grammar.getNonterminalSymbolIndexOf(symbol);
+	}
+
+	private void setAction(int row, int column, Action action) {
 		this.actionsList.get(row)[column] = action;
 	}
 
-	public void setAction(int row, Action value) {
+	public void setAction(int row, Action action) {
 		for (int column = 0; column < this.columnLength; column++)
-			setAction(row, column, value);
+			setAction(row, column, action);
+	}
+
+	private void setGoto(int row, int column, Action action) {
+		this.gotosList.get(row)[column] = action;
 	}
 
 	private void setupActionData(Grammar grammar) {
@@ -128,6 +141,15 @@ public class SyntaticsTable {
 					item.increaseDot();
 
 				// Store next state for the symbol from the current state
+
+				if (grammar.isNonterminalSymbol(begSymbol)) {
+					setGoto(currentState, getNonterminalSymbolIndexOf(grammar, begSymbol),
+							takeAction(grammar, partOfItems, itemStates));
+				} else if (grammar.isTerminalSymbol(begSymbol)) {
+
+				} else {
+
+				}
 				setAction(currentState, grammar.getNonterminalSymbolIndexOf(begSymbol),
 						takeAction(grammar, partOfItems, itemStates));
 
@@ -145,14 +167,13 @@ public class SyntaticsTable {
 	@Override
 	public String toString() {
 		StringBuilder out = new StringBuilder();
-		
+
 		for (Action[] actions : this.actionsList) {
 			out.append(Arrays.toString(actions));
 			out.append(System.lineSeparator());
 		}
-		
+
 		return out.toString();
 	}
-	
-	
+
 }

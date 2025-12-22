@@ -115,7 +115,7 @@ public class Grammar {
 	}
 
 	public boolean isNonterminalSymbol(String symbol) {
-		return this.ruleIndices.containsKey(symbol);
+		return this.nonterminalSymbolIndices.containsKey(symbol);
 	}
 
 	public Set<Rule> getRulesOf(String nonterminalSymbol) {

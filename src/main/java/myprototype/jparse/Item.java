@@ -85,7 +85,7 @@ public class Item {
 	@Override
 	public String toString() {
 		StringBuilder stringBuilder = new StringBuilder();
-		stringBuilder.append("DottedRule [");
+		stringBuilder.append("Item [" + this.getProductSymbol() + " -> ");
 
 		if (this.dot == 0)
 			stringBuilder.append(". ");
