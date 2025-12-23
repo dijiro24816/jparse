@@ -21,4 +21,32 @@ public class Action {
 	public String toString() {
 		return "[" + getClass().getSimpleName() + " " + this.kind + "(" + this.argumentValue + ")]";
 	}
+	
+	public String toShortString() {
+		StringBuilder stringBuilder = new StringBuilder();
+		
+		switch (kind) {
+		case Shift:
+			stringBuilder.append('s');
+			stringBuilder.append(argumentValue);
+			break;
+		
+		case Reduce:
+			stringBuilder.append('r');
+			stringBuilder.append(argumentValue);
+			break;
+			
+		case Accept:
+			stringBuilder.append('a');
+			break;
+			
+		case Goto:
+			stringBuilder.append('g');
+			stringBuilder.append(argumentValue);
+			break;
+		}
+		
+		
+		return stringBuilder.toString();
+	}
 }

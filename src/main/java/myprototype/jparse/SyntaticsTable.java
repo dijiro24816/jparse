@@ -10,13 +10,15 @@ import java.util.HashSet;
 import java.util.List;
 
 public class SyntaticsTable {
-	private int columnLength;
+	private int actionsColumnLength;
+	private int gotosColumnLength;
 
 	private List<Action[]> actionsList;
 	private List<Action[]> gotosList;
 
 	public SyntaticsTable(Grammar grammar) {
-		this.columnLength = grammar.getNormalAndTerminalCount();
+		this.actionsColumnLength = grammar.getNormalAndTerminalSymbolCount();
+		this.gotosColumnLength = grammar.getNonterminalSymbolCount();
 		setupActionData(grammar);
 	}
 
@@ -24,19 +26,13 @@ public class SyntaticsTable {
 	public int getNewState() {
 		int newState = this.actionsList.size();
 
-		Action[] actions = new Action[this.columnLength];
+		Action[] actions = new Action[this.actionsColumnLength];
 		this.actionsList.add(actions);
+		
+		Action[] gotos = new Action[this.gotosColumnLength];
+		this.gotosList.add(gotos);
 
 		return newState;
-	}
-	
-	private int getNormalOrTerminalSymbolIndexOf(Grammar grammar, String symbol) {
-		return grammar.isTerminalSymbol(symbol) ? grammar.getTerminalSymbolIndexOf(symbol)
-				: grammar.getNormalSymbolIndexOf(symbol);
-	}
-
-	private int getNonterminalSymbolIndexOf(Grammar grammar, String symbol) {
-		return grammar.getNonterminalSymbolIndexOf(symbol);
 	}
 
 	private void setAction(int row, int column, Action action) {
@@ -44,7 +40,7 @@ public class SyntaticsTable {
 	}
 
 	public void setAction(int row, Action action) {
-		for (int column = 0; column < this.columnLength; column++)
+		for (int column = 0; column < this.actionsColumnLength; column++)
 			setAction(row, column, action);
 	}
 
@@ -54,7 +50,8 @@ public class SyntaticsTable {
 
 	private void setupActionData(Grammar grammar) {
 		this.actionsList = new ArrayList<Action[]>();
-
+		this.gotosList = new ArrayList<Action[]>();
+		
 		HashSet<Item> itemStatesKey = new HashSet<>(Item.generateItemsOf(grammar));
 
 		takeAction(grammar, itemStatesKey, new HashMap<HashSet<Item>, Action>());
@@ -140,18 +137,15 @@ public class SyntaticsTable {
 				for (Item item : partOfItems)
 					item.increaseDot();
 
-				// Store next state for the symbol from the current state
+				// Store the next state for the symbol from the current state
 
 				if (grammar.isNonterminalSymbol(begSymbol)) {
-					setGoto(currentState, getNonterminalSymbolIndexOf(grammar, begSymbol),
+					setGoto(currentState, grammar.getNonterminalSymbolIndexOf(begSymbol),
 							takeAction(grammar, partOfItems, itemStates));
-				} else if (grammar.isTerminalSymbol(begSymbol)) {
-
-				} else {
-
+				} else if (grammar.isNormalOrTerminalSymbol(begSymbol)) {
+					setAction(currentState, grammar.getNormalOrTerminalSymbolIndexOf(begSymbol),
+							takeAction(grammar, partOfItems, itemStates));
 				}
-				setAction(currentState, grammar.getNonterminalSymbolIndexOf(begSymbol),
-						takeAction(grammar, partOfItems, itemStates));
 
 				// postfix processing
 				if (endIndex == items.size())
@@ -174,6 +168,59 @@ public class SyntaticsTable {
 		}
 
 		return out.toString();
+	}
+	
+	
+	public String getActionsCSV(Grammar grammar) {
+		StringBuilder stringBuilder = new StringBuilder();
+		
+		stringBuilder.append(grammar.getNormalOrTerminalSymbolsCSV());
+		stringBuilder.append(',');
+		stringBuilder.append(System.lineSeparator());
+		
+		for (Action[] actions : this.actionsList) {
+			for (int i = 0; i < actions.length; i++) {
+				if (actions[i] == null) {
+					stringBuilder.append("\"\",");
+					continue;
+				}
+					
+				
+				stringBuilder.append('"');
+				stringBuilder.append(actions[i].toShortString());
+				stringBuilder.append('"');
+				stringBuilder.append(',');
+			}
+			stringBuilder.append(System.lineSeparator());
+		}
+		
+		return stringBuilder.toString();
+	}
+	
+	public String getGotosCSV(Grammar grammar) {
+		StringBuilder stringBuilder = new StringBuilder();
+		
+		stringBuilder.append(grammar.getNonterminalSymbolsCSV());
+		stringBuilder.append(',');
+		stringBuilder.append(System.lineSeparator());
+		
+		for (Action[] gotos : this.gotosList) {
+			for (int i = 0; i < gotos.length; i++) {
+				if (gotos[i] == null) {
+					stringBuilder.append("\"\",");
+					continue;
+				}
+				stringBuilder.append('"');
+				stringBuilder.append(gotos[i].toShortString());
+				stringBuilder.append('"');
+				stringBuilder.append(',');
+			}
+			stringBuilder.append(System.lineSeparator());
+		}
+		
+		
+		
+		return stringBuilder.toString();
 	}
 
 }
