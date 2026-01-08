@@ -44,7 +44,7 @@ public class Item {
 		return Item.generateItemsOf(grammar, getDotSymbol());
 	}
 	
-	public static List<Item> generateItemsOf(Grammar grammar) {
+	public static List<Item> generateStartItemsOf(Grammar grammar) {
 		return Item.generateItemsOf(grammar, grammar.getStartSymbol());
 	}
 

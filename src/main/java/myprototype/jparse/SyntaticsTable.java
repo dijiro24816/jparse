@@ -10,51 +10,51 @@ import java.util.HashSet;
 import java.util.List;
 
 public class SyntaticsTable {
-	private int actionsColumnLength;
-	private int gotosColumnLength;
+	private int terminalSectionColumnLength;
+	private int nonterminalSectionColumnLength;
 
-	private List<Action[]> actionsList;
-	private List<Action[]> gotosList;
+	private List<Action[]> terminalSection;
+	private List<Action[]> nonterminalSection;
 
 	public SyntaticsTable(Grammar grammar) {
-		this.actionsColumnLength = grammar.getNormalAndTerminalSymbolCount();
-		this.gotosColumnLength = grammar.getNonterminalSymbolCount();
-		setupActionData(grammar);
+		this.terminalSectionColumnLength = grammar.getTerminalSymbolCount();
+		this.nonterminalSectionColumnLength = grammar.getNonterminalSymbolCount();
+		setupAllSection(grammar);
 	}
 
 	// Insert new row and return the index number as the state number
 	public int getNewState() {
-		int newState = this.actionsList.size();
+		int newState = this.terminalSection.size();
 
-		Action[] actions = new Action[this.actionsColumnLength];
-		this.actionsList.add(actions);
+		Action[] terminalSection = new Action[this.terminalSectionColumnLength];
+		this.terminalSection.add(terminalSection);
 		
-		Action[] gotos = new Action[this.gotosColumnLength];
-		this.gotosList.add(gotos);
+		Action[] nonterminalSection = new Action[this.nonterminalSectionColumnLength];
+		this.nonterminalSection.add(nonterminalSection);
 
 		return newState;
 	}
 
-	private void setAction(int row, int column, Action action) {
-		this.actionsList.get(row)[column] = action;
+	private void setTerminalSection(int row, int column, Action action) {
+		this.terminalSection.get(row)[column] = action;
 	}
 
-	public void setAction(int row, Action action) {
-		for (int column = 0; column < this.actionsColumnLength; column++)
-			setAction(row, column, action);
+	public void setTerminalSection(int row, Action action) {
+		for (int column = 0; column < this.terminalSectionColumnLength; column++)
+			setTerminalSection(row, column, action);
 	}
 
-	private void setGoto(int row, int column, Action action) {
-		this.gotosList.get(row)[column] = action;
+	private void setNonterminalSection(int row, int column, Action action) {
+		this.nonterminalSection.get(row)[column] = action;
 	}
 
-	private void setupActionData(Grammar grammar) {
-		this.actionsList = new ArrayList<Action[]>();
-		this.gotosList = new ArrayList<Action[]>();
+	private void setupAllSection(Grammar grammar) {
+		this.terminalSection = new ArrayList<Action[]>();
+		this.nonterminalSection = new ArrayList<Action[]>();
 		
-		HashSet<Item> itemStatesKey = new HashSet<>(Item.generateItemsOf(grammar));
+		HashSet<Item> itemStatesKey = new HashSet<>(Item.generateStartItemsOf(grammar));
 
-		takeAction(grammar, itemStatesKey, new HashMap<HashSet<Item>, Action>());
+		createState(grammar, itemStatesKey, new HashMap<HashSet<Item>, Integer>());
 	}
 
 	private List<Item> excludeClosure(Collection<Item> items) {
@@ -81,8 +81,8 @@ public class SyntaticsTable {
 
 		return items;
 	}
-
-	private Action takeAction(Grammar grammar, HashSet<Item> orgItemKey, HashMap<HashSet<Item>, Action> itemStates) {
+	
+	private int createState(Grammar grammar, HashSet<Item> orgItemKey, HashMap<HashSet<Item>, Integer> itemStates) {
 		// return states if already existing
 		// FIXME: This is very bad implementation
 		for (HashSet<Item> itemKey : itemStates.keySet()) {
@@ -95,14 +95,13 @@ public class SyntaticsTable {
 			return itemStates.get(orgItemKey);
 
 		int currentState = getNewState();
-		Action enterAction = new Action(ActionKind.Shift, currentState);
 
 		// Make rule scenario set that has not moveable dot
 		HashSet<Item> itemKeyClone = new HashSet<>();
 		for (Item item : orgItemKey)
 			itemKeyClone.add(item.clone());
 
-		itemStates.put(itemKeyClone, enterAction);
+		itemStates.put(itemKeyClone, currentState);
 
 		// Taking the closure
 		List<Item> closures = orgItemKey.stream().filter(e -> e.isTakingTheClosure()).toList();
@@ -115,23 +114,23 @@ public class SyntaticsTable {
 			// Set reduce action as default
 			// The value is rule index with negative sign
 			// TODO: Use follow-set or lookahead-set
-			setAction(currentState, new Action(ActionKind.Reduce, grammar.getRuleIndexOf(closure.getRule())));
+			setTerminalSection(currentState, new Action(ActionKind.Reduce, grammar.getRuleIndexOf(closure.getRule())));
 		}
 
 		List<Item> items = expandItemsDot(grammar, excludeClosure(orgItemKey));
 		if (items.size() == 0)
-			return enterAction;
+			return currentState;
 
 		items.sort(Comparator.comparing(e -> ((Item) e).getDotSymbol()));
 		if (items.size() == 0)
-			return enterAction;
+			return currentState;
 
 		int begIndex = 0, endIndex = 0;
-		String begSymbol = items.get(begIndex).getDotSymbol();
+		String currentSymbol = items.get(begIndex).getDotSymbol();
 		for (;;) {
 			endIndex++;
 			if ((endIndex == items.size())
-					|| !begSymbol.equals(items.get(endIndex).getDotSymbol())) {
+					|| !currentSymbol.equals(items.get(endIndex).getDotSymbol())) {
 				HashSet<Item> partOfItems = new HashSet<>(items.subList(begIndex, endIndex));
 
 				for (Item item : partOfItems)
@@ -139,30 +138,29 @@ public class SyntaticsTable {
 
 				// Store the next state for the symbol from the current state
 
-				if (grammar.isNonterminalSymbol(begSymbol)) {
-					setGoto(currentState, grammar.getNonterminalSymbolIndexOf(begSymbol),
-							takeAction(grammar, partOfItems, itemStates));
-				} else if (grammar.isNormalOrTerminalSymbol(begSymbol)) {
-					setAction(currentState, grammar.getNormalOrTerminalSymbolIndexOf(begSymbol),
-							takeAction(grammar, partOfItems, itemStates));
-				}
+				if (grammar.isNonterminalSymbol(currentSymbol)) {
+					setNonterminalSection(currentState, grammar.getNonterminalSymbolIndexOf(currentSymbol),
+							new Action(ActionKind.Goto, createState(grammar, partOfItems, itemStates)));
+				} else if (grammar.isTerminalSymbol(currentSymbol)) {
+					setTerminalSection(currentState, grammar.getTerminalSymbolIndexOf(currentSymbol),
+							new Action(ActionKind.Shift, createState(grammar, partOfItems, itemStates)));			}
 
 				// postfix processing
 				if (endIndex == items.size())
 					break;
 				begIndex = endIndex;
-				begSymbol = items.get(begIndex).getDotSymbol();
+				currentSymbol = items.get(begIndex).getDotSymbol();
 			}
 		}
 
-		return enterAction;
+		return currentState;
 	}
 
 	@Override
 	public String toString() {
 		StringBuilder out = new StringBuilder();
 
-		for (Action[] actions : this.actionsList) {
+		for (Action[] actions : this.terminalSection) {
 			out.append(Arrays.toString(actions));
 			out.append(System.lineSeparator());
 		}
@@ -174,20 +172,24 @@ public class SyntaticsTable {
 	public String getActionsCSV(Grammar grammar) {
 		StringBuilder stringBuilder = new StringBuilder();
 		
-		stringBuilder.append(grammar.getNormalOrTerminalSymbolsCSV());
+		stringBuilder.append("\"\", ");
+		stringBuilder.append(grammar.getTerminalSymbolsCSV());
 		stringBuilder.append(',');
 		stringBuilder.append(System.lineSeparator());
 		
-		for (Action[] actions : this.actionsList) {
-			for (int i = 0; i < actions.length; i++) {
-				if (actions[i] == null) {
+		for (int i = 0; i < this.terminalSection.size(); i++) {
+			stringBuilder.append('"');
+			stringBuilder.append(i);
+			stringBuilder.append("\",");
+			for (int j = 0; j < this.terminalSectionColumnLength; j++) {
+				Action[] actions = this.terminalSection.get(i);
+				if (actions[j] == null) {
 					stringBuilder.append("\"\",");
 					continue;
 				}
-					
 				
 				stringBuilder.append('"');
-				stringBuilder.append(actions[i].toShortString());
+				stringBuilder.append(actions[j].toShortString());
 				stringBuilder.append('"');
 				stringBuilder.append(',');
 			}
@@ -200,25 +202,29 @@ public class SyntaticsTable {
 	public String getGotosCSV(Grammar grammar) {
 		StringBuilder stringBuilder = new StringBuilder();
 		
+		stringBuilder.append("\"\", ");
 		stringBuilder.append(grammar.getNonterminalSymbolsCSV());
 		stringBuilder.append(',');
 		stringBuilder.append(System.lineSeparator());
 		
-		for (Action[] gotos : this.gotosList) {
-			for (int i = 0; i < gotos.length; i++) {
-				if (gotos[i] == null) {
+		for (int i = 0; i < this.nonterminalSection.size(); i++) {
+			stringBuilder.append('"');
+			stringBuilder.append(i);
+			stringBuilder.append("\",");
+			
+			for (int j = 0; j < this.nonterminalSectionColumnLength; j++) {
+				Action[] gotos = this.nonterminalSection.get(i);
+				if (gotos[j] == null) {
 					stringBuilder.append("\"\",");
 					continue;
 				}
 				stringBuilder.append('"');
-				stringBuilder.append(gotos[i].toShortString());
+				stringBuilder.append(gotos[j].toShortString());
 				stringBuilder.append('"');
 				stringBuilder.append(',');
 			}
 			stringBuilder.append(System.lineSeparator());
 		}
-		
-		
 		
 		return stringBuilder.toString();
 	}
