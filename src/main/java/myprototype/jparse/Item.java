@@ -1,11 +1,13 @@
 package myprototype.jparse;
 
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 
 public class Item {
 	private Rule rule;
 	private int dot;
+	private HashSet<String> lookAheadSet;
 	
 	public String getProductSymbol() {
 		return rule.getProductSymbol();
@@ -19,13 +21,18 @@ public class Item {
 		return dot;
 	}
 
-	public Item(Rule rule, int dot) {
+	public Item(Rule rule, HashSet<String> lookAhead, int dot) {
 		this.rule = rule;
+		this.lookAheadSet = lookAhead;
 		this.dot = dot;
 	}
 
+	public Item(Rule rule, HashSet<String> lookAhead) {
+		this(rule, lookAhead, 0);
+	}
+	
 	public Item(Rule rule) {
-		this(rule, 0);
+		this(rule, new HashSet<String>());
 	}
 
 	public boolean isTakingTheClosure() {
@@ -40,16 +47,16 @@ public class Item {
 		return grammar.isNonterminalSymbol(getDotSymbol());
 	}
 
-	public List<Item> generateDotItemsOf(Grammar grammar) {
-		return Item.generateItemsOf(grammar, getDotSymbol());
+	public List<Item> generateDotItemsOf(Grammar grammar, HashSet<String> lookAheadSet) {
+		return Item.generateItemsOf(grammar, getDotSymbol(), lookAheadSet);
 	}
 	
-	public static List<Item> generateStartItemsOf(Grammar grammar) {
-		return Item.generateItemsOf(grammar, grammar.getStartSymbol());
+	public static List<Item> generateStartItemsOf(Grammar grammar, HashSet<String> lookAheadSet) {
+		return Item.generateItemsOf(grammar, grammar.getStartSymbol(), lookAheadSet);
 	}
 
-	public static List<Item> generateItemsOf(Grammar grammar, String symbol) {
-		return grammar.getRulesOf(symbol).stream().map(e -> new Item(e)).toList();
+	public static List<Item> generateItemsOf(Grammar grammar, String symbol, HashSet<String> lookAheadSet) {
+		return grammar.getRulesOf(symbol).stream().map(e -> new Item(e, lookAheadSet)).toList();
 	}
 	
 	public void increaseDot() {
@@ -79,7 +86,7 @@ public class Item {
 
 	@Override
 	protected Item clone() {
-		return new Item(this.rule, this.dot);
+		return new Item(this.rule, this.lookAheadSet, this.dot);
 	}
 
 	@Override

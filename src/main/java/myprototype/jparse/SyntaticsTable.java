@@ -28,7 +28,7 @@ public class SyntaticsTable {
 
 		Action[] terminalSection = new Action[this.terminalSectionColumnLength];
 		this.terminalSection.add(terminalSection);
-		
+
 		Action[] nonterminalSection = new Action[this.nonterminalSectionColumnLength];
 		this.nonterminalSection.add(nonterminalSection);
 
@@ -51,7 +51,7 @@ public class SyntaticsTable {
 	private void setupAllSection(Grammar grammar) {
 		this.terminalSection = new ArrayList<Action[]>();
 		this.nonterminalSection = new ArrayList<Action[]>();
-		
+
 		HashSet<Item> itemStatesKey = new HashSet<>(Item.generateStartItemsOf(grammar));
 
 		createState(grammar, itemStatesKey, new HashMap<HashSet<Item>, Integer>());
@@ -61,12 +61,9 @@ public class SyntaticsTable {
 		return items.stream().filter(e -> !e.isTakingTheClosure()).toList();
 	}
 
-	private List<Item> expandItemsDot(Grammar grammar, Collection<Item> orgItems) {
+	private List<Item> expandItemsDot(Grammar grammar, HashSet<String> lookAheadSet, ArrayDeque<Item> itemQueue) {
 		List<Item> items = new ArrayList<>();
 		HashSet<String> expandedNonterminals = new HashSet<>();
-		ArrayDeque<Item> itemQueue = new ArrayDeque<>();
-
-		orgItems.stream().forEach(e -> itemQueue.offer(e));
 
 		Item item;
 		while ((item = itemQueue.poll()) != null) {
@@ -75,13 +72,31 @@ public class SyntaticsTable {
 					&& !expandedNonterminals.contains(item.getDotSymbol())) {
 				// Get all of derivative rules fromd dot production, and convert Rule to
 				// RuleScenario, and then push it on queue
-				item.generateDotItemsOf(grammar).stream().forEach(e -> itemQueue.offer(e));
+				item.generateDotItemsOf(grammar, lookAheadSet).stream().forEach(e -> itemQueue.offer(e));
 			}
 		}
 
 		return items;
 	}
-	
+
+	private List<Item> expandItemsDot(Grammar grammar, HashSet<String> lookAheadSet, Collection<Item> orgItems) {
+		ArrayDeque<Item> itemQueue = new ArrayDeque<>();
+		orgItems.stream().forEach(e -> itemQueue.offer(e));
+		return expandItemsDot(grammar, lookAheadSet, itemQueue);
+	}
+
+	private List<Item> expandItemsDot(Grammar grammar, HashSet<String> lookAheadSet, Item... orgItems) {
+		return expandItemsDot(grammar, lookAheadSet, Arrays.asList(orgItems));
+	}
+
+	// This implementation is very slow. but now, it's ok! 
+	private HashSet<String> getFirstSet(Grammar grammar, String symbol) {
+		Item item = new Item(new Rule(symbol, symbol));
+		return new HashSet<String>(expandItemsDot(grammar, new HashSet<>(), item).stream()
+				.map(e -> e.getDotSymbol())
+				.filter(e -> grammar.isTerminalSymbol(e)).toList());
+	}
+
 	private int createState(Grammar grammar, HashSet<Item> orgItemKey, HashMap<HashSet<Item>, Integer> itemStates) {
 		// return states if already existing
 		// FIXME: This is very bad implementation
@@ -117,7 +132,12 @@ public class SyntaticsTable {
 			setTerminalSection(currentState, new Action(ActionKind.Reduce, grammar.getRuleIndexOf(closure.getRule())));
 		}
 
-		List<Item> items = expandItemsDot(grammar, excludeClosure(orgItemKey));
+		HashSet<String> lookAheadSet = new HashSet<String>();
+		
+		// TODO: implement lookaheadset
+		
+		
+		List<Item> items = expandItemsDot(grammar, lookAheadSet, excludeClosure(orgItemKey));
 		if (items.size() == 0)
 			return currentState;
 
@@ -143,7 +163,8 @@ public class SyntaticsTable {
 							new Action(ActionKind.Goto, createState(grammar, partOfItems, itemStates)));
 				} else if (grammar.isTerminalSymbol(currentSymbol)) {
 					setTerminalSection(currentState, grammar.getTerminalSymbolIndexOf(currentSymbol),
-							new Action(ActionKind.Shift, createState(grammar, partOfItems, itemStates)));			}
+							new Action(ActionKind.Shift, createState(grammar, partOfItems, itemStates)));
+				}
 
 				// postfix processing
 				if (endIndex == items.size())
@@ -167,16 +188,15 @@ public class SyntaticsTable {
 
 		return out.toString();
 	}
-	
-	
+
 	public String getActionsCSV(Grammar grammar) {
 		StringBuilder stringBuilder = new StringBuilder();
-		
+
 		stringBuilder.append("\"\", ");
 		stringBuilder.append(grammar.getTerminalSymbolsCSV());
 		stringBuilder.append(',');
 		stringBuilder.append(System.lineSeparator());
-		
+
 		for (int i = 0; i < this.terminalSection.size(); i++) {
 			stringBuilder.append('"');
 			stringBuilder.append(i);
@@ -187,7 +207,7 @@ public class SyntaticsTable {
 					stringBuilder.append("\"\",");
 					continue;
 				}
-				
+
 				stringBuilder.append('"');
 				stringBuilder.append(actions[j].toShortString());
 				stringBuilder.append('"');
@@ -195,23 +215,23 @@ public class SyntaticsTable {
 			}
 			stringBuilder.append(System.lineSeparator());
 		}
-		
+
 		return stringBuilder.toString();
 	}
-	
+
 	public String getGotosCSV(Grammar grammar) {
 		StringBuilder stringBuilder = new StringBuilder();
-		
+
 		stringBuilder.append("\"\", ");
 		stringBuilder.append(grammar.getNonterminalSymbolsCSV());
 		stringBuilder.append(',');
 		stringBuilder.append(System.lineSeparator());
-		
+
 		for (int i = 0; i < this.nonterminalSection.size(); i++) {
 			stringBuilder.append('"');
 			stringBuilder.append(i);
 			stringBuilder.append("\",");
-			
+
 			for (int j = 0; j < this.nonterminalSectionColumnLength; j++) {
 				Action[] gotos = this.nonterminalSection.get(i);
 				if (gotos[j] == null) {
@@ -225,7 +245,7 @@ public class SyntaticsTable {
 			}
 			stringBuilder.append(System.lineSeparator());
 		}
-		
+
 		return stringBuilder.toString();
 	}
 
