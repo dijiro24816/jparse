@@ -34,6 +34,10 @@ public class Grammar {
 	public String getStartSymbol() {
 		return this.begSymbol;
 	}
+	
+	public String getEndSymbol() {
+		return endSymbol;
+	}
 
 	public int getTerminalSymbolCount() {
 		return this.terminalSymbolIndices.size();
@@ -183,6 +187,11 @@ public class Grammar {
 //		
 //		System.exit(0);
 		
+		OperatorPrecedenceRule operatorPrecedenceRule = new OperatorPrecedenceRule();
+		operatorPrecedenceRule.add(PrecedenceDirection.Right, "=");
+		operatorPrecedenceRule.add(PrecedenceDirection.Left, "+", "-");
+		operatorPrecedenceRule.add(PrecedenceDirection.Left, "*", "/");
+		
 		String[] terminals = { "ID", "NUM" };
 		Grammar grammar = new Grammar("S", "$", Arrays.asList(terminals),
 				new Rule("S", "Stmt"),
@@ -190,11 +199,11 @@ public class Grammar {
 				new Rule("Stmt", "Assg"),
 				new Rule("Expr", "ID"),
 				new Rule("Expr", "NUM"),
-				new Rule("Expr", "+", "Expr", "Expr"),
-				new Rule("Expr", "-", "Expr", "Expr"),
-				new Rule("Expr", "*", "Expr", "Expr"),
-				new Rule("Expr", "/", "Expr", "Expr"),
-				new Rule("Assg", "int", "ID", "Exp"));
+				new Rule(operatorPrecedenceRule.getInfo("+"), "Expr", "+", "Expr", "Expr"),
+				new Rule(operatorPrecedenceRule.getInfo("-"), "Expr", "-", "Expr", "Expr"),
+				new Rule(operatorPrecedenceRule.getInfo("*"), "Expr", "*", "Expr", "Expr"),
+				new Rule(operatorPrecedenceRule.getInfo("/"), "Expr", "/", "Expr", "Expr"),
+				new Rule(operatorPrecedenceRule.getInfo("="), "Assg", "=", "ID", "Exp"));
 		System.out.println(grammar);
 
 				System.out.println(grammar.getTerminalSymbolsCSV());

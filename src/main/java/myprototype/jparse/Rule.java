@@ -1,6 +1,8 @@
 package myprototype.jparse;
 
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
 
 public class Rule {
@@ -8,6 +10,12 @@ public class Rule {
 //	private Function<StateSymbolStack, Object> compounder;
 	private List<String> symbols;
 	
+	private PrecedenceRuleInfo precedenceInfo;
+	
+	public PrecedenceRuleInfo getPrecedenceInfo() {
+		return precedenceInfo;
+	}
+
 	public String getProductSymbol() {
 		return productSymbol;
 	}
@@ -19,11 +27,15 @@ public class Rule {
 	public List<String> getSymbols() {
 		return symbols;
 	}
-
-	public Rule(String productSymbol, String...symbols) {
+	
+	public Rule(PrecedenceRuleInfo precedenceInfo, String productSymbol, String...symbols) {
+		this.precedenceInfo = precedenceInfo;
 		this.productSymbol = productSymbol;
-//		this.compounder = compounder;
 		this.symbols = Arrays.asList(symbols);
+	}
+	
+	public Rule(String productSymbol, String...symbols) {
+		this(new PrecedenceRuleInfo(), productSymbol, symbols);
 	}
 
 	@Override
@@ -44,12 +56,12 @@ public class Rule {
 		
 		Rule otherRule = (Rule)obj;
 		
-		return this.productSymbol.equals(otherRule.getProductSymbol()) && this.symbols.equals(otherRule.getSymbols());
+		return this.productSymbol.equals(otherRule.getProductSymbol()) && this.symbols.equals(otherRule.getSymbols()) && this.precedenceInfo.equals(otherRule.getPrecedenceInfo());
 	}
 	
 	@Override
 	public int hashCode() {
-		return this.productSymbol.hashCode() + this.symbols.hashCode();
+		return this.productSymbol.hashCode() + this.symbols.hashCode() + this.precedenceInfo.hashCode();
 	}
 
 	public static void main(String[] args) {

@@ -52,7 +52,9 @@ public class SyntaticsTable {
 		this.terminalSection = new ArrayList<Action[]>();
 		this.nonterminalSection = new ArrayList<Action[]>();
 
-		HashSet<Item> itemStatesKey = new HashSet<>(Item.generateStartItemsOf(grammar));
+		HashSet<String> lookAheadSet = new HashSet<>();
+		lookAheadSet.add(grammar.getEndSymbol());
+		HashSet<Item> itemStatesKey = new HashSet<>(Item.generateStartItemsOf(grammar, lookAheadSet));
 
 		createState(grammar, itemStatesKey, new HashMap<HashSet<Item>, Integer>());
 	}
