@@ -192,6 +192,8 @@ public class Grammar {
 		operatorPrecedenceRule.add(PrecedenceDirection.Left, "+", "-");
 		operatorPrecedenceRule.add(PrecedenceDirection.Left, "*", "/");
 		
+		PrecedenceRuleInfo info = operatorPrecedenceRule.getInfo("=");
+		
 		String[] terminals = { "ID", "NUM" };
 		Grammar grammar = new Grammar("S", "$", Arrays.asList(terminals),
 				new Rule("S", "Stmt"),
