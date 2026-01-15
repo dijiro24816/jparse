@@ -1,5 +1,7 @@
 package myprototype.jparse;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -7,7 +9,7 @@ import java.util.Objects;
 public class Item {
 	private Rule rule;
 	private int dot;
-	private HashSet<String> lookAheadSet;
+	private HashSet<String> lookaheadSet;
 	
 	public String getProductSymbol() {
 		return rule.getProductSymbol();
@@ -21,9 +23,9 @@ public class Item {
 		return dot;
 	}
 
-	public Item(Rule rule, HashSet<String> lookAhead, int dot) {
+	public Item(Rule rule, HashSet<String> lookaheadSet, int dot) {
 		this.rule = rule;
-		this.lookAheadSet = lookAhead;
+		this.lookaheadSet = lookaheadSet;
 		this.dot = dot;
 	}
 
@@ -36,7 +38,11 @@ public class Item {
 	}
 
 	public boolean isTakingTheClosure() {
-		return this.dot == this.rule.getSymbols().size();
+		return getRestSymbolsCount() == 0;
+	}
+	
+	public int getRestSymbolsCount() {
+		return this.rule.getSymbols().size() - this.dot;
 	}
 
 	public String getDotSymbol() {
@@ -47,17 +53,61 @@ public class Item {
 		return grammar.isNonterminalSymbol(getDotSymbol());
 	}
 
-	public List<Item> generateDotItemsOf(Grammar grammar, HashSet<String> lookAheadSet) {
-		return Item.generateItemsOf(grammar, getDotSymbol(), lookAheadSet);
+	public List<Item> generateDotItemsOf(Grammar grammar, HashSet<String> orgLookaheadSet) {
+		
+		// Generate lookahead-set
+		if (getRestSymbolsCount() == 1)
+			return Item.generateItemsOf(grammar, getDotSymbol(), orgLookaheadSet);
+		
+		HashSet<String> lookaheadSet = new HashSet<>();
+		
+		return Item.generateItemsOf(grammar, getDotSymbol(), lookaheadSet);
+		
 	}
 	
-	public static List<Item> generateStartItemsOf(Grammar grammar, HashSet<String> lookAheadSet) {
+	public static List<Item> generateBeginningItemsOf(Grammar grammar) {
+		HashSet<String> lookAheadSet = new HashSet<>();
+		lookAheadSet.add(grammar.getEndSymbol());
 		return Item.generateItemsOf(grammar, grammar.getStartSymbol(), lookAheadSet);
 	}
 
 	public static List<Item> generateItemsOf(Grammar grammar, String symbol, HashSet<String> lookAheadSet) {
 		return grammar.getRulesOf(symbol).stream().map(e -> new Item(e, lookAheadSet)).toList();
 	}
+	
+//	public static List<Item> expandDot(Grammar grammar, HashSet<String> lookAheadSet, ArrayDeque<Item> itemQueue) {
+//		List<Item> items = new ArrayList<>();
+//		HashSet<String> expandedNonterminals = new HashSet<>();
+//
+//		Item item;
+//		while ((item = itemQueue.poll()) != null) {
+//			items.add(item);
+//			if (grammar.isNonterminalSymbol(item.getDotSymbol())
+//					&& !expandedNonterminals.contains(item.getDotSymbol())) {
+//				// Get all of derivative rules fromd dot production, and convert Rule to
+//				// RuleScenario, and then push it on queue
+//				item.generateDotItemsOf(grammar, lookAheadSet).stream().forEach(e -> itemQueue.offer(e));
+//			}
+//		}
+//
+//		return items;
+//	}
+//
+//	public static List<Item> expandDot(Grammar grammar, HashSet<String> lookAheadSet, Collection<Item> orgItems) {
+//		ArrayDeque<Item> itemQueue = new ArrayDeque<>();
+//		orgItems.stream().forEach(e -> itemQueue.offer(e));
+//		return expandDot(grammar, lookAheadSet, itemQueue);
+//	}
+//
+//	public List<Item> expandDot(Grammar grammar, HashSet<String> lookAheadSet, Item... orgItems) {
+//		return expandDot(grammar, lookAheadSet, Arrays.asList(orgItems));
+//	}
+	
+	public static List<Item> expandDot(Grammar grammar, HashSet<String> lookaheadSet, Collection<Item> items) {
+		return new ArrayList<Item>(grammar.expandSymbolsRules(items.stream().map(e -> e.getDotSymbol()).toList().map(e -> new Item(e, lookAheadSet))));
+	}
+	
+	
 	
 	public void increaseDot() {
 		this.dot++;
@@ -86,7 +136,7 @@ public class Item {
 
 	@Override
 	protected Item clone() {
-		return new Item(this.rule, this.lookAheadSet, this.dot);
+		return new Item(this.rule, this.lookaheadSet, this.dot);
 	}
 
 	@Override

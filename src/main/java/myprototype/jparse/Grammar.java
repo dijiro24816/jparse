@@ -2,6 +2,7 @@ package myprototype.jparse;
 
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -164,6 +165,25 @@ public class Grammar {
 
 	public int getRuleIndexOf(Rule rule) {
 		return this.ruleIndices.get(rule);
+	}
+	
+	public HashSet<Rule> expandSymbolsRules(Collection<String> symbols) {
+		HashSet<Rule> symbolsRules = new HashSet<>();
+		ArrayDeque<String> nonterminalSymbols = new ArrayDeque<>(symbols);
+		HashSet<String> foundNonterminals = new HashSet<>(symbols);
+
+		String nonterminalSymbol;
+		while ((nonterminalSymbol = nonterminalSymbols.poll()) != null) {
+			Set<Rule> symbolRules = getRulesOf(nonterminalSymbol);
+			symbolsRules.addAll(symbolRules);
+
+			for (Rule rule : symbolRules)
+				for (String symbol : rule.getSymbols())
+					if (isNonterminalSymbol(symbol) && foundNonterminals.add(symbol))
+						nonterminalSymbols.add(symbol);
+		}
+
+		return symbolsRules;
 	}
 
 	@Override

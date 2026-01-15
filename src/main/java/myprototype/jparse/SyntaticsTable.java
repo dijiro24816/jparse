@@ -1,6 +1,5 @@
 package myprototype.jparse;
 
-import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -52,9 +51,7 @@ public class SyntaticsTable {
 		this.terminalSection = new ArrayList<Action[]>();
 		this.nonterminalSection = new ArrayList<Action[]>();
 
-		HashSet<String> lookAheadSet = new HashSet<>();
-		lookAheadSet.add(grammar.getEndSymbol());
-		HashSet<Item> itemStatesKey = new HashSet<>(Item.generateStartItemsOf(grammar, lookAheadSet));
+		HashSet<Item> itemStatesKey = new HashSet<>(Item.generateBeginningItemsOf(grammar));
 
 		createState(grammar, itemStatesKey, new HashMap<HashSet<Item>, Integer>());
 	}
@@ -63,38 +60,12 @@ public class SyntaticsTable {
 		return items.stream().filter(e -> !e.isTakingTheClosure()).toList();
 	}
 
-	private List<Item> expandItemsDot(Grammar grammar, HashSet<String> lookAheadSet, ArrayDeque<Item> itemQueue) {
-		List<Item> items = new ArrayList<>();
-		HashSet<String> expandedNonterminals = new HashSet<>();
 
-		Item item;
-		while ((item = itemQueue.poll()) != null) {
-			items.add(item);
-			if (grammar.isNonterminalSymbol(item.getDotSymbol())
-					&& !expandedNonterminals.contains(item.getDotSymbol())) {
-				// Get all of derivative rules fromd dot production, and convert Rule to
-				// RuleScenario, and then push it on queue
-				item.generateDotItemsOf(grammar, lookAheadSet).stream().forEach(e -> itemQueue.offer(e));
-			}
-		}
-
-		return items;
-	}
-
-	private List<Item> expandItemsDot(Grammar grammar, HashSet<String> lookAheadSet, Collection<Item> orgItems) {
-		ArrayDeque<Item> itemQueue = new ArrayDeque<>();
-		orgItems.stream().forEach(e -> itemQueue.offer(e));
-		return expandItemsDot(grammar, lookAheadSet, itemQueue);
-	}
-
-	private List<Item> expandItemsDot(Grammar grammar, HashSet<String> lookAheadSet, Item... orgItems) {
-		return expandItemsDot(grammar, lookAheadSet, Arrays.asList(orgItems));
-	}
 
 	// This implementation is very slow. but now, it's ok! 
 	private HashSet<String> getFirstSet(Grammar grammar, String symbol) {
 		Item item = new Item(new Rule(symbol, symbol));
-		return new HashSet<String>(expandItemsDot(grammar, new HashSet<>(), item).stream()
+		return new HashSet<String>(Item.expandDot(grammar, new HashSet<>(), item).stream()
 				.map(e -> e.getDotSymbol())
 				.filter(e -> grammar.isTerminalSymbol(e)).toList());
 	}
@@ -139,7 +110,7 @@ public class SyntaticsTable {
 		// TODO: implement lookaheadset
 		
 		
-		List<Item> items = expandItemsDot(grammar, lookAheadSet, excludeClosure(orgItemKey));
+		List<Item> items = Item.expandDot(grammar, lookAheadSet, excludeClosure(orgItemKey));
 		if (items.size() == 0)
 			return currentState;
 

@@ -1,14 +1,12 @@
 package myprototype.jparse;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.List;
 
 public class Rule {
 	private String productSymbol;
 //	private Function<StateSymbolStack, Object> compounder;
-	private List<String> symbols;
+	private List<String> symbols; // symbols.size() > 0
 	
 	private PrecedenceRuleInfo precedenceInfo;
 	
@@ -26,6 +24,10 @@ public class Rule {
 
 	public List<String> getSymbols() {
 		return symbols;
+	}
+	
+	public String getFirstSymbol() {
+		return symbols.get(0);
 	}
 	
 	public Rule(PrecedenceRuleInfo precedenceInfo, String productSymbol, String...symbols) {
