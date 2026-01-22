@@ -22,7 +22,7 @@ public class Grammar {
 	private HashSet<String> generalTerminalSymbolSet;
 	private List<String> generalTerminalSymbolList;
 	private HashMap<String, Integer> terminalSymbolIndices;
-	
+
 	private HashMap<String, Integer> nonterminalSymbolIndices;
 	private List<String> nonterminalSymbols;
 	private HashMap<Rule, Integer> ruleIndices;
@@ -35,7 +35,7 @@ public class Grammar {
 	public String getStartSymbol() {
 		return this.begSymbol;
 	}
-	
+
 	public String getEndSymbol() {
 		return endSymbol;
 	}
@@ -51,7 +51,7 @@ public class Grammar {
 	public Grammar(String startSymbol, String endSymbol, Collection<String> terminalSymbols, Rule... rules) {
 		this.begSymbol = startSymbol;
 		this.endSymbol = endSymbol;
-		
+
 		this.specificTerminalSymbolSet = new HashSet<String>();
 		this.specificTerminalSymbolList = new ArrayList<String>();
 		this.generalTerminalSymbolSet = new HashSet<String>();
@@ -59,7 +59,7 @@ public class Grammar {
 		this.terminalSymbolIndices = new HashMap<String, Integer>();
 		cacheGeneralTerminalSymbolWithIndex(endSymbol); // terminal symbol contains end of symbol
 		terminalSymbols.stream().forEach(e -> cacheGeneralTerminalSymbolWithIndex(e));
-		
+
 		this.nonterminalSymbolIndices = new HashMap<String, Integer>();
 		this.nonterminalSymbols = new ArrayList<String>();
 		this.ruleIndices = new HashMap<Rule, Integer>();
@@ -70,7 +70,7 @@ public class Grammar {
 			if (!cacheRuleWithIndex(rule))
 				throw new RuntimeException("Error: Duplicated Rule: " + rule);
 		}
-		
+
 		// DON'T MERGE FOR rules LOOP
 
 		for (Rule rule : rules)
@@ -87,7 +87,7 @@ public class Grammar {
 		this.nonterminalSymbols.add(symbol);
 		return true;
 	}
-	
+
 	private boolean cacheGeneralTerminalSymbolWithIndex(String symbol) {
 		if (this.generalTerminalSymbolSet.contains(symbol))
 			return false;
@@ -96,7 +96,7 @@ public class Grammar {
 		cacheTerminalSymbolWithIndex(symbol);
 		return true;
 	}
-	
+
 	private boolean cacheSpecificTerminalSymbolWithIndex(String symbol) {
 		if (this.specificTerminalSymbolSet.contains(symbol))
 			return false;
@@ -133,11 +133,11 @@ public class Grammar {
 			}
 		}
 	}
-	
+
 	public boolean isSpecificTerminalSymbol(String symbol) {
 		return this.specificTerminalSymbolSet.contains(symbol);
 	}
-	
+
 	public boolean isGeneralTerminalSymbol(String symbol) {
 		return this.generalTerminalSymbolSet.contains(symbol);
 	}
@@ -166,7 +166,11 @@ public class Grammar {
 	public int getRuleIndexOf(Rule rule) {
 		return this.ruleIndices.get(rule);
 	}
-	
+
+	public HashSet<Rule> expandSymbolsRules(String... symbols) {
+		return expandSymbolsRules(Arrays.asList(symbols));
+	}
+
 	public HashSet<Rule> expandSymbolsRules(Collection<String> symbols) {
 		HashSet<Rule> symbolsRules = new HashSet<>();
 		ArrayDeque<String> nonterminalSymbols = new ArrayDeque<>(symbols);
@@ -186,34 +190,57 @@ public class Grammar {
 		return symbolsRules;
 	}
 
+	public HashSet<Item> expandFirstItems() {
+		HashSet<String> lookaheadSet = new HashSet<>();
+		lookaheadSet.add(getEndSymbol());
+		return new HashSet<>(
+				expandSymbolsRules(getStartSymbol()).stream().map(e -> new Item(e, lookaheadSet)).toList());
+	}
+
+	public List<Item> expandItems(HashSet<String> lookAheadSet, Item... orgItems) {
+		return expandItems(lookAheadSet, Arrays.asList(orgItems));
+	}
+
+	public List<Item> expandItems(HashSet<String> lookaheadSet, Collection<Item> items) {
+
+		// TODO: implements lookaheadSet inheritance
+
+		return new ArrayList<>(
+				expandSymbolsRules(
+						items.stream()
+								.map(e -> e.getDotSymbol()).toList()).stream()
+										.map(e -> new Item(e, lookaheadSet))
+										.toList());
+	}
+
 	@Override
 	public String toString() {
 		return String.join(System.lineSeparator(), this.rules.stream().map(e -> e.toString()).toList());
 	}
 
 	public static void main(String[] args) {
-//		HashSet<String> h1 = new HashSet();
-//		HashSet<String> h2 = new HashSet();
-//		
-//		h1.add("hello");
-//		h2.add("world");
-//		
-//		System.out.println(Stream.concat(h1.stream(), h2.stream()).toList());
-//		System.out.println(new HashSet<String>(Stream.concat(h1.stream(), h2.stream()).toList()));
-//		
-//		System.out.println(h1);
-//		System.out.println(h2);
-//		
-//		
-//		System.exit(0);
-		
+		//		HashSet<String> h1 = new HashSet();
+		//		HashSet<String> h2 = new HashSet();
+		//		
+		//		h1.add("hello");
+		//		h2.add("world");
+		//		
+		//		System.out.println(Stream.concat(h1.stream(), h2.stream()).toList());
+		//		System.out.println(new HashSet<String>(Stream.concat(h1.stream(), h2.stream()).toList()));
+		//		
+		//		System.out.println(h1);
+		//		System.out.println(h2);
+		//		
+		//		
+		//		System.exit(0);
+
 		OperatorPrecedenceRule operatorPrecedenceRule = new OperatorPrecedenceRule();
 		operatorPrecedenceRule.add(PrecedenceDirection.Right, "=");
 		operatorPrecedenceRule.add(PrecedenceDirection.Left, "+", "-");
 		operatorPrecedenceRule.add(PrecedenceDirection.Left, "*", "/");
-		
+
 		PrecedenceRuleInfo info = operatorPrecedenceRule.getInfo("=");
-		
+
 		String[] terminals = { "ID", "NUM" };
 		Grammar grammar = new Grammar("S", "$", Arrays.asList(terminals),
 				new Rule("S", "Stmt"),
@@ -225,32 +252,39 @@ public class Grammar {
 				new Rule(operatorPrecedenceRule.getInfo("-"), "Expr", "-", "Expr", "Expr"),
 				new Rule(operatorPrecedenceRule.getInfo("*"), "Expr", "*", "Expr", "Expr"),
 				new Rule(operatorPrecedenceRule.getInfo("/"), "Expr", "/", "Expr", "Expr"),
-				new Rule(operatorPrecedenceRule.getInfo("="), "Assg", "=", "ID", "Exp"));
+				new Rule(operatorPrecedenceRule.getInfo("="), "Assg", "=", "ID", "Expr"));
 		System.out.println(grammar);
 
-				System.out.println(grammar.getTerminalSymbolsCSV());
-		
-				SyntaticsTable table = new SyntaticsTable(grammar);
-				System.out.println(table);
-				
-				
-				try {
-					FileWriter writer = new FileWriter("actions.csv");
-					writer.write(table.getActionsCSV(grammar));
-					writer.flush();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-				System.out.println(table.getActionsCSV(grammar));
-				
-				System.out.println(table.getGotosCSV(grammar));
-				
-				System.out.println("FINISHED!");
+		System.out.println(grammar.getTerminalSymbolsCSV());
+
+		SyntaticsTable table = new SyntaticsTable(grammar);
+		System.out.println(table);
+
+		try {
+			{
+				FileWriter writer = new FileWriter("actions.csv");
+				writer.write(table.getActionsCSV(grammar));
+				writer.flush();
+			}
+			{
+				FileWriter writer = new FileWriter("gotos.csv");
+				writer.write(table.getGotosCSV(grammar));
+				writer.flush();
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		System.out.println(table.getActionsCSV(grammar));
+
+		System.out.println(table.getGotosCSV(grammar));
+
+		System.out.println("FINISHED!");
 	}
 
 	public String getTerminalSymbolsCSV() {
-		return String.join(",", Stream.concat(this.generalTerminalSymbolList.stream(), this.specificTerminalSymbolList.stream())
-				.map(e -> "\"" + e + "\"").toList());
+		return String.join(",",
+				Stream.concat(this.generalTerminalSymbolList.stream(), this.specificTerminalSymbolList.stream())
+						.map(e -> "\"" + e + "\"").toList());
 	}
 
 	public String getNonterminalSymbolsCSV() {

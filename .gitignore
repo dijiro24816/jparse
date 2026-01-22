@@ -6,3 +6,8 @@ target/
 .settings/
 .project
 .classpath
+
+
+# for debug
+actions.csv
+gotos.csv

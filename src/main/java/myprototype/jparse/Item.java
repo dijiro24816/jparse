@@ -1,7 +1,5 @@
 package myprototype.jparse;
 
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
@@ -99,14 +97,7 @@ public class Item {
 //		return expandDot(grammar, lookAheadSet, itemQueue);
 //	}
 //
-//	public List<Item> expandDot(Grammar grammar, HashSet<String> lookAheadSet, Item... orgItems) {
-//		return expandDot(grammar, lookAheadSet, Arrays.asList(orgItems));
-//	}
-	
-	public static List<Item> expandDot(Grammar grammar, HashSet<String> lookaheadSet, Collection<Item> items) {
-		return new ArrayList<Item>(grammar.expandSymbolsRules(items.stream().map(e -> e.getDotSymbol()).toList().map(e -> new Item(e, lookAheadSet))));
-	}
-	
+
 	
 	
 	public void increaseDot() {

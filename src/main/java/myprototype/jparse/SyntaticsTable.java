@@ -51,9 +51,7 @@ public class SyntaticsTable {
 		this.terminalSection = new ArrayList<Action[]>();
 		this.nonterminalSection = new ArrayList<Action[]>();
 
-		HashSet<Item> itemStatesKey = new HashSet<>(Item.generateBeginningItemsOf(grammar));
-
-		createState(grammar, itemStatesKey, new HashMap<HashSet<Item>, Integer>());
+		createState(grammar, grammar.expandFirstItems(), new HashMap<HashSet<Item>, Integer>());
 	}
 
 	private List<Item> excludeClosure(Collection<Item> items) {
@@ -65,7 +63,7 @@ public class SyntaticsTable {
 	// This implementation is very slow. but now, it's ok! 
 	private HashSet<String> getFirstSet(Grammar grammar, String symbol) {
 		Item item = new Item(new Rule(symbol, symbol));
-		return new HashSet<String>(Item.expandDot(grammar, new HashSet<>(), item).stream()
+		return new HashSet<String>(grammar.expandItems(new HashSet<>(), item).stream()
 				.map(e -> e.getDotSymbol())
 				.filter(e -> grammar.isTerminalSymbol(e)).toList());
 	}
@@ -81,6 +79,16 @@ public class SyntaticsTable {
 
 		if (itemStates.containsKey(orgItemKey))
 			return itemStates.get(orgItemKey);
+		
+		
+
+		for (Item item : orgItemKey) {
+			System.out.println(item);
+			
+			System.out.println();
+		}
+		
+		
 
 		int currentState = getNewState();
 
@@ -110,7 +118,7 @@ public class SyntaticsTable {
 		// TODO: implement lookaheadset
 		
 		
-		List<Item> items = Item.expandDot(grammar, lookAheadSet, excludeClosure(orgItemKey));
+		List<Item> items = grammar.expandItems(lookAheadSet, excludeClosure(orgItemKey));
 		if (items.size() == 0)
 			return currentState;
 
