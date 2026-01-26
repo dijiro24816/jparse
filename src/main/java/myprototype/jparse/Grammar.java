@@ -197,25 +197,70 @@ public class Grammar {
 				expandSymbolsRules(getStartSymbol()).stream().map(e -> new Item(e, lookaheadSet)).toList());
 	}
 
-	public List<Item> expandItems(HashSet<String> lookAheadSet, Item... orgItems) {
-		return expandItems(lookAheadSet, Arrays.asList(orgItems));
+	public List<Item> expandItems(Item... orgItems) {
+		return expandItems(Arrays.asList(orgItems));
 	}
 
-	public List<Item> expandItems(HashSet<String> lookaheadSet, Collection<Item> items) {
+	public List<Item> expandItems(Collection<Item> items) {
+		// TODO: Implement lookahead-set
+		HashSet<String> lookaheadSet = new HashSet<>();
 
-		// TODO: implements lookaheadSet inheritance
+		List<String> symbols = items.stream().map(e -> e.getDotSymbol()).toList();
+		ArrayList<Item> expandedItems = new ArrayList<>(items);
 
-		return new ArrayList<>(
+		for (Rule rule : expandSymbolsRules(symbols)) {
+			// TODO: implements lookaheadSet inheritance
+			Item item;
+			
+			
+			expandedItems.add(new Item(rule, lookaheadSet));
+		}
+
+		return expandedItems;
+	}
+	
+	public HashSet<String> getLookaheadSetFromExpandedItems(Collection<Item> items, Rule rule) {
+		HashSet<String> lookaheadSet = new HashSet<>();
+		List<Item> orgItems = items.stream().filter(e -> e.getDotSymbol().equals(rule.getProductSymbol())).toList();
+		for (Item item : orgItems) {
+			
+			if (item.isReachingLastSymbol())
+				// Nonterm1 -> . Nonterm2
+				// add Lookahead-Set(Nonterm2)
+				lookaheadSet.addAll(item.getLookaheadSet());
+			else
+				// Nonterm -> . Nonterm Term
+				lookaheadSet.addAll(getFirstSet(item.getDotNextSymbol()));
+		}
+	}
+
+	// This implementation is very slow. but now, it's ok! 
+	private HashSet<String> getFirstSet(String symbol) {
+		if (isTerminalSymbol(symbol)) {
+			HashSet<String> symbols = new HashSet<>();
+			symbols.add(symbol);
+			return symbols;
+		}
+
+		return new HashSet<>(
 				expandSymbolsRules(
-						items.stream()
-								.map(e -> e.getDotSymbol()).toList()).stream()
-										.map(e -> new Item(e, lookaheadSet))
-										.toList());
+						symbol).stream()
+								.map(e -> e.getFirstSymbol())
+								.filter(e -> isTerminalSymbol(e)).toList());
 	}
 
 	@Override
 	public String toString() {
-		return String.join(System.lineSeparator(), this.rules.stream().map(e -> e.toString()).toList());
+		StringBuilder stringBuilder = new StringBuilder();
+
+		for (int i = 0; i < this.rules.size(); i++) {
+			stringBuilder.append(i);
+			stringBuilder.append(": ");
+			stringBuilder.append(this.rules.get(i));
+			stringBuilder.append(System.lineSeparator());
+		}
+
+		return stringBuilder.toString();
 	}
 
 	public static void main(String[] args) {

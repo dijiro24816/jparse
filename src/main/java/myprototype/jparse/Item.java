@@ -20,6 +20,10 @@ public class Item {
 	public int getDot() {
 		return dot;
 	}
+	
+	public HashSet<String> getLookaheadSet() {
+		return this.lookaheadSet;
+	}
 
 	public Item(Rule rule, HashSet<String> lookaheadSet, int dot) {
 		this.rule = rule;
@@ -39,12 +43,20 @@ public class Item {
 		return getRestSymbolsCount() == 0;
 	}
 	
+	public boolean isReachingLastSymbol() {
+		return getRestSymbolsCount() == 1;
+	}
+	
 	public int getRestSymbolsCount() {
 		return this.rule.getSymbols().size() - this.dot;
 	}
 
 	public String getDotSymbol() {
 		return this.rule.getSymbols().get(this.dot);
+	}
+	
+	public String getDotNextSymbol() {
+		return this.rule.getSymbols().get(this.dot + 1);
 	}
 	
 	public boolean isDotNonterminal(Grammar grammar) {
