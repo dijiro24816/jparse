@@ -202,19 +202,13 @@ public class Grammar {
 	}
 
 	public List<Item> expandItems(Collection<Item> items) {
-		// TODO: Implement lookahead-set
-		HashSet<String> lookaheadSet = new HashSet<>();
-
 		List<String> symbols = items.stream().map(e -> e.getDotSymbol()).toList();
+		HashSet<String> expandedSymbols = new HashSet<>(items.stream().map(e -> e.getDotSymbol()).toList());
 		ArrayList<Item> expandedItems = new ArrayList<>(items);
 
-		for (Rule rule : expandSymbolsRules(symbols)) {
-			// TODO: implements lookaheadSet inheritance
-			Item item;
-			
-			
-			expandedItems.add(new Item(rule, lookaheadSet));
-		}
+		for (Rule rule : expandSymbolsRules(symbols))
+			if (expandedSymbols.add(rule.getProductSymbol()))
+				expandedItems.add(new Item(rule, getLookaheadSetFromExpandedItems(expandedItems, rule)));
 
 		return expandedItems;
 	}
@@ -232,6 +226,7 @@ public class Grammar {
 				// Nonterm -> . Nonterm Term
 				lookaheadSet.addAll(getFirstSet(item.getDotNextSymbol()));
 		}
+		return lookaheadSet;
 	}
 
 	// This implementation is very slow. but now, it's ok! 

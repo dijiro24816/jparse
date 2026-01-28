@@ -105,6 +105,7 @@ public class SyntaticsTable {
 			// The value is rule index with negative sign
 			// TODO: Use follow-set or lookahead-set
 			setTerminalSection(currentState, new Action(ActionKind.Reduce, grammar.getRuleIndexOf(closure.getRule())));
+			System.out.println(closure.getLookaheadSet());
 		}
 
 		List<Item> items = grammar.expandItems(excludeClosure(orgItemKey));
