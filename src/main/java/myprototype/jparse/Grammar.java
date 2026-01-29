@@ -197,14 +197,14 @@ public class Grammar {
 				expandSymbolsRules(getStartSymbol()).stream().map(e -> new Item(e, lookaheadSet)).toList());
 	}
 
-	public List<Item> expandItems(Item... orgItems) {
+	public HashSet<Item> expandItems(Item... orgItems) {
 		return expandItems(Arrays.asList(orgItems));
 	}
 
-	public List<Item> expandItems(Collection<Item> items) {
+	public HashSet<Item> expandItems(Collection<Item> items) {
 		List<String> symbols = items.stream().map(e -> e.getDotSymbol()).toList();
 		HashSet<String> expandedSymbols = new HashSet<>(items.stream().map(e -> e.getDotSymbol()).toList());
-		ArrayList<Item> expandedItems = new ArrayList<>(items);
+		HashSet<Item> expandedItems = new HashSet<>(items);
 
 		for (Rule rule : expandSymbolsRules(symbols))
 			if (expandedSymbols.add(rule.getProductSymbol()))

@@ -108,7 +108,7 @@ public class SyntaticsTable {
 			System.out.println(closure.getLookaheadSet());
 		}
 
-		List<Item> items = grammar.expandItems(excludeClosure(orgItemKey));
+		HashSet<Item> items = grammar.expandItems(excludeClosure(orgItemKey));
 		if (items.size() == 0)
 			return currentState;
 
