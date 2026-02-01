@@ -203,12 +203,21 @@ public class Grammar {
 
 	public HashSet<Item> expandItems(Collection<Item> items) {
 		List<String> symbols = items.stream().map(e -> e.getDotSymbol()).toList();
-		HashSet<String> expandedSymbols = new HashSet<>(items.stream().map(e -> e.getDotSymbol()).toList());
+//		HashSet<String> expandedSymbols = new HashSet<>(items.stream().map(e -> e.getDotSymbol()).toList());
+//		HashSet<Item> expandedItems = new HashSet<>(items);
+		HashSet<String> expandedSymbols = new HashSet<>();
+		
+		HashSet<Rule> expandedRules = new HashSet<>();
+		
 		HashSet<Item> expandedItems = new HashSet<>(items);
 
 		for (Rule rule : expandSymbolsRules(symbols))
-			if (expandedSymbols.add(rule.getProductSymbol()))
-				expandedItems.add(new Item(rule, getLookaheadSetFromExpandedItems(expandedItems, rule)));
+			if (expandedRules.add(rule)) {
+				// We must replace expandedItems with new items
+				Item item = new Item(rule, getLookaheadSetFromExpandedItems(expandedItems, rule));
+				expandedItems.remove(item);
+				expandedItems.add(item);
+			}
 
 		return expandedItems;
 	}

@@ -75,12 +75,10 @@ public class SyntaticsTable {
 			return itemStates.get(orgItemKey);
 		
 		
-		// For debug
-		for (Item item : orgItemKey) {
-			System.out.println(item);
-			
-			System.out.println();
-		}
+//		// For debug
+//		for (Item item : orgItemKey) {
+//			System.out.println(item);
+//		}
 		
 		
 
@@ -105,10 +103,13 @@ public class SyntaticsTable {
 			// The value is rule index with negative sign
 			// TODO: Use follow-set or lookahead-set
 			setTerminalSection(currentState, new Action(ActionKind.Reduce, grammar.getRuleIndexOf(closure.getRule())));
+			
+			System.out.println(closure);
 			System.out.println(closure.getLookaheadSet());
+			System.out.println();
 		}
 
-		HashSet<Item> items = grammar.expandItems(excludeClosure(orgItemKey));
+		ArrayList<Item> items = new ArrayList<>(grammar.expandItems(excludeClosure(orgItemKey)));
 		if (items.size() == 0)
 			return currentState;
 
