@@ -102,11 +102,12 @@ public class SyntaticsTable {
 			// Set reduce action as default
 			// The value is rule index with negative sign
 			// TODO: Use follow-set or lookahead-set
-			setTerminalSection(currentState, new Action(ActionKind.Reduce, grammar.getRuleIndexOf(closure.getRule())));
+
+			for (String symbol : closure.getLookaheadSet()) {
+				setTerminalSection(currentState, grammar.getTerminalSymbolIndexOf(symbol), new Action(ActionKind.Reduce, grammar.getRuleIndexOf(closure.getRule())));
+			}
 			
 			System.out.println(closure);
-			System.out.println(closure.getLookaheadSet());
-			System.out.println();
 		}
 
 		ArrayList<Item> items = new ArrayList<>(grammar.expandItems(excludeClosure(orgItemKey)));

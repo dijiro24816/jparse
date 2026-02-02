@@ -210,12 +210,20 @@ public class Grammar {
 		HashSet<Rule> expandedRules = new HashSet<>();
 		
 		HashSet<Item> expandedItems = new HashSet<>(items);
+		
+//		if (items.stream().filter(e -> e.getDot() == 1 && e.getDotSymbol().equals("Expr")).toList().size() >= 1) {
+//			System.out.println("==============================================");
+//			System.out.println("Hit");
+//			System.out.println(items.stream().toList().get(0));
+//			System.out.println("==============================================");
+//		}
+		
 
 		for (Rule rule : expandSymbolsRules(symbols))
 			if (expandedRules.add(rule)) {
 				// We must replace expandedItems with new items
 				Item item = new Item(rule, getLookaheadSetFromExpandedItems(expandedItems, rule));
-				expandedItems.remove(item);
+//				expandedItems.remove(item);
 				expandedItems.add(item);
 			}
 
@@ -297,11 +305,11 @@ public class Grammar {
 				new Rule("Stmt", "Assg"),
 				new Rule("Expr", "ID"),
 				new Rule("Expr", "NUM"),
-				new Rule(operatorPrecedenceRule.getInfo("+"), "Expr", "+", "Expr", "Expr"),
-				new Rule(operatorPrecedenceRule.getInfo("-"), "Expr", "-", "Expr", "Expr"),
-				new Rule(operatorPrecedenceRule.getInfo("*"), "Expr", "*", "Expr", "Expr"),
-				new Rule(operatorPrecedenceRule.getInfo("/"), "Expr", "/", "Expr", "Expr"),
-				new Rule(operatorPrecedenceRule.getInfo("="), "Assg", "=", "ID", "Expr"));
+				new Rule(operatorPrecedenceRule.getInfo("+"), "Expr", "Expr", "+", "Expr"),
+				new Rule(operatorPrecedenceRule.getInfo("-"), "Expr", "Expr", "-", "Expr"),
+				new Rule(operatorPrecedenceRule.getInfo("*"), "Expr", "Expr", "*", "Expr"),
+				new Rule(operatorPrecedenceRule.getInfo("/"), "Expr", "Expr", "/", "Expr"),
+				new Rule(operatorPrecedenceRule.getInfo("="), "Assg", "ID", "=", "Expr"));
 		System.out.println(grammar);
 
 		System.out.println(grammar.getTerminalSymbolsCSV());

@@ -133,7 +133,7 @@ public class Item {
 			return false;
 
 		Item other = (Item) obj;
-		return this.dot == other.getDot() && this.rule.equals(other.getRule());
+		return this.dot == other.getDot() && this.rule.equals(other.getRule()) && this.lookaheadSet.equals(other.getLookaheadSet());
 	}
 
 
@@ -168,7 +168,8 @@ public class Item {
 			}
 		}
 
-		stringBuilder.append("]");
+		stringBuilder.append("] & ");
+		stringBuilder.append(this.lookaheadSet);
 		return stringBuilder.toString();
 	}
 }
