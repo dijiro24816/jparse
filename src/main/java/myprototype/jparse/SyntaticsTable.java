@@ -58,6 +58,20 @@ public class SyntaticsTable {
 		return items.stream().filter(e -> !e.isTakingTheClosure()).toList();
 	}
 
+	
+	private int createState(Grammar grammar, StateKey key, HashMap<StateKey, Integer> itemStates) {
+		if (itemStates.containsKey(key))
+			return itemStates.get(key);
+		
+		int currentState = getNewState();
+		
+		itemStates.put(key, currentState);
+		
+		for (List<Item> derivativeItems : key.getDerivativeItemsList()) {
+		}
+		
+		
+	}
 
 
 
@@ -66,9 +80,8 @@ public class SyntaticsTable {
 		// return states if already existing
 		// FIXME: This is very bad implementation
 		for (HashSet<Item> itemKey : itemStates.keySet()) {
-			if (itemKey.equals(orgItemKey)) {
+			if (itemKey.equals(orgItemKey))
 				return itemStates.get(itemKey);
-			}
 		}
 
 		if (itemStates.containsKey(orgItemKey))

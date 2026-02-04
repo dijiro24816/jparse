@@ -24,7 +24,7 @@ public class Item {
 	public HashSet<String> getLookaheadSet() {
 		return this.lookaheadSet;
 	}
-
+	
 	public Item(Rule rule, HashSet<String> lookaheadSet, int dot) {
 		this.rule = rule;
 		this.lookaheadSet = lookaheadSet;
