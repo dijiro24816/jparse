@@ -1,6 +1,7 @@
 package myprototype.jparse;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.HashSet;
 import java.util.List;
@@ -11,10 +12,14 @@ public class StateKey {
 	private List<Item> items;
 	private List<Item> closures;
 	
-	private StateKey(List<Item> items, List<Item> closures) {
-		
+	private StateKey(String rootSymbol, List<Item> items, List<Item> closures) {
+		this.rootSymbol = rootSymbol;
 		this.items = items;
 		this.closures = closures;
+	}
+	
+	public String getRootSymbol() {
+		return this.rootSymbol;
 	}
 	
 	protected List<Item> getItems() {
@@ -25,7 +30,7 @@ public class StateKey {
 		return this.closures;
 	}
 	
-	public static StateKey create(List<Item> orgItems) {
+	public static StateKey create(String rootSymbol, Collection<Item> orgItems) {
 		ArrayList<Item> items = new ArrayList<>();
 		ArrayList<Item> closures = new ArrayList<>();
 		Comparator<Item> comparator = Comparator
@@ -42,14 +47,14 @@ public class StateKey {
 		if (items.size() > 1)
 			throw new RuntimeException("The Grammar has reduce-reduce problem!");
 		
-		return new StateKey(items, closures);
+		return new StateKey(rootSymbol, items, closures);
 	}
 	
-	public ArrayList<List<Item>> getDerivativeItemsList() {
-		ArrayList<List<Item>> derivativeItemsList = new ArrayList<>();
+	public ArrayList<StateKey> getDerivativeKeys(Grammar grammar) {
+		ArrayList<StateKey> derivativeKeys = new ArrayList<>();
 		
 		if (this.items.size() == 0)
-			return derivativeItemsList;
+			return derivativeKeys;
 		
 		int begIndex = 0, endIndex = 0;
 		String currentSymbol = items.get(begIndex).getDotSymbol();
@@ -64,7 +69,7 @@ public class StateKey {
 				for (Item item : partOfItems)
 					item.increaseDot();
 				
-				derivativeItemsList.add(partOfItems);
+				derivativeKeys.add(StateKey.create(currentSymbol, grammar.expandItems(partOfItems)));
 				
 				// postfix processing
 				if (endIndex == items.size())
@@ -73,7 +78,7 @@ public class StateKey {
 				currentSymbol = items.get(begIndex).getDotSymbol();
 			}
 		}
-		return derivativeItemsList;
+		return derivativeKeys;
 	}
 
 	@Override

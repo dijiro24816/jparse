@@ -58,23 +58,27 @@ public class SyntaticsTable {
 		return items.stream().filter(e -> !e.isTakingTheClosure()).toList();
 	}
 
-	
 	private int createState(Grammar grammar, StateKey key, HashMap<StateKey, Integer> itemStates) {
 		if (itemStates.containsKey(key))
 			return itemStates.get(key);
-		
+
 		int currentState = getNewState();
-		
+
 		itemStates.put(key, currentState);
-		
-		for (List<Item> derivativeItems : key.getDerivativeItemsList()) {
+
+		for (StateKey derivativeKey : key.getDerivativeKeys(grammar)) {
+			String rootSymbol = derivativeKey.getRootSymbol();
+			if (grammar.isNonterminalSymbol(rootSymbol)) {
+				setNonterminalSection(currentState, grammar.getNonterminalSymbolIndexOf(rootSymbol),
+						new Action(ActionKind.Goto, createState(grammar, derivativeKey, itemStates)));
+
+			} else if (grammar.isTerminalSymbol(rootSymbol)) {
+				setTerminalSection(currentState, grammar.getTerminalSymbolIndexOf(rootSymbol),
+						new Action(ActionKind.Shift, createState(grammar, derivativeKey, itemStates)));
+			}
 		}
-		
-		
+
 	}
-
-
-
 
 	private int createState(Grammar grammar, HashSet<Item> orgItemKey, HashMap<HashSet<Item>, Integer> itemStates) {
 		// return states if already existing
@@ -86,14 +90,11 @@ public class SyntaticsTable {
 
 		if (itemStates.containsKey(orgItemKey))
 			return itemStates.get(orgItemKey);
-		
-		
-//		// For debug
-//		for (Item item : orgItemKey) {
-//			System.out.println(item);
-//		}
-		
-		
+
+		//		// For debug
+		//		for (Item item : orgItemKey) {
+		//			System.out.println(item);
+		//		}
 
 		int currentState = getNewState();
 
@@ -117,9 +118,10 @@ public class SyntaticsTable {
 			// TODO: Use follow-set or lookahead-set
 
 			for (String symbol : closure.getLookaheadSet()) {
-				setTerminalSection(currentState, grammar.getTerminalSymbolIndexOf(symbol), new Action(ActionKind.Reduce, grammar.getRuleIndexOf(closure.getRule())));
+				setTerminalSection(currentState, grammar.getTerminalSymbolIndexOf(symbol),
+						new Action(ActionKind.Reduce, grammar.getRuleIndexOf(closure.getRule())));
 			}
-			
+
 			System.out.println(closure);
 		}
 
@@ -147,11 +149,7 @@ public class SyntaticsTable {
 				if (grammar.isNonterminalSymbol(currentSymbol)) {
 					setNonterminalSection(currentState, grammar.getNonterminalSymbolIndexOf(currentSymbol),
 							new Action(ActionKind.Goto, createState(grammar, partOfItems, itemStates)));
-					
-					
-					
-					
-					
+
 				} else if (grammar.isTerminalSymbol(currentSymbol)) {
 					setTerminalSection(currentState, grammar.getTerminalSymbolIndexOf(currentSymbol),
 							new Action(ActionKind.Shift, createState(grammar, partOfItems, itemStates)));
@@ -200,7 +198,7 @@ public class SyntaticsTable {
 					stringBuilder.append(actions[j].toShortString());
 					stringBuilder.append('"');
 				}
-				
+
 				if (j + 1 < this.terminalSectionColumnLength)
 					stringBuilder.append(',');
 			}
@@ -231,7 +229,7 @@ public class SyntaticsTable {
 					stringBuilder.append(gotos[j].toShortString());
 					stringBuilder.append('"');
 				}
-				
+
 				if (j + 1 < this.nonterminalSectionColumnLength)
 					stringBuilder.append(',');
 			}
