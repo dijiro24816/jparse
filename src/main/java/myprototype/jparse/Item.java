@@ -52,7 +52,7 @@ public class Item {
 	}
 
 	public String getDotSymbol() {
-		return this.rule.getSymbols().get(this.dot);
+		return isTakingTheClosure() ? null : this.rule.getSymbols().get(this.dot);
 	}
 	
 	public String getDotNextSymbol() {

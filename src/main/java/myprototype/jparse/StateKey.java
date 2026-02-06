@@ -30,6 +30,10 @@ public class StateKey {
 		return this.closures;
 	}
 	
+	public static StateKey create(Collection<Item> orgItems) {
+		return create(null, orgItems);
+	}
+	
 	public static StateKey create(String rootSymbol, Collection<Item> orgItems) {
 		ArrayList<Item> items = new ArrayList<>();
 		ArrayList<Item> closures = new ArrayList<>();
@@ -43,9 +47,6 @@ public class StateKey {
 			else
 				items.add(item);
 		}
-		
-		if (items.size() > 1)
-			throw new RuntimeException("The Grammar has reduce-reduce problem!");
 		
 		return new StateKey(rootSymbol, items, closures);
 	}

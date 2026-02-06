@@ -51,32 +51,61 @@ public class SyntaticsTable {
 		this.terminalSection = new ArrayList<Action[]>();
 		this.nonterminalSection = new ArrayList<Action[]>();
 
-		createState(grammar, grammar.expandFirstItems(), new HashMap<HashSet<Item>, Integer>());
+//		createState(grammar, grammar.expandFirstItems(), new HashMap<HashSet<Item>, Integer>());
+		
+		createState(grammar);
 	}
 
 	private List<Item> excludeClosure(Collection<Item> items) {
 		return items.stream().filter(e -> !e.isTakingTheClosure()).toList();
 	}
+	
+	private int createState(Grammar grammar) {
+		return createState(grammar, new HashMap<StateKey, Integer>(), StateKey.create(grammar.expandFirstItems()));
+	}
 
-	private int createState(Grammar grammar, StateKey key, HashMap<StateKey, Integer> itemStates) {
-		if (itemStates.containsKey(key))
-			return itemStates.get(key);
+	private int createState(Grammar grammar, HashMap<StateKey, Integer> keyStates, StateKey key) {
+		if (keyStates.containsKey(key))
+			return keyStates.get(key);
 
 		int currentState = getNewState();
 
-		itemStates.put(key, currentState);
+		keyStates.put(key, currentState);
+		
+		List<Item> closures = key.getClosures();
+		if (closures.size() > 0) {
+			// Check reduce-reduce problem
+			if (closures.size() > 1)
+				throw new RuntimeException("The Grammar has reduce-reduce problem!");
+			Item closure = closures.get(0);
+
+			// Set reduce action as default
+			// The value is rule index with negative sign
+			// TODO: Use follow-set or lookahead-set
+
+			for (String symbol : closure.getLookaheadSet()) {
+				setTerminalSection(currentState, grammar.getTerminalSymbolIndexOf(symbol),
+						new Action(ActionKind.Reduce, grammar.getRuleIndexOf(closure.getRule())));
+			}
+
+			System.out.println(closure);
+			
+			// TODO: We should return ?
+		}
 
 		for (StateKey derivativeKey : key.getDerivativeKeys(grammar)) {
 			String rootSymbol = derivativeKey.getRootSymbol();
 			if (grammar.isNonterminalSymbol(rootSymbol)) {
 				setNonterminalSection(currentState, grammar.getNonterminalSymbolIndexOf(rootSymbol),
-						new Action(ActionKind.Goto, createState(grammar, derivativeKey, itemStates)));
+						new Action(ActionKind.Goto, createState(grammar, keyStates, derivativeKey)));
 
 			} else if (grammar.isTerminalSymbol(rootSymbol)) {
 				setTerminalSection(currentState, grammar.getTerminalSymbolIndexOf(rootSymbol),
-						new Action(ActionKind.Shift, createState(grammar, derivativeKey, itemStates)));
+						new Action(ActionKind.Shift, createState(grammar, keyStates, derivativeKey)));
 			}
 		}
+		
+		return currentState;
 
 	}
 
