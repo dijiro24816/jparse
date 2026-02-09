@@ -7,13 +7,6 @@ import java.util.function.BiFunction;
 
 import myprototype.jparse.symbol.terminal.InvalidTokenException;
 
-//@FunctionalInterface
-//interface Compounder<Rule, List<?>, Object> {
-//	Object apply(Rule rule, List<?> list) {
-//		return nuill;
-//	}
-//}
-
 public class Parser {
 	private BufferedLexer lexer;
 	private Grammar grammar;
@@ -30,29 +23,43 @@ public class Parser {
 	}
 	
 	public Action parse(InputStream inStrm, BiFunction<Rule, List<Symbol>, Object> compounder) throws IOException, InvalidTokenException {
-		StateSymbolStack stack = new StateSymbolStack();
-		stack.push(0);
+		StateSymbolStack stack = null;
+		Action action = new Action(ActionKind.Start, 0);
 		
 		for (;;) {
-			Action action = this.table.getAction(stack.getCurrentState(), this.lexer.peek(inStrm).getLabel());
-			
 			switch (action.getKind()) {
+			case Start:
+				stack = new StateSymbolStack();
+				stack.push((int)action.getArgumentValue());
+				break;
+				
 			case Shift:
-				stack.push(this.lexer.getSymbol(inStrm), action.getArgumentValue());
+				stack.push(this.lexer.getSymbol(inStrm));
+				stack.push((int)action.getArgumentValue());
 				break;
 				
 			case Reduce:
-				Rule rule = this.grammar.getRules().get(action.getArgumentValue());
+				Rule rule = this.grammar.getRules().get((int)action.getArgumentValue());
 				List<Symbol> fromSymbols = stack.pop(rule.getSymbols().size());
 				int beg = fromSymbols.get(0).getBeg();
 				int end = fromSymbols.get(fromSymbols.size() - 1).getEnd();
 				Symbol toSymbol = new Symbol(rule.getProductSymbol(), beg, end, compounder.apply(rule, fromSymbols));
-				stack.push(toSymbol, this.table.getAction(stack.getCurrentState(), toSymbol.getLabel()).getArgumentValue());
+				stack.push(toSymbol);
+				continue;
+
+			case Goto:
+				Symbol symbol = stack.pop();
+				stack.push((int)this.table.getNonterminalAction(stack.getCurrentState(), symbol.getLabel()).getArgumentValue());
 				break;
 				
-			default:
+			case Accept:
+				return new Action(ActionKind.Accept, stack.pop());
+				
+			case Error:
 				return action;
 			}
+			
+			action = this.table.getAction(stack.getCurrentState(), this.lexer.peek(inStrm).getLabel());
 		}
 	}
 }

@@ -3,7 +3,6 @@ package myprototype.jparse;
 import java.io.IOException;
 import java.io.InputStream;
 
-import myprototype.jparse.Symbol;
 import myprototype.jparse.symbol.terminal.InvalidTokenException;
 import myprototype.jparse.symbol.terminal.Lexer;
 
@@ -63,7 +62,7 @@ public class BufferedLexer {
 		this.headIndex = increaseIndex(this.headIndex);
 		return symbol;
 	}
-
+	
 	// MUST: nth < this.lookaheadMax
 	public Symbol peek(InputStream source, int nth) throws IOException, InvalidTokenException {
 		int existing = distanceBetweenHeadAndTail() - nth;

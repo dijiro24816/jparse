@@ -2,9 +2,9 @@ package myprototype.jparse;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Arrays;
 
-import myprototype.jparse.Parser;
 import myprototype.jparse.symbol.terminal.InvalidTokenException;
 import myprototype.jparse.symbol.terminal.Lexer;
 
@@ -21,27 +21,48 @@ public class App {
 
 		PrecedenceRuleInfo info = operatorPrecedenceRule.getInfo("=");
 
-		String[] terminals = { "ID", "NUM" };
+		String[] terminals = { "IDENTIFIER", "NUM" };
 		Grammar grammar = new Grammar("S", "$", Arrays.asList(terminals),
 				new Rule("S", "Stmt"),
 				new Rule("Stmt", "Expr"),
 				new Rule("Stmt", "Assg"),
-				new Rule("Expr", "ID"),
+				new Rule("Expr", "IDENTIFIER"),
 				new Rule("Expr", "NUM"),
 				new Rule(operatorPrecedenceRule.getInfo("+"), "Expr", "Expr", "+", "Expr"),
 				new Rule(operatorPrecedenceRule.getInfo("-"), "Expr", "Expr", "-", "Expr"),
 				new Rule(operatorPrecedenceRule.getInfo("*"), "Expr", "Expr", "*", "Expr"),
 				new Rule(operatorPrecedenceRule.getInfo("/"), "Expr", "Expr", "/", "Expr"),
-				new Rule(operatorPrecedenceRule.getInfo("="), "Assg", "ID", "=", "Expr"));
+				new Rule(operatorPrecedenceRule.getInfo("="), "Assg", "ID", "=", "Expr")
+				);
 		
+		System.out.println("*** Grammar ***");
 		System.out.println(grammar);
 		
 		String src = """
-				source code
+				hello
 				""";
+		System.out.println("*** Source ***");
+		System.out.println("```");
+		System.out.println(src);
+		System.out.println("```");
+		
+		try {
+			System.out.println("*** Loaded Token ***");
+			InputStream inStrm = new ByteArrayInputStream(src.getBytes());
+			Lexer lexer = new Lexer();
+			Symbol symbol;
+			while ((symbol = lexer.getSymbol(inStrm)) != null) {
+				System.out.println(symbol);
+			}
+		} catch (IOException | InvalidTokenException e) {
+			// TODO 自動生成された catch ブロック
+			e.printStackTrace();
+		}
+		System.exit(0);
+		
+		
 		
 		Parser parser = Parser.create(new BufferedLexer(new Lexer()), grammar);
-
 		try {
 			System.out.println(parser.parse(new ByteArrayInputStream(src.getBytes()), (rule, symbols) -> { return null; }));
 		} catch (IOException | InvalidTokenException e) {

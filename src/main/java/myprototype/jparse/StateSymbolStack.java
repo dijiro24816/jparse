@@ -4,14 +4,13 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Stack;
 
-import myprototype.jparse.Symbol;
-
 public class StateSymbolStack {
 	private Stack<Integer> states;
 	private Stack<Symbol> symbols;
 	
 	public StateSymbolStack() {
-		this.states.push(0);
+		this.states = new Stack<>();
+		this.symbols = new Stack<>();
 	}
 
 	public int push(Integer item) {

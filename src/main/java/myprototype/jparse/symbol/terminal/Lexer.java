@@ -33,7 +33,7 @@ public class Lexer {
 		if (symbol != null)
 			return symbol;
 
-		return new Symbol("Identifier", beg, end, s);
+		return new Symbol("IDENTIFIER", beg, end, s);
 	}
 
 	public long extractOctalDigits(InputStream inStrm) throws IOException, InvalidTokenException {

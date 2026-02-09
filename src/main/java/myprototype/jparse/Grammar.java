@@ -257,15 +257,13 @@ public class Grammar {
 	public String toString() {
 		StringBuilder stringBuilder = new StringBuilder();
 
-		stringBuilder.append("Grammar" + System.lineSeparator());
-		
 		for (int i = 0; i < this.rules.size(); i++) {
 			stringBuilder.append(i);
 			stringBuilder.append(": ");
 			stringBuilder.append(this.rules.get(i));
 			stringBuilder.append(System.lineSeparator());
 		}
-
+		
 		return stringBuilder.toString();
 	}
 

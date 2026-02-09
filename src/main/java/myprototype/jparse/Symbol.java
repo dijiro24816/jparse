@@ -32,4 +32,11 @@ public class Symbol {
 	public Symbol(String label, int beg, int end) {
 		this(label, beg, end, null);
 	}
+
+	@Override
+	public String toString() {
+		return "Symbol [label=" + this.label + " beg=" + this.beg + " end=" + this.end + " value=" + this.value + "]";
+	}
+	
+	
 }
