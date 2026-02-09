@@ -1,5 +1,6 @@
 package myprototype.jparse.symbol.terminal;
 
+import myprototype.jparse.Symbol;
 import myprototype.jparse.symbol.SymbolEnum;
 
 public class NullLiteralToken extends LiteralToken {
@@ -8,8 +9,8 @@ public class NullLiteralToken extends LiteralToken {
 		super(SymbolEnum.NULL_LITERAL_TOKEN, beg, end);
 	}
 	
-	public static NullLiteralToken capture(int beg, int end, String s) {
-		return s.equals("null") ? new NullLiteralToken(beg, end) : null;
+	public static Symbol capture(int beg, int end, String s) {
+		return s.equals("null") ? new Symbol("NullLiteral", beg, end) : null;
 	}
 
 	@Override

@@ -1,5 +1,6 @@
 package myprototype.jparse.symbol.terminal;
 
+import myprototype.jparse.Symbol;
 import myprototype.jparse.symbol.SymbolEnum;
 
 public class BooleanLiteralToken extends LiteralToken {
@@ -11,7 +12,7 @@ public class BooleanLiteralToken extends LiteralToken {
 		this.value = value;
 	}
 	
-	public static BooleanLiteralToken capture(int beg, int end, String s) {
+	public static Symbol capture(int beg, int end, String s) {
 		boolean value;
 		
 		switch (s) {
@@ -25,7 +26,7 @@ public class BooleanLiteralToken extends LiteralToken {
 			return null;
 		}
 		
-		return new BooleanLiteralToken(beg, end, value);
+		return new Symbol("BooleanLiteral", beg, end, value);
 	}
 
 	@Override

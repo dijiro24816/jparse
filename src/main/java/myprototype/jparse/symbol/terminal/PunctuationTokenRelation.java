@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 
+import myprototype.jparse.Symbol;
 import myprototype.jparse.symbol.terminal.operator.AdditionAssignmentOperatorToken;
 import myprototype.jparse.symbol.terminal.operator.AdditionOperatorToken;
 import myprototype.jparse.symbol.terminal.operator.AssignmentOperatorToken;
@@ -63,13 +64,13 @@ public class PunctuationTokenRelation {
 		this.relations = relations;
 	}
 
-	private Terminal extractInternal(TextBuffer textBuffer, InputStream inStrm)
+	private Symbol extractInternal(TextBuffer textBuffer, InputStream inStrm)
 			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
 			NoSuchMethodException, SecurityException, IOException {
 		return extractInternal(textBuffer, inStrm, 0);
 	}
 
-	private Terminal extractInternal(TextBuffer textBuffer, InputStream inStrm, int count)
+	private Symbol extractInternal(TextBuffer textBuffer, InputStream inStrm, int count)
 			throws IOException, InstantiationException, IllegalAccessException, IllegalArgumentException,
 			InvocationTargetException, NoSuchMethodException, SecurityException {
 		int index = textBuffer.getIndex();
@@ -80,7 +81,7 @@ public class PunctuationTokenRelation {
 		}
 
 		for (PunctuationTokenRelation relation : relations) {
-			Terminal tok = relation.extractInternal(textBuffer, inStrm, count + 1);
+			Symbol tok = relation.extractInternal(textBuffer, inStrm, count + 1);
 			if (tok != null)
 				return tok;
 		}
@@ -90,8 +91,8 @@ public class PunctuationTokenRelation {
 		int endIndex = index + 1;
 		int beg = textBuffer.getByteCount(begIndex);
 		int end = textBuffer.getByteCount(endIndex);
-		textBuffer.erase(begIndex, endIndex);
-		return klass.getConstructor(int.class, int.class).newInstance(beg, end);
+		String s = textBuffer.extract(begIndex, endIndex);
+		return new Symbol(s, beg, end);
 	}
 
 	public static PunctuationTokenRelation[] rootRelations = {
@@ -145,15 +146,15 @@ public class PunctuationTokenRelation {
 					new PunctuationTokenRelation('=', ModuloAssignmentOperatorToken.class))
 	};
 
-	public static Terminal extract(TextBuffer textBuffer, InputStream inStrm)
+	public static Symbol extract(TextBuffer textBuffer, InputStream inStrm)
 			throws IOException, InstantiationException, IllegalAccessException, IllegalArgumentException,
 			InvocationTargetException, NoSuchMethodException, SecurityException {
 		int index = textBuffer.getIndex();
 
 		for (PunctuationTokenRelation relation : rootRelations) {
-			Terminal tok = relation.extractInternal(textBuffer, inStrm);
-			if (tok != null)
-				return tok;
+			Symbol symbol = relation.extractInternal(textBuffer, inStrm);
+			if (symbol != null)
+				return symbol;
 			
 			textBuffer.jump(inStrm, index);
 		}

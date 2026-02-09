@@ -1,122 +1,54 @@
 package myprototype.jparse;
 
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.util.Arrays;
+
+import myprototype.jparse.Parser;
+import myprototype.jparse.symbol.terminal.InvalidTokenException;
+import myprototype.jparse.symbol.terminal.Lexer;
+
 /**
  * Hello world!
  */
 
 public class App {
 	public static void main(String[] args) {
-//		Grammar grammar = new Grammar(SymbolEnum.class, MyNonterm.class,
-//				new Rule("S", stack -> {
-//					return null;
-//				}, "Stmt"),
-//				new Rule("Stmt", stack -> {
-//					return null;
-//				}, "Exp"),
-//				new Rule("Assg", stack -> {
-//					return null;
-//				}, "int", "IDENTIFIER_TOKEN", "Exp"),
-//				new Rule("Exp", stack -> {
-//					return null;
-//				}, "+", "Exp", "Exp"),
-//				new Rule("Exp", stack -> {
-//					return null;
-//				}, "-", "Exp", "Exp"),
-//				new Rule("Exp", stack -> {
-//					return null;
-//				}, "*", "Exp", "Exp"),
-//				new Rule("Exp", stack -> {
-//					return null;
-//				}, "/", "Exp", "Exp"));
-//
-//		if (grammar.isInvalid()) {
-//			throw new RuntimeException("Invalid Grammar Rules");
-//		}
+		OperatorPrecedenceRule operatorPrecedenceRule = new OperatorPrecedenceRule();
+		operatorPrecedenceRule.add(PrecedenceDirection.Right, "=");
+		operatorPrecedenceRule.add(PrecedenceDirection.Left, "+", "-");
+		operatorPrecedenceRule.add(PrecedenceDirection.Left, "*", "/");
 
-//		ProductionO s = new ProductionO(SymbolEnum.S);
-//		ProductionO stmt = new ProductionO(SymbolEnum.STMT);
-//		ProductionO assg = new ProductionO(SymbolEnum.ASSG);
-//		ProductionO int_ = new ProductionO(SymbolEnum.INT_KEYWORD_TOKEN);
-//		ProductionO exp = new ProductionO(SymbolEnum.EXP);
-//		ProductionO digit = new ProductionO(SymbolEnum.INTEGER_LITERAL_TOKEN);
-//		ProductionO ident = new ProductionO(SymbolEnum.IDENTIFIER_TOKEN);
-//		ProductionO add = new ProductionO(SymbolEnum.ADDITION_OPERATOR_TOKEN);
-//		ProductionO sub = new ProductionO(SymbolEnum.SUBTRACTION_OPERATOR_TOKEN);
-//		ProductionO mul = new ProductionO(SymbolEnum.MULTIPLICATION_OPERATOR_TOKEN);
-//		ProductionO div = new ProductionO(SymbolEnum.DIVISION_OPERATOR_TOKEN);
-//
-//		// S    -> Stmt
-//		s.addRule(new RuleO(stack -> {
-//			return null;
-//		}, stmt));
-//
-//		// Stmt -> Assg
-//		stmt.addRule(new RuleO(stack -> {
-//			return null;
-//		}, assg));
-//
-//		// Stmt -> Exp
-//		stmt.addRule(new RuleO(stack -> {
-//			return null;
-//		}, exp));
-//
-//		// Assg -> int IDENT Exp
-//		assg.addRule(new RuleO(stack -> {
-//			return null;
-//		}, int_, ident, exp));
-//
-//		// Exp  -> + Exp Exp
-//		exp.addRule(new RuleO(stack -> {
-//			return null;
-//		}, add, exp, exp));
-//
-//		// Exp  -> - Exp Exp
-//		exp.addRule(new RuleO(stack -> {
-//			return null;
-//		}, sub, exp, exp));
-//
-//		// Exp  -> * Exp Exp
-//		exp.addRule(new RuleO(stack -> {
-//			return null;
-//		}, mul, exp, exp));
-//
-//		// Exp  -> / Exp Exp
-//		exp.addRule(new RuleO(stack -> {
-//			return null;
-//		}, div, exp, exp));
-//
-//		// Exp  -> DIGIT
-//		exp.addRule(new RuleO(stack -> {
-//			return null;
-//		}, digit));
-//
-//		// Exp  -> IDENT
-//		exp.addRule(new RuleO(stack -> {
-//			return null;
-//		}, ident));
-//
-//		ParserData parserData = new ScenarioWriter().getParserData(s, SymbolEnum.class);
-//
-//		//		System.out.println(parserData.getRuleTableString());
-//		//		System.out.println(parserData.getSyntaticsTableString());
-//		//		System.exit(0);
-//
-//		//		String src = "int v + + 3.14159265359 0x2p-2 ";
-//		String src = "int v + 1 1";
-//		//		String src = "+ \\u0031 1";
-//		//		int v = \u0031;
-//		//		\u0069\u006E\u0074\u0020\u0076\u0020\u003D\u0020\u0031\u003b
-//		//		System.out.println(v);
-//
-//		try {
-//			Parser parser = new Parser(new Lexer(), parserData);
-//			InputStream inStrm = new ByteArrayInputStream(src.getBytes());
-//			parser.parse(inStrm);
-//		} catch (IOException e) {
-//			System.out.println(e.getMessage());
-//			System.exit(0);
-//		}
-//		System.out.println("MSG: Finished!");
+		PrecedenceRuleInfo info = operatorPrecedenceRule.getInfo("=");
+
+		String[] terminals = { "ID", "NUM" };
+		Grammar grammar = new Grammar("S", "$", Arrays.asList(terminals),
+				new Rule("S", "Stmt"),
+				new Rule("Stmt", "Expr"),
+				new Rule("Stmt", "Assg"),
+				new Rule("Expr", "ID"),
+				new Rule("Expr", "NUM"),
+				new Rule(operatorPrecedenceRule.getInfo("+"), "Expr", "Expr", "+", "Expr"),
+				new Rule(operatorPrecedenceRule.getInfo("-"), "Expr", "Expr", "-", "Expr"),
+				new Rule(operatorPrecedenceRule.getInfo("*"), "Expr", "Expr", "*", "Expr"),
+				new Rule(operatorPrecedenceRule.getInfo("/"), "Expr", "Expr", "/", "Expr"),
+				new Rule(operatorPrecedenceRule.getInfo("="), "Assg", "ID", "=", "Expr"));
+		
+		System.out.println(grammar);
+		
+		String src = """
+				source code
+				""";
+		
+		Parser parser = Parser.create(new BufferedLexer(new Lexer()), grammar);
+
+		try {
+			System.out.println(parser.parse(new ByteArrayInputStream(src.getBytes()), (rule, symbols) -> { return null; }));
+		} catch (IOException | InvalidTokenException e) {
+			e.printStackTrace();
+		}
+		
+		System.out.println("MSG: Finished!");
 	}
 
 	public static void maina(String[] args) throws CloneNotSupportedException {

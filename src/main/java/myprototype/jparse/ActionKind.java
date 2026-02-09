@@ -4,8 +4,8 @@ public enum ActionKind {
 	Shift,
 	Reduce,
 	Goto,
-	Accept
-	
+	Accept,
+	Error
 	;
 	
 	

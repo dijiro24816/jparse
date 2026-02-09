@@ -12,6 +12,10 @@ public class Action {
 		return argumentValue;
 	}
 
+	public Action(ActionKind kind) {
+		this(kind, -1);
+	}
+	
 	public Action(ActionKind kind, int argumentValue) {
 		this.kind = kind;
 		this.argumentValue = argumentValue;

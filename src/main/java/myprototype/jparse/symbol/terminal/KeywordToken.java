@@ -1,5 +1,6 @@
 package myprototype.jparse.symbol.terminal;
 
+import myprototype.jparse.Symbol;
 import myprototype.jparse.symbol.SymbolEnum;
 import myprototype.jparse.symbol.terminal.keyword.AbstractKeywordToken;
 import myprototype.jparse.symbol.terminal.keyword.AssertKeywordToken;
@@ -61,109 +62,109 @@ public class KeywordToken extends Terminal {
 		super(kind, beg, end);
 	}
 
-	public static KeywordToken capture(int beg, int end, String s) {
+	public static Symbol capture(int beg, int end, String s) {
 		switch (s) {
 
-		case "abstract":
-			return new AbstractKeywordToken(beg, end);
+ 		case "abstract":
+			return new Symbol("abstract", beg, end);
 		case "assert":
-			return new AssertKeywordToken(beg, end);
+			return new Symbol("assert", beg, end);
 		case "boolean":
-			return new BooleanKeywordToken(beg, end);
+			return new Symbol("boolean", beg, end);
 		case "break":
-			return new BreakKeywordToken(beg, end);
+			return new Symbol("break", beg, end);
 		case "byte":
-			return new ByteKeywordToken(beg, end);
+			return new Symbol("byte", beg, end);
 		case "case":
-			return new CaseKeywordToken(beg, end);
+			return new Symbol("case", beg, end);
 		case "catch":
-			return new CatchKeywordToken(beg, end);
+			return new Symbol("catch", beg, end);
 		case "char":
-			return new CharKeywordToken(beg, end);
+			return new Symbol("char", beg, end);
 		case "class":
-			return new ClassKeywordToken(beg, end);
+			return new Symbol("class", beg, end);
 		case "const":
-			return new ConstKeywordToken(beg, end);
+			return new Symbol("const", beg, end);
 		case "continue":
-			return new ContinueKeywordToken(beg, end);
+			return new Symbol("continue", beg, end);
 		case "default":
-			return new DefaultKeywordToken(beg, end);
+			return new Symbol("default", beg, end);
 		case "do":
-			return new DoKeywordToken(beg, end);
+			return new Symbol("do", beg, end);
 		case "double":
-			return new DoubleKeywordToken(beg, end);
+			return new Symbol("double", beg, end);
 		case "else":
-			return new ElseKeywordToken(beg, end);
+			return new Symbol("else", beg, end);
 		case "enum":
-			return new EnumKeywordToken(beg, end);
+			return new Symbol("enum", beg, end);
 		case "extends":
-			return new ExtendsKeywordToken(beg, end);
+			return new Symbol("extends", beg, end);
 		case "final":
-			return new FinalKeywordToken(beg, end);
+			return new Symbol("final", beg, end);
 		case "finally":
-			return new FinallyKeywordToken(beg, end);
+			return new Symbol("finally", beg, end);
 		case "float":
-			return new FloatKeywordToken(beg, end);
+			return new Symbol("float", beg, end);
 		case "for":
-			return new ForKeywordToken(beg, end);
+			return new Symbol("for", beg, end);
 		case "if":
-			return new IfKeywordToken(beg, end);
+			return new Symbol("if", beg, end);
 		case "goto":
-			return new GotoKeywordToken(beg, end);
+			return new Symbol("goto", beg, end);
 		case "implements":
-			return new ImplementsKeywordToken(beg, end);
+			return new Symbol("implements", beg, end);
 		case "import":
-			return new ImportKeywordToken(beg, end);
+			return new Symbol("import", beg, end);
 		case "instanceof":
-			return new InstanceofKeywordToken(beg, end);
+			return new Symbol("instanceof", beg, end);
 		case "int":
-			return new IntKeywordToken(beg, end);
+			return new Symbol("int", beg, end);
 		case "interface":
-			return new InterfaceKeywordToken(beg, end);
+			return new Symbol("interface", beg, end);
 		case "long":
-			return new LongKeywordToken(beg, end);
+			return new Symbol("long", beg, end);
 		case "native":
-			return new NativeKeywordToken(beg, end);
+			return new Symbol("native", beg, end);
 		case "new":
-			return new NewKeywordToken(beg, end);
+			return new Symbol("new", beg, end);
 		case "package":
-			return new PackageKeywordToken(beg, end);
+			return new Symbol("package", beg, end);
 		case "private":
-			return new PrivateKeywordToken(beg, end);
+			return new Symbol("private", beg, end);
 		case "protected":
-			return new ProtectedKeywordToken(beg, end);
+			return new Symbol("protected", beg, end);
 		case "public":
-			return new PublicKeywordToken(beg, end);
+			return new Symbol("public", beg, end);
 		case "return":
-			return new ReturnKeywordToken(beg, end);
+			return new Symbol("return", beg, end);
 		case "short":
-			return new ShortKeywordToken(beg, end);
+			return new Symbol("short", beg, end);
 		case "static":
-			return new StaticKeywordToken(beg, end);
+			return new Symbol("static", beg, end);
 		case "strictfp":
-			return new StrictfpKeywordToken(beg, end);
+			return new Symbol("strictfp", beg, end);
 		case "super":
-			return new SuperKeywordToken(beg, end);
+			return new Symbol("super", beg, end);
 		case "switch":
-			return new SwitchKeywordToken(beg, end);
+			return new Symbol("switch", beg, end);
 		case "synchronized":
-			return new SynchronizedKeywordToken(beg, end);
+			return new Symbol("synchronized", beg, end);
 		case "this":
-			return new ThisKeywordToken(beg, end);
+			return new Symbol("this", beg, end);
 		case "throw":
-			return new ThrowKeywordToken(beg, end);
+			return new Symbol("throw", beg, end);
 		case "throws":
-			return new ThrowsKeywordToken(beg, end);
+			return new Symbol("throws", beg, end);
 		case "transient":
-			return new TransientKeywordToken(beg, end);
+			return new Symbol("transient", beg, end);
 		case "try":
-			return new TryKeywordToken(beg, end);
+			return new Symbol("try", beg, end);
 		case "void":
-			return new VoidKeywordToken(beg, end);
+			return new Symbol("void", beg, end);
 		case "volatile":
-			return new VolatileKeywordToken(beg, end);
+			return new Symbol("volatile", beg, end);
 		case "while":
-			return new WhileKeywordToken(beg, end);
+			return new Symbol("while", beg, end);
 		}
 		return null;
 	}

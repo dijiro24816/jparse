@@ -1,9 +1,9 @@
-package myprototype.jparse.lr1;
+package myprototype.jparse;
 
 import java.io.IOException;
 import java.io.InputStream;
 
-import myprototype.jparse.symbol.Symbol;
+import myprototype.jparse.Symbol;
 import myprototype.jparse.symbol.terminal.InvalidTokenException;
 import myprototype.jparse.symbol.terminal.Lexer;
 
@@ -75,5 +75,9 @@ public class BufferedLexer {
 			read(source);
 		
 		return this.symbols[increaseIndex(this.headIndex, nth)];
+	}
+	
+	public Symbol peek(InputStream source) throws IOException, InvalidTokenException {
+		return peek(source, 0);
 	}
 }

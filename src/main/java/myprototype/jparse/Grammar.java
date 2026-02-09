@@ -16,7 +16,6 @@ public class Grammar {
 	private String begSymbol;
 	private String endSymbol;
 
-	// We can implements like this, because Java resolve the collision by the Chaining method 
 	private HashSet<String> specificTerminalSymbolSet;
 	private List<String> specificTerminalSymbolList;
 	private HashSet<String> generalTerminalSymbolSet;
@@ -62,6 +61,8 @@ public class Grammar {
 
 		this.nonterminalSymbolIndices = new HashMap<String, Integer>();
 		this.nonterminalSymbols = new ArrayList<String>();
+		cacheNonterminalSymbolWithIndex(startSymbol);
+		
 		this.ruleIndices = new HashMap<Rule, Integer>();
 		this.rules = new ArrayList<Rule>();
 
@@ -207,22 +208,9 @@ public class Grammar {
 
 	public HashSet<Item> expandItems(Collection<Item> items) {
 		List<String> symbols = getDotSymbols(items);
-//		HashSet<String> expandedSymbols = new HashSet<>(items.stream().map(e -> e.getDotSymbol()).toList());
-//		HashSet<Item> expandedItems = new HashSet<>(items);
-		HashSet<String> expandedSymbols = new HashSet<>();
-		
 		HashSet<Rule> expandedRules = new HashSet<>();
-		
 		HashSet<Item> expandedItems = new HashSet<>(items);
 		
-//		if (items.stream().filter(e -> e.getDot() == 1 && e.getDotSymbol().equals("Expr")).toList().size() >= 1) {
-//			System.out.println("==============================================");
-//			System.out.println("Hit");
-//			System.out.println(items.stream().toList().get(0));
-//			System.out.println("==============================================");
-//		}
-		
-
 		for (Rule rule : expandSymbolsRules(symbols))
 			if (expandedRules.add(rule)) {
 				// We must replace expandedItems with new items
@@ -269,6 +257,8 @@ public class Grammar {
 	public String toString() {
 		StringBuilder stringBuilder = new StringBuilder();
 
+		stringBuilder.append("Grammar" + System.lineSeparator());
+		
 		for (int i = 0; i < this.rules.size(); i++) {
 			stringBuilder.append(i);
 			stringBuilder.append(": ");
@@ -309,11 +299,11 @@ public class Grammar {
 				new Rule("Stmt", "Assg"),
 				new Rule("Expr", "ID"),
 				new Rule("Expr", "NUM"),
-				new Rule(operatorPrecedenceRule.getInfo("+"), "Expr", "+", "Expr", "Expr"),
-				new Rule(operatorPrecedenceRule.getInfo("-"), "Expr", "-", "Expr", "Expr"),
-				new Rule(operatorPrecedenceRule.getInfo("*"), "Expr", "*", "Expr", "Expr"),
-				new Rule(operatorPrecedenceRule.getInfo("/"), "Expr", "/", "Expr", "Expr"),
-				new Rule(operatorPrecedenceRule.getInfo("="), "Assg", "=", "ID", "Expr"));
+				new Rule(operatorPrecedenceRule.getInfo("+"), "Expr", "Expr", "+", "Expr"),
+				new Rule(operatorPrecedenceRule.getInfo("-"), "Expr", "Expr", "-", "Expr"),
+				new Rule(operatorPrecedenceRule.getInfo("*"), "Expr", "Expr", "*", "Expr"),
+				new Rule(operatorPrecedenceRule.getInfo("/"), "Expr", "Expr", "/", "Expr"),
+				new Rule(operatorPrecedenceRule.getInfo("="), "Assg", "ID", "=", "Expr"));
 		System.out.println(grammar);
 
 		System.out.println(grammar.getTerminalSymbolsCSV());

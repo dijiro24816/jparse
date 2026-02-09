@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import myprototype.jparse.Action;
+import myprototype.jparse.BufferedLexer;
 import myprototype.jparse.ParserData;
 import myprototype.jparse.symbol.Symbol;
 import myprototype.jparse.symbol.nonterminal.StmtNode;

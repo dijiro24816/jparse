@@ -5,10 +5,12 @@ import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HexFormat;
 
+import myprototype.jparse.Symbol;
+
 public class Lexer {
 	public TextBuffer textBuffer = new TextBuffer();
 
-	public Terminal extractAfterJavaLetter(InputStream inStrm) throws IOException, InvalidTokenException {
+	public Symbol extractAfterJavaLetter(InputStream inStrm) throws IOException, InvalidTokenException {
 		int ch, length = 0;
 		while ((ch = textBuffer.getCharacter(inStrm)) >= 0 && (isJavaLetter(ch) || Character.isDigit(ch)))
 			length++;
@@ -17,21 +19,21 @@ public class Lexer {
 		String s = textBuffer.extract(length);
 		int end = textBuffer.getFirstByteCount();
 
-		Terminal tok;
+		Symbol symbol;
 
-		tok = KeywordToken.capture(beg, end, s);
-		if (tok != null)
-			return tok;
+		symbol = KeywordToken.capture(beg, end, s);
+		if (symbol != null)
+			return symbol;
 
-		tok = NullLiteralToken.capture(beg, end, s);
-		if (tok != null)
-			return tok;
+		symbol = NullLiteralToken.capture(beg, end, s);
+		if (symbol != null)
+			return symbol;
 
-		tok = BooleanLiteralToken.capture(beg, end, s);
-		if (tok != null)
-			return tok;
+		symbol = BooleanLiteralToken.capture(beg, end, s);
+		if (symbol != null)
+			return symbol;
 
-		return new IdentifierToken(beg, end, s);
+		return new Symbol("Identifier", beg, end, s);
 	}
 
 	public long extractOctalDigits(InputStream inStrm) throws IOException, InvalidTokenException {
@@ -52,7 +54,8 @@ public class Lexer {
 		return Util.parseHexDecimalDigits(textBuffer.extract(start, end));
 	}
 
-	public Terminal extractAfterBinaryExponent(InputStream inStrm, String left) throws IOException, InvalidTokenException {
+	public Symbol extractAfterBinaryExponent(InputStream inStrm, String left)
+			throws IOException, InvalidTokenException {
 		int beg = textBuffer.getFirstByteCount() - left.length();
 
 		double value = 0;
@@ -84,10 +87,10 @@ public class Lexer {
 		textBuffer.erase(length);
 		int end = textBuffer.getFirstByteCount();
 
-		return new FloatingPointLiteralToken(beg, end, value);
+		return new Symbol("FlotingPointLiteral", beg, end, value);
 	}
 
-	public Terminal extractAfterDigit(InputStream inStrm) throws IOException, InvalidTokenException {
+	public Symbol extractAfterDigit(InputStream inStrm) throws IOException, InvalidTokenException {
 		int ch = textBuffer.peek(inStrm);
 		int length = 0;
 
@@ -122,11 +125,11 @@ public class Lexer {
 
 			if (isFloatingPoint) {
 				floatingPointValue = Double.parseDouble(s);
-				return new FloatingPointLiteralToken(beg, end, floatingPointValue);
+				return new Symbol("FloatingPointLiteral", beg, end, floatingPointValue);
 			}
 			value = Long.parseLong(s);
 
-			return new IntegerLiteralToken(beg, end, value);
+			return new Symbol("IntegerLiteral", beg, end, value);
 		}
 
 		switch (textBuffer.peek(inStrm, 1)) {
@@ -156,7 +159,7 @@ public class Lexer {
 			value = HexFormat.fromHexDigitsToLong(s);
 			end = textBuffer.getFirstByteCount();
 
-			return new IntegerLiteralToken(beg, end, value);
+			return new Symbol("IntegerLiteral", beg, end, value);
 
 		case 'b':
 		case 'B': {
@@ -180,7 +183,7 @@ public class Lexer {
 				m *= 2;
 			}
 
-			return new IntegerLiteralToken(beg, end, value);
+			return new Symbol("IntegerLiteral", beg, end, value);
 		}
 
 		default: {
@@ -205,7 +208,7 @@ public class Lexer {
 				m *= 8;
 			}
 
-			return new IntegerLiteralToken(beg, end, value);
+			return new Symbol("IntegerLiteral", beg, end, value);
 		}
 
 		}
@@ -267,7 +270,7 @@ public class Lexer {
 		return ch;
 	}
 
-	public Terminal extractStringLiteralToken(InputStream inStrm) throws IOException, InvalidTokenException {
+	public Symbol extractStringLiteralToken(InputStream inStrm) throws IOException, InvalidTokenException {
 		int beg = textBuffer.getFirstByteCount();
 		int offset = textBuffer.getIndex();
 
@@ -284,7 +287,7 @@ public class Lexer {
 
 		textBuffer.erase(offset, offset + 2); // erase '"' + '"'
 
-		return new StringLiteralToken(beg, textBuffer.getByteCount(offset), sb.toString());
+		return new Symbol("StringLiteral", beg, textBuffer.getByteCount(offset), sb.toString());
 	}
 
 	public int extractSingleCharacter(InputStream inStrm) throws IOException, InvalidTokenException {
@@ -303,7 +306,7 @@ public class Lexer {
 		return ch;
 	}
 
-	public Terminal extractCharacterLiteralToken(InputStream inStrm) throws IOException, InvalidTokenException {
+	public Symbol extractCharacterLiteralToken(InputStream inStrm) throws IOException, InvalidTokenException {
 		int beg = textBuffer.getFirstByteCount();
 		int offset = textBuffer.getIndex();
 
@@ -323,10 +326,10 @@ public class Lexer {
 			throw new InvalidTokenException();
 
 		textBuffer.erase(offset, offset + 2); // erase '\'' + '\''
-		return new CharacterLiteralToken(beg, textBuffer.getFirstByteCount(), ch);
+		return new Symbol("CharacterLiteral", ch, beg, textBuffer.getFirstByteCount());
 	}
-	
-	public Terminal extractPunctuation(InputStream inStrm) throws IOException {
+
+	public Symbol extractPunctuation(InputStream inStrm) throws IOException {
 		try {
 			return PunctuationTokenRelation.extract(textBuffer, inStrm);
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
@@ -343,7 +346,7 @@ public class Lexer {
 		return false;
 	}
 
-	public Terminal getSymbol(InputStream inStrm) throws IOException, InvalidTokenException {
+	public Symbol getSymbol(InputStream inStrm) throws IOException, InvalidTokenException {
 		int ch;
 		while ((ch = textBuffer.peek(inStrm)) >= 0) {
 			if (ch != '\n' && (ch < ' ' || ch > 126)) // Invaild character
@@ -377,7 +380,8 @@ public class Lexer {
 			if (isJavaLetter(ch))
 				return extractAfterJavaLetter(inStrm);
 
-			if (Character.isDigit(ch) || (ch == '.' && Character.isDigit(textBuffer.peek(inStrm, 1)))) // Digit or FloatingPoint
+			if (Character.isDigit(ch) || (ch == '.' && Character.isDigit(textBuffer.peek(inStrm, 1)))) // Digit or
+																										// FloatingPoint
 				return extractAfterDigit(inStrm);
 
 			String s = "";
