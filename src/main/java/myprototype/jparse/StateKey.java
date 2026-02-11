@@ -37,7 +37,7 @@ public class StateKey {
 	public static StateKey create(String rootSymbol, Collection<Item> orgItems) {
 		ArrayList<Item> items = new ArrayList<>(orgItems.stream().filter(e -> !e.isTakingTheClosure()).toList());
 		ArrayList<Item> closures = new ArrayList<>(orgItems.stream().filter(e -> e.isTakingTheClosure()).toList());
-		Comparator<Item> comparator = Comparator.<Item, String>comparing(Item::getDotSymbol).thenComparing(
+		Comparator<Item> comparator = Comparator.<Item, String>comparing(Item::getRightSymbolsString).thenComparing(
 				e -> e.getLookaheadSet().stream().sorted(String.CASE_INSENSITIVE_ORDER).toString(),
 				String.CASE_INSENSITIVE_ORDER);
 
@@ -55,11 +55,12 @@ public class StateKey {
 
 		int begIndex = 0, endIndex = 0;
 		String currentSymbol = this.items.get(begIndex).getDotSymbol();
-		HashSet<String> currentLookaheadSet = this.items.get(begIndex).getLookaheadSet();
+//		HashSet<String> currentLookaheadSet = this.items.get(begIndex).getLookaheadSet();
 		for (;;) {
 			endIndex++;
 			if ((endIndex == this.items.size()) || !currentSymbol.equals(this.items.get(endIndex).getDotSymbol())
-					|| !currentLookaheadSet.equals(this.items.get(endIndex).getLookaheadSet())) {
+//					|| !currentLookaheadSet.equals(this.items.get(endIndex).getLookaheadSet())
+					) {
 
 				List<Item> partOfItems = this.items.subList(begIndex, endIndex).stream().map(e -> e.clone()).toList();
 				for (Item item : partOfItems)

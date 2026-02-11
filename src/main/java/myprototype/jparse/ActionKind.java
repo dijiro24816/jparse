@@ -6,8 +6,7 @@ public enum ActionKind {
 	Shift,
 	Reduce,
 	Goto,
-	Accept,
-	Error
+	Accept
 	;
 	
 	

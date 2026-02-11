@@ -18,11 +18,7 @@ public class Parser {
 		this.lexer = lexer;
 	}
 	
-	public static Parser create(BufferedLexer lexer, Grammar grammar) {
-		return new Parser(lexer, grammar, new SyntaticsTable(grammar));
-	}
-	
-	public Action parse(InputStream inStrm, BiFunction<Rule, List<Symbol>, Object> compounder) throws IOException, InvalidTokenException {
+	public Object parse(InputStream inStrm, BiFunction<Rule, List<Symbol>, Object> compounder) throws IOException, InvalidTokenException {
 		StateSymbolStack stack = null;
 		Action action = new Action(ActionKind.Start, 0);
 		
@@ -30,33 +26,45 @@ public class Parser {
 			switch (action.getKind()) {
 			case Start:
 				stack = new StateSymbolStack();
-				stack.push((int)action.getArgumentValue());
+				stack.push(action.getArgumentValue());
 				break;
 				
 			case Shift:
+				System.out.print(stack);
+				System.out.println(" (" + this.lexer.peek(inStrm).getLabel() + ") Shift Symbol -- " + action.getArgumentValue());
+				
 				stack.push(this.lexer.getSymbol(inStrm));
-				stack.push((int)action.getArgumentValue());
+				stack.push(action.getArgumentValue());
+				
+				
 				break;
 				
 			case Reduce:
-				Rule rule = this.grammar.getRules().get((int)action.getArgumentValue());
+				System.out.print(stack);
+				System.out.println(" (" + this.lexer.peek(inStrm).getLabel() + ") Reduce Rule -- " + action.getArgumentValue() + ": " + this.grammar.getRules().get(action.getArgumentValue()));
+				
+				Rule rule = this.grammar.getRules().get(action.getArgumentValue());
 				List<Symbol> fromSymbols = stack.pop(rule.getSymbols().size());
-				int beg = fromSymbols.get(0).getBeg();
-				int end = fromSymbols.get(fromSymbols.size() - 1).getEnd();
+				int beg = -1, end = -1;
+				if (fromSymbols.size() > 0) { // Nonterm -> 
+					beg = fromSymbols.get(0).getBeg();
+					end = fromSymbols.get(fromSymbols.size() - 1).getEnd();
+				}
 				Symbol toSymbol = new Symbol(rule.getProductSymbol(), beg, end, compounder.apply(rule, fromSymbols));
 				stack.push(toSymbol);
+				
+				action = this.table.getNonterminalAction(stack.getCurrentState(), toSymbol.getLabel());
 				continue;
 
 			case Goto:
-				Symbol symbol = stack.pop();
-				stack.push((int)this.table.getNonterminalAction(stack.getCurrentState(), symbol.getLabel()).getArgumentValue());
+				System.out.print(stack);
+				stack.push(action.getArgumentValue());
+				
+				System.out.println(" (" + this.lexer.peek(inStrm).getLabel() + ") Goto State -- " + action.getArgumentValue());
 				break;
 				
 			case Accept:
-				return new Action(ActionKind.Accept, stack.pop());
-				
-			case Error:
-				return action;
+				return stack.pop();
 			}
 			
 			action = this.table.getAction(stack.getCurrentState(), this.lexer.peek(inStrm).getLabel());

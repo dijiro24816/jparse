@@ -4,16 +4,16 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import myprototype.jparse.symbol.terminal.InvalidTokenException;
-import myprototype.jparse.symbol.terminal.Lexer;
+import myprototype.jparse.symbol.terminal.JavaLexer;
 
 public class BufferedLexer {
 	private Symbol[] symbols;
 	private int headIndex;
 	private int tailIndex;
 	
-	private Lexer lexer;
+	private JavaLexer lexer;
 	
-	public BufferedLexer(int lookaheadMax, Lexer lexer) {
+	public BufferedLexer(int lookaheadMax, JavaLexer lexer) {
 		this.symbols = new Symbol[lookaheadMax + 1];
 		this.headIndex = 0;
 		this.tailIndex = 0;
@@ -21,7 +21,7 @@ public class BufferedLexer {
 		this.lexer = lexer;
 	}
 	
-	public BufferedLexer(Lexer lexer) { 
+	public BufferedLexer(JavaLexer lexer) { 
 		this(1, lexer);
 	}
 	

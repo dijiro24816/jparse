@@ -1,7 +1,9 @@
 package myprototype.jparse;
 
+import java.io.ByteArrayInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -11,6 +13,9 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.stream.Stream;
+
+import myprototype.jparse.symbol.terminal.InvalidTokenException;
+import myprototype.jparse.symbol.terminal.JavaLexer;
 
 public class Grammar {
 	private String begSymbol;
@@ -134,6 +139,10 @@ public class Grammar {
 			}
 		}
 	}
+	
+	public boolean isEndSymbol(Symbol symbol) {
+		return symbol.getLabel().equals(this.endSymbol);
+	}
 
 	public boolean isSpecificTerminalSymbol(String symbol) {
 		return this.specificTerminalSymbolSet.contains(symbol);
@@ -192,10 +201,28 @@ public class Grammar {
 	}
 
 	public HashSet<Item> expandFirstItems() {
-		HashSet<String> lookaheadSet = new HashSet<>();
-		lookaheadSet.add(getEndSymbol());
-		return new HashSet<>(
-				expandSymbolsRules(getStartSymbol()).stream().map(e -> new Item(e, lookaheadSet)).toList());
+		
+		HashSet<Item> items = new HashSet<>(expandSymbolsRules(getStartSymbol()).stream().map(e -> new Item(e)).toList());
+		HashSet<Item> dstItems = new HashSet<>();
+		System.out.println(items);
+		for (Item item : items) {
+			HashSet<String> lookaheadSet = getLookaheadSetFromItems(items, item.getRule().getProductSymbol());
+			lookaheadSet.add("$");
+			dstItems.add(new Item(item.getRule(), lookaheadSet));
+		}
+		
+		
+//		HashSet<String> lookaheadSet = new HashSet<>();
+//		lookaheadSet.add(getEndSymbol());
+//		HashSet<Item> items = expandItems(expandSymbolsRules(getStartSymbol()).stream().map(e -> new Item(e, lookaheadSet)).toList());
+//		System.out.println(dstItems);
+		return dstItems;
+		
+		
+//		HashSet<String> lookaheadSet = new HashSet<>();
+//		lookaheadSet.add(getEndSymbol());
+//		return new HashSet<>(
+//				expandSymbolsRules(getStartSymbol()).stream().map(e -> new Item(e, lookaheadSet)).toList());
 	}
 
 	public HashSet<Item> expandItems(Item... orgItems) {
@@ -206,25 +233,41 @@ public class Grammar {
 		return items.stream().map(e -> e.getDotSymbol()).filter(e -> e != null).toList();
 	}
 
-	public HashSet<Item> expandItems(Collection<Item> items) {
-		List<String> symbols = getDotSymbols(items);
-		HashSet<Rule> expandedRules = new HashSet<>();
-		HashSet<Item> expandedItems = new HashSet<>(items);
+	public HashSet<Item> expandItems(Collection<Item> orgItems) {
+//		List<String> symbols = getDotSymbols(orgItems);
+//		
+//		System.out.println("dot symbols: " + symbols);
+//		HashSet<Rule> expandedRules = new HashSet<>();
+//		HashSet<Item> expandedItems = new HashSet<>(orgItems);
+//		
+//		for (Rule rule : expandSymbolsRules(symbols))
+//			if (expandedRules.add(rule)) {
+//				// We must replace expandedItems with new items
+//				Item item = new Item(rule, getLookaheadSetFromItems(expandedItems, rule.getProductSymbol()));
+////				expandedItems.remove(item);
+//				expandedItems.add(item);
+//			}
+//		return new ArrayList(expandedItems);
 		
-		for (Rule rule : expandSymbolsRules(symbols))
-			if (expandedRules.add(rule)) {
-				// We must replace expandedItems with new items
-				Item item = new Item(rule, getLookaheadSetFromExpandedItems(expandedItems, rule));
-//				expandedItems.remove(item);
-				expandedItems.add(item);
-			}
+		HashSet<Rule> rules = expandSymbolsRules(getDotSymbols(orgItems));
+		
+		HashSet<Item> items = new HashSet<>();
+		items.addAll(orgItems);
+		items.addAll(rules.stream().map(e -> new Item(e)).toList());
+		
+		HashSet<Item> dstItems = new HashSet<>(orgItems);
+		for (Rule rule : rules)
+			dstItems.add(new Item(rule, getLookaheadSetFromItems(items, rule.getProductSymbol())));
 
-		return expandedItems;
+//		System.out.println("-----------------------------");
+//		System.out.println(dstItems);
+		return dstItems;
 	}
 	
-	public HashSet<String> getLookaheadSetFromExpandedItems(Collection<Item> items, Rule rule) {
+	public HashSet<String> getLookaheadSetFromItems(Collection<Item> items, String symbol) {
 		HashSet<String> lookaheadSet = new HashSet<>();
-		List<Item> orgItems = items.stream().filter(e -> e.getDotSymbol().equals(rule.getProductSymbol())).toList();
+		List<Item> orgItems = items.stream().filter(e -> e.getDotSymbol() != null).filter(e -> e.getDotSymbol().equals(symbol)).toList();
+		
 		for (Item item : orgItems) {
 			
 			if (item.isReachingLastSymbol())
@@ -235,6 +278,13 @@ public class Grammar {
 				// Nonterm -> . Nonterm Term
 				lookaheadSet.addAll(getFirstSet(item.getDotNextSymbol()));
 		}
+		
+//		if (new HashSet<>(orgItems.stream().map(e -> e.getProductSymbol()).toList()).contains("Stmt")) {
+//			System.out.println(items);
+//			System.out.println(symbol);
+//			System.out.println(lookaheadSet);
+////			System.exit(0);
+//		}
 		return lookaheadSet;
 	}
 
@@ -266,8 +316,54 @@ public class Grammar {
 		
 		return stringBuilder.toString();
 	}
-
+	
 	public static void main(String[] args) {
+		OperatorPrecedenceRule operatorPrecedenceRule = new OperatorPrecedenceRule();
+		operatorPrecedenceRule.add(PrecedenceDirection.Right, "=");
+		operatorPrecedenceRule.add(PrecedenceDirection.Left, "+", "-");
+		operatorPrecedenceRule.add(PrecedenceDirection.Left, "*", "/");
+
+		String[] terminals = { "Identifier", "NUM" };
+		Grammar grammar = new Grammar("S", "$", Arrays.asList(terminals),
+				new Rule("S", "Stmt"),
+				new Rule("Stmt", "Expr"),
+				new Rule("Stmt", "Assg"),
+				new Rule("Expr", "Identifier"),
+				new Rule("Expr", "NUM"),
+				new Rule(operatorPrecedenceRule.getInfo("+"), "Expr", "Expr", "+", "Expr"),
+				new Rule(operatorPrecedenceRule.getInfo("-"), "Expr", "Expr", "-", "Expr"),
+				new Rule(operatorPrecedenceRule.getInfo("*"), "Expr", "Expr", "*", "Expr"),
+				new Rule(operatorPrecedenceRule.getInfo("/"), "Expr", "Expr", "/", "Expr"),
+				new Rule(operatorPrecedenceRule.getInfo("="), "Assg", "ID", "=", "Expr")
+				);
+		
+		System.out.println("*** Grammar ***");
+		System.out.println(grammar);
+		
+		SyntaticsTable syntaticsTable = new SyntaticsTable(grammar);
+		
+		System.out.println(syntaticsTable.getActionsCSV(grammar));
+		System.out.println(syntaticsTable.getGotosCSV(grammar));
+		
+		try {
+			{
+				FileWriter writer = new FileWriter("actions.csv");
+				writer.write(syntaticsTable.getActionsCSV(grammar));
+				writer.flush();
+				writer.close();
+			}
+			{
+				FileWriter writer = new FileWriter("gotos.csv");
+				writer.write(syntaticsTable.getGotosCSV(grammar));
+				writer.flush();
+				writer.close();
+			}
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	public static void maina(String[] args) {
 		//		HashSet<String> h1 = new HashSet();
 		//		HashSet<String> h2 = new HashSet();
 		//		
@@ -282,7 +378,6 @@ public class Grammar {
 		//		
 		//		
 		//		System.exit(0);
-
 		OperatorPrecedenceRule operatorPrecedenceRule = new OperatorPrecedenceRule();
 		operatorPrecedenceRule.add(PrecedenceDirection.Right, "=");
 		operatorPrecedenceRule.add(PrecedenceDirection.Left, "+", "-");
@@ -290,12 +385,12 @@ public class Grammar {
 
 		PrecedenceRuleInfo info = operatorPrecedenceRule.getInfo("=");
 
-		String[] terminals = { "ID", "NUM" };
+		String[] terminals = { "Identifier", "NUM" };
 		Grammar grammar = new Grammar("S", "$", Arrays.asList(terminals),
 				new Rule("S", "Stmt"),
 				new Rule("Stmt", "Expr"),
 				new Rule("Stmt", "Assg"),
-				new Rule("Expr", "ID"),
+				new Rule("Expr", "Identifier"),
 				new Rule("Expr", "NUM"),
 				new Rule(operatorPrecedenceRule.getInfo("+"), "Expr", "Expr", "+", "Expr"),
 				new Rule(operatorPrecedenceRule.getInfo("-"), "Expr", "Expr", "-", "Expr"),
@@ -314,11 +409,13 @@ public class Grammar {
 				FileWriter writer = new FileWriter("actions.csv");
 				writer.write(table.getActionsCSV(grammar));
 				writer.flush();
+				writer.close();
 			}
 			{
 				FileWriter writer = new FileWriter("gotos.csv");
 				writer.write(table.getGotosCSV(grammar));
 				writer.flush();
+				writer.close();
 			}
 		} catch (IOException e) {
 			e.printStackTrace();

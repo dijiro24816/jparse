@@ -42,4 +42,42 @@ public class StateSymbolStack {
 	public int getCurrentState() {
 		return states.peek();
 	}
+	
+	public Symbol getCurrentSymbol() {
+		return this.symbols.peek();
+	}
+
+	@Override
+	public String toString() {
+		StringBuilder stringBuilder = new StringBuilder();
+		
+		stringBuilder.append("StateSymbolStack [");
+		
+		int i = 0, j = 0;
+		for (;;) {
+			if (this.states.size() > i) {
+				stringBuilder.append(this.states.get(i));
+			} else {
+				break;
+			}
+			i++;
+			
+			if (this.symbols.size() > j) {
+				stringBuilder.append(' ');
+				stringBuilder.append(this.symbols.get(j).getLabel());
+				
+				if (this.states.size() > i)
+					stringBuilder.append(' ');
+			} else {
+				break;
+			}
+			j++;
+		}
+		
+		stringBuilder.append("]");
+		
+		return stringBuilder.toString();
+	}
+	
+	
 }

@@ -6,11 +6,12 @@ import java.io.InputStream;
 import java.util.Arrays;
 
 import myprototype.jparse.symbol.terminal.InvalidTokenException;
-import myprototype.jparse.symbol.terminal.Lexer;
+import myprototype.jparse.symbol.terminal.JavaLexer;
 
 /**
  * Hello world!
  */
+
 
 public class App {
 	public static void main(String[] args) {
@@ -19,27 +20,51 @@ public class App {
 		operatorPrecedenceRule.add(PrecedenceDirection.Left, "+", "-");
 		operatorPrecedenceRule.add(PrecedenceDirection.Left, "*", "/");
 
-		PrecedenceRuleInfo info = operatorPrecedenceRule.getInfo("=");
-
-		String[] terminals = { "IDENTIFIER", "NUM" };
+		String[] terminals = { "Identifier", "NUM" };
 		Grammar grammar = new Grammar("S", "$", Arrays.asList(terminals),
 				new Rule("S", "Stmt"),
+				new Rule("Stmt"),
 				new Rule("Stmt", "Expr"),
 				new Rule("Stmt", "Assg"),
-				new Rule("Expr", "IDENTIFIER"),
+				new Rule("Expr", "Identifier"),
 				new Rule("Expr", "NUM"),
 				new Rule(operatorPrecedenceRule.getInfo("+"), "Expr", "Expr", "+", "Expr"),
 				new Rule(operatorPrecedenceRule.getInfo("-"), "Expr", "Expr", "-", "Expr"),
 				new Rule(operatorPrecedenceRule.getInfo("*"), "Expr", "Expr", "*", "Expr"),
 				new Rule(operatorPrecedenceRule.getInfo("/"), "Expr", "Expr", "/", "Expr"),
-				new Rule(operatorPrecedenceRule.getInfo("="), "Assg", "ID", "=", "Expr")
+				new Rule(operatorPrecedenceRule.getInfo("="), "Assg", "Identifier", "=", "Expr")
 				);
+		
+		
+		
+//		String[] terminals = { "Identifier", "NUM" };
+//		Grammar grammar = new Grammar("S", "$", Arrays.asList(terminals),
+//				
+//				new Rule("QualifiedIdentifier", "Identifier"),
+//				
+//				
+//				new Rule("S", "Stmt"),
+//				new Rule("Stmt", "Expr"),
+//				new Rule("Stmt", "Assg"),
+//				new Rule("Expr", "Identifier"),
+//				new Rule("Expr", "NUM"),
+//				new Rule(operatorPrecedenceRule.getInfo("+"), "Expr", "Expr", "+", "Expr"),
+//				new Rule(operatorPrecedenceRule.getInfo("-"), "Expr", "Expr", "-", "Expr"),
+//				new Rule(operatorPrecedenceRule.getInfo("*"), "Expr", "Expr", "*", "Expr"),
+//				new Rule(operatorPrecedenceRule.getInfo("/"), "Expr", "Expr", "/", "Expr"),
+//				new Rule(operatorPrecedenceRule.getInfo("="), "Assg", "Identifier", "=", "Expr")
+//				);
 		
 		System.out.println("*** Grammar ***");
 		System.out.println(grammar);
 		
+		SyntaticsTable syntaticsTable = new SyntaticsTable(grammar);
+		
+		System.out.println(syntaticsTable.getActionsCSV(grammar));
+		System.out.println(syntaticsTable.getGotosCSV(grammar));
+		
 		String src = """
-				hello
+	
 				""";
 		System.out.println("*** Source ***");
 		System.out.println("```");
@@ -49,21 +74,29 @@ public class App {
 		try {
 			System.out.println("*** Loaded Token ***");
 			InputStream inStrm = new ByteArrayInputStream(src.getBytes());
-			Lexer lexer = new Lexer();
-			Symbol symbol;
-			while ((symbol = lexer.getSymbol(inStrm)) != null) {
+			JavaLexer lexer = new JavaLexer(grammar.getEndSymbol());
+			for (;;) {
+				Symbol symbol = lexer.getSymbol(inStrm);
+				if (symbol == null)
+					throw new UnknownTokenException();
+				
+				if (grammar.isEndSymbol(symbol)) {
+					System.out.println(symbol);
+					break;
+				}
+				
 				System.out.println(symbol);
 			}
-		} catch (IOException | InvalidTokenException e) {
+		} catch (IOException | InvalidTokenException | UnknownTokenException e) {
 			// TODO 自動生成された catch ブロック
 			e.printStackTrace();
+			System.exit(0);
 		}
-		System.exit(0);
 		
 		
-		
-		Parser parser = Parser.create(new BufferedLexer(new Lexer()), grammar);
+		Parser parser = new Parser(new BufferedLexer(new JavaLexer(grammar.getEndSymbol())), grammar, syntaticsTable);
 		try {
+			System.out.println("*** Parser Stack ***");
 			System.out.println(parser.parse(new ByteArrayInputStream(src.getBytes()), (rule, symbols) -> { return null; }));
 		} catch (IOException | InvalidTokenException e) {
 			e.printStackTrace();

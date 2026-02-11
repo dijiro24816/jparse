@@ -59,6 +59,10 @@ public class Item {
 		return this.rule.getSymbols().get(this.dot + 1);
 	}
 	
+	public String getRightSymbolsString() {
+		return String.join(" ", this.rule.getSymbols().subList(this.dot, this.rule.getSymbols().size()));
+	}
+	
 	public boolean isDotNonterminal(Grammar grammar) {
 		return grammar.isNonterminalSymbol(getDotSymbol());
 	}

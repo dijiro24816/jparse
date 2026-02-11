@@ -2,13 +2,13 @@ package myprototype.jparse;
 
 public class Action {
 	private ActionKind kind;
-	private Object argumentValue;
+	private int argumentValue;
 
 	public ActionKind getKind() {
 		return kind;
 	}
 
-	public Object getArgumentValue() {
+	public int getArgumentValue() {
 		return argumentValue;
 	}
 
@@ -16,7 +16,7 @@ public class Action {
 		this(kind, -1);
 	}
 	
-	public Action(ActionKind kind, Object argumentValue) {
+	public Action(ActionKind kind, int argumentValue) {
 		this.kind = kind;
 		this.argumentValue = argumentValue;
 	}
