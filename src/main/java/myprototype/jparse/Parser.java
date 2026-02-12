@@ -51,22 +51,36 @@ public class Parser {
 					end = fromSymbols.get(fromSymbols.size() - 1).getEnd();
 				}
 				Symbol toSymbol = new Symbol(rule.getProductSymbol(), beg, end, compounder.apply(rule, fromSymbols));
-				stack.push(toSymbol);
+				System.out.print(stack);
 				
 				action = this.table.getNonterminalAction(stack.getCurrentState(), toSymbol.getLabel());
-				continue;
+				if (action.getKind() == ActionKind.Accept) {
+					System.out.println(" (" + toSymbol.getLabel() + ") Accept");
+					return toSymbol;
+				}
+				System.out.println(" (" + toSymbol.getLabel() + ") Goto State -- " + action.getArgumentValue());
+				
+				
+				stack.push(toSymbol);
+				stack.push(action.getArgumentValue());
+				
+//				action = this.table.getNonterminalAction(stack.getCurrentState(), toSymbol.getLabel());
+//				continue;
+				break;
 
 			case Goto:
 				System.out.print(stack);
-				stack.push(action.getArgumentValue());
-				
 				System.out.println(" (" + this.lexer.peek(inStrm).getLabel() + ") Goto State -- " + action.getArgumentValue());
+				
+				stack.push(this.lexer.getSymbol(inStrm));
+				stack.push(action.getArgumentValue());
 				break;
 				
 			case Accept:
 				return stack.pop();
 			}
 			
+//			System.out.println(this.lexer.peek(inStrm));
 			action = this.table.getAction(stack.getCurrentState(), this.lexer.peek(inStrm).getLabel());
 		}
 	}

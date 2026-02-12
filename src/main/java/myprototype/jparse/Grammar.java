@@ -21,10 +21,7 @@ public class Grammar {
 	private String begSymbol;
 	private String endSymbol;
 
-	private HashSet<String> specificTerminalSymbolSet;
-	private List<String> specificTerminalSymbolList;
-	private HashSet<String> generalTerminalSymbolSet;
-	private List<String> generalTerminalSymbolList;
+	private List<String> terminalSymbols;
 	private HashMap<String, Integer> terminalSymbolIndices;
 
 	private HashMap<String, Integer> nonterminalSymbolIndices;
@@ -52,22 +49,18 @@ public class Grammar {
 		return this.nonterminalSymbolIndices.size();
 	}
 
-	public Grammar(String startSymbol, String endSymbol, Collection<String> terminalSymbols, Rule... rules) {
+	public Grammar(String startSymbol, String endSymbol, Rule... rules) {
 		this.begSymbol = startSymbol;
 		this.endSymbol = endSymbol;
 
-		this.specificTerminalSymbolSet = new HashSet<String>();
-		this.specificTerminalSymbolList = new ArrayList<String>();
-		this.generalTerminalSymbolSet = new HashSet<String>();
-		this.generalTerminalSymbolList = new ArrayList<String>();
+		this.terminalSymbols = new ArrayList<String>();
 		this.terminalSymbolIndices = new HashMap<String, Integer>();
-		cacheGeneralTerminalSymbolWithIndex(endSymbol); // terminal symbol contains end of symbol
-		terminalSymbols.stream().forEach(e -> cacheGeneralTerminalSymbolWithIndex(e));
+		cacheTerminalSymbolWithIndex(endSymbol); // terminal symbol contains end of symbol
 
 		this.nonterminalSymbolIndices = new HashMap<String, Integer>();
 		this.nonterminalSymbols = new ArrayList<String>();
 		cacheNonterminalSymbolWithIndex(startSymbol);
-		
+
 		this.ruleIndices = new HashMap<Rule, Integer>();
 		this.rules = new ArrayList<Rule>();
 
@@ -81,9 +74,9 @@ public class Grammar {
 
 		for (Rule rule : rules)
 			for (String symbol : rule.getSymbols())
-				if (!isTerminalSymbol(symbol) && !isNonterminalSymbol(symbol))
+				if (!isNonterminalSymbol(symbol))
 					// We should call this method after saving all of nonterminal symbol has done
-					cacheSpecificTerminalSymbolWithIndex(symbol);
+					cacheTerminalSymbolWithIndex(symbol);
 	}
 
 	private boolean cacheNonterminalSymbolWithIndex(String symbol) {
@@ -94,28 +87,11 @@ public class Grammar {
 		return true;
 	}
 
-	private boolean cacheGeneralTerminalSymbolWithIndex(String symbol) {
-		if (this.generalTerminalSymbolSet.contains(symbol))
-			return false;
-		this.generalTerminalSymbolSet.add(symbol);
-		this.generalTerminalSymbolList.add(symbol);
-		cacheTerminalSymbolWithIndex(symbol);
-		return true;
-	}
-
-	private boolean cacheSpecificTerminalSymbolWithIndex(String symbol) {
-		if (this.specificTerminalSymbolSet.contains(symbol))
-			return false;
-		this.specificTerminalSymbolSet.add(symbol);
-		this.specificTerminalSymbolList.add(symbol);
-		cacheTerminalSymbolWithIndex(symbol);
-		return true;
-	}
-
 	private boolean cacheTerminalSymbolWithIndex(String symbol) {
 		if (this.terminalSymbolIndices.containsKey(symbol))
 			return false;
-		this.terminalSymbolIndices.put(symbol, getTerminalSymbolCount());
+		this.terminalSymbolIndices.put(symbol, this.terminalSymbolIndices.size());
+		this.terminalSymbols.add(symbol);
 		return true;
 	}
 
@@ -139,17 +115,9 @@ public class Grammar {
 			}
 		}
 	}
-	
+
 	public boolean isEndSymbol(Symbol symbol) {
 		return symbol.getLabel().equals(this.endSymbol);
-	}
-
-	public boolean isSpecificTerminalSymbol(String symbol) {
-		return this.specificTerminalSymbolSet.contains(symbol);
-	}
-
-	public boolean isGeneralTerminalSymbol(String symbol) {
-		return this.generalTerminalSymbolSet.contains(symbol);
 	}
 
 	public boolean isTerminalSymbol(String symbol) {
@@ -201,8 +169,9 @@ public class Grammar {
 	}
 
 	public HashSet<Item> expandFirstItems() {
-		
-		HashSet<Item> items = new HashSet<>(expandSymbolsRules(getStartSymbol()).stream().map(e -> new Item(e)).toList());
+
+		HashSet<Item> items = new HashSet<>(
+				expandSymbolsRules(getStartSymbol()).stream().map(e -> new Item(e)).toList());
 		HashSet<Item> dstItems = new HashSet<>();
 		System.out.println(items);
 		for (Item item : items) {
@@ -210,15 +179,13 @@ public class Grammar {
 			lookaheadSet.add("$");
 			dstItems.add(new Item(item.getRule(), lookaheadSet));
 		}
-		
-		
+
 //		HashSet<String> lookaheadSet = new HashSet<>();
 //		lookaheadSet.add(getEndSymbol());
 //		HashSet<Item> items = expandItems(expandSymbolsRules(getStartSymbol()).stream().map(e -> new Item(e, lookaheadSet)).toList());
 //		System.out.println(dstItems);
 		return dstItems;
-		
-		
+
 //		HashSet<String> lookaheadSet = new HashSet<>();
 //		lookaheadSet.add(getEndSymbol());
 //		return new HashSet<>(
@@ -228,7 +195,7 @@ public class Grammar {
 	public HashSet<Item> expandItems(Item... orgItems) {
 		return expandItems(Arrays.asList(orgItems));
 	}
-	
+
 	public List<String> getDotSymbols(Collection<Item> items) {
 		return items.stream().map(e -> e.getDotSymbol()).filter(e -> e != null).toList();
 	}
@@ -248,13 +215,13 @@ public class Grammar {
 //				expandedItems.add(item);
 //			}
 //		return new ArrayList(expandedItems);
-		
+
 		HashSet<Rule> rules = expandSymbolsRules(getDotSymbols(orgItems));
-		
+
 		HashSet<Item> items = new HashSet<>();
 		items.addAll(orgItems);
 		items.addAll(rules.stream().map(e -> new Item(e)).toList());
-		
+
 		HashSet<Item> dstItems = new HashSet<>(orgItems);
 		for (Rule rule : rules)
 			dstItems.add(new Item(rule, getLookaheadSetFromItems(items, rule.getProductSymbol())));
@@ -263,13 +230,35 @@ public class Grammar {
 //		System.out.println(dstItems);
 		return dstItems;
 	}
-	
-	public HashSet<String> getLookaheadSetFromItems(Collection<Item> items, String symbol) {
+
+	public HashSet<String> getLookaheadSetFromItems(Collection<Item> items, String targetSymbol) {
 		HashSet<String> lookaheadSet = new HashSet<>();
-		List<Item> orgItems = items.stream().filter(e -> e.getDotSymbol() != null).filter(e -> e.getDotSymbol().equals(symbol)).toList();
-		
+
+		ArrayList<String> symbols = new ArrayList<>();
+		symbols.add(targetSymbol);
+
+		boolean found;
+		do {
+			found = false;
+
+			String currentSymbol = symbols.get(symbols.size() - 1);
+
+			for (Item item : items) {
+				if (item.isReachingLastSymbol() && item.getDotSymbol().equals(currentSymbol)) {
+					symbols.add(item.getProductSymbol());
+					found = true;
+					break;
+				}
+			}
+
+		} while (found);
+
+		List<Item> orgItems = items.stream().filter(e -> e.getDotSymbol() != null)
+				.filter(e -> symbols.stream().anyMatch(s -> s.equals(e.getDotSymbol()))).toList();
+//		List<Item> orgItems = items.stream().filter(e -> e.getDotSymbol() != null).filter(e -> symbols.anyMatch(e.getDotSymbol()) e.getDotSymbol().equals(targetSymbol)).toList();
+
 		for (Item item : orgItems) {
-			
+
 			if (item.isReachingLastSymbol())
 				// Nonterm1 -> . Nonterm2
 				// add Lookahead-Set(Nonterm2)
@@ -278,7 +267,7 @@ public class Grammar {
 				// Nonterm -> . Nonterm Term
 				lookaheadSet.addAll(getFirstSet(item.getDotNextSymbol()));
 		}
-		
+
 //		if (new HashSet<>(orgItems.stream().map(e -> e.getProductSymbol()).toList()).contains("Stmt")) {
 //			System.out.println(items);
 //			System.out.println(symbol);
@@ -288,7 +277,7 @@ public class Grammar {
 		return lookaheadSet;
 	}
 
-	// This implementation is very slow. but now, it's ok! 
+	// This implementation is very slow. but now, it's ok!
 	private HashSet<String> getFirstSet(String symbol) {
 		if (isTerminalSymbol(symbol)) {
 			HashSet<String> symbols = new HashSet<>();
@@ -296,11 +285,8 @@ public class Grammar {
 			return symbols;
 		}
 
-		return new HashSet<>(
-				expandSymbolsRules(
-						symbol).stream()
-								.map(e -> e.getFirstSymbol())
-								.filter(e -> isTerminalSymbol(e)).toList());
+		return new HashSet<>(expandSymbolsRules(symbol).stream().map(e -> e.getFirstSymbol())
+				.filter(e -> isTerminalSymbol(e)).toList());
 	}
 
 	@Override
@@ -313,38 +299,38 @@ public class Grammar {
 			stringBuilder.append(this.rules.get(i));
 			stringBuilder.append(System.lineSeparator());
 		}
-		
+
 		return stringBuilder.toString();
 	}
-	
+
 	public static void main(String[] args) {
 		OperatorPrecedenceRule operatorPrecedenceRule = new OperatorPrecedenceRule();
 		operatorPrecedenceRule.add(PrecedenceDirection.Right, "=");
 		operatorPrecedenceRule.add(PrecedenceDirection.Left, "+", "-");
 		operatorPrecedenceRule.add(PrecedenceDirection.Left, "*", "/");
 
-		String[] terminals = { "Identifier", "NUM" };
-		Grammar grammar = new Grammar("S", "$", Arrays.asList(terminals),
-				new Rule("S", "Stmt"),
-				new Rule("Stmt", "Expr"),
-				new Rule("Stmt", "Assg"),
-				new Rule("Expr", "Identifier"),
-				new Rule("Expr", "NUM"),
-				new Rule(operatorPrecedenceRule.getInfo("+"), "Expr", "Expr", "+", "Expr"),
-				new Rule(operatorPrecedenceRule.getInfo("-"), "Expr", "Expr", "-", "Expr"),
-				new Rule(operatorPrecedenceRule.getInfo("*"), "Expr", "Expr", "*", "Expr"),
-				new Rule(operatorPrecedenceRule.getInfo("/"), "Expr", "Expr", "/", "Expr"),
-				new Rule(operatorPrecedenceRule.getInfo("="), "Assg", "ID", "=", "Expr")
-				);
-		
+//		String[] terminals = { "Identifier", "NUM" };
+		Grammar grammar = new Grammar("S", "$",
+//				new Rule("S", "QualifiedIdentifier"),
+				new Rule("S", "QualifiedIdentifierList"),
+
+				new Rule("QualifiedIdentifier", "Identifier"),
+				new Rule("QualifiedIdentifier", "QualifiedIdentifier", ".", "Identifier"),
+
+				new Rule("QualifiedIdentifierList", "QualifiedIdentifier"),
+				new Rule("QualifiedIdentifierList", "QualifiedIdentifierList", ",", "QualifiedIdentifier")
+//				QualifiedIdentifierList -> QualifiedIdentifier
+//				QualifiedIdentifierList -> QualifiedIdentifierList , QualifiedIdentifier
+		);
+
 		System.out.println("*** Grammar ***");
 		System.out.println(grammar);
-		
+
 		SyntaticsTable syntaticsTable = new SyntaticsTable(grammar);
-		
+
 		System.out.println(syntaticsTable.getActionsCSV(grammar));
 		System.out.println(syntaticsTable.getGotosCSV(grammar));
-		
+
 		try {
 			{
 				FileWriter writer = new FileWriter("actions.csv");
@@ -364,20 +350,21 @@ public class Grammar {
 	}
 
 	public static void maina(String[] args) {
-		//		HashSet<String> h1 = new HashSet();
-		//		HashSet<String> h2 = new HashSet();
-		//		
-		//		h1.add("hello");
-		//		h2.add("world");
-		//		
-		//		System.out.println(Stream.concat(h1.stream(), h2.stream()).toList());
-		//		System.out.println(new HashSet<String>(Stream.concat(h1.stream(), h2.stream()).toList()));
-		//		
-		//		System.out.println(h1);
-		//		System.out.println(h2);
-		//		
-		//		
-		//		System.exit(0);
+		// HashSet<String> h1 = new HashSet();
+		// HashSet<String> h2 = new HashSet();
+		//
+		// h1.add("hello");
+		// h2.add("world");
+		//
+		// System.out.println(Stream.concat(h1.stream(), h2.stream()).toList());
+		// System.out.println(new HashSet<String>(Stream.concat(h1.stream(),
+		// h2.stream()).toList()));
+		//
+		// System.out.println(h1);
+		// System.out.println(h2);
+		//
+		//
+		// System.exit(0);
 		OperatorPrecedenceRule operatorPrecedenceRule = new OperatorPrecedenceRule();
 		operatorPrecedenceRule.add(PrecedenceDirection.Right, "=");
 		operatorPrecedenceRule.add(PrecedenceDirection.Left, "+", "-");
@@ -385,13 +372,9 @@ public class Grammar {
 
 		PrecedenceRuleInfo info = operatorPrecedenceRule.getInfo("=");
 
-		String[] terminals = { "Identifier", "NUM" };
-		Grammar grammar = new Grammar("S", "$", Arrays.asList(terminals),
-				new Rule("S", "Stmt"),
-				new Rule("Stmt", "Expr"),
-				new Rule("Stmt", "Assg"),
-				new Rule("Expr", "Identifier"),
-				new Rule("Expr", "NUM"),
+//		String[] terminals = { "Identifier", "NUM" };
+		Grammar grammar = new Grammar("S", "$", new Rule("S", "Stmt"), new Rule("Stmt", "Expr"),
+				new Rule("Stmt", "Assg"), new Rule("Expr", "Identifier"), new Rule("Expr", "NUM"),
 				new Rule(operatorPrecedenceRule.getInfo("+"), "Expr", "Expr", "+", "Expr"),
 				new Rule(operatorPrecedenceRule.getInfo("-"), "Expr", "Expr", "-", "Expr"),
 				new Rule(operatorPrecedenceRule.getInfo("*"), "Expr", "Expr", "*", "Expr"),
@@ -428,9 +411,7 @@ public class Grammar {
 	}
 
 	public String getTerminalSymbolsCSV() {
-		return String.join(",",
-				Stream.concat(this.generalTerminalSymbolList.stream(), this.specificTerminalSymbolList.stream())
-						.map(e -> "\"" + e + "\"").toList());
+		return String.join(",", this.terminalSymbols.stream().map(e -> "\"" + e + "\"").toList());
 	}
 
 	public String getNonterminalSymbolsCSV() {

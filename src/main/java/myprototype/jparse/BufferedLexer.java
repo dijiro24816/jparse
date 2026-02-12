@@ -11,9 +11,9 @@ public class BufferedLexer {
 	private int headIndex;
 	private int tailIndex;
 	
-	private JavaLexer lexer;
+	private Lexer lexer;
 	
-	public BufferedLexer(int lookaheadMax, JavaLexer lexer) {
+	public BufferedLexer(int lookaheadMax, Lexer lexer) {
 		this.symbols = new Symbol[lookaheadMax + 1];
 		this.headIndex = 0;
 		this.tailIndex = 0;
@@ -21,7 +21,7 @@ public class BufferedLexer {
 		this.lexer = lexer;
 	}
 	
-	public BufferedLexer(JavaLexer lexer) { 
+	public BufferedLexer(Lexer lexer) { 
 		this(1, lexer);
 	}
 	

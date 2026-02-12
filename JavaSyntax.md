@@ -52,12 +52,29 @@ TypeDeclarations -> TypeDeclarations TypeDeclaration
 ImportDeclaration: 
     import [static] Identifier { . Identifier } [. *] ;
 
+```
+ImportDeclarationIdentifier -> Identifier
+ImportDeclarationIdentifier -> ImportDeclarationIdentifier . Identifier
+ImportDeclarationIdentifier -> ImportDeclarationIdentifier . *
+
+ImportDeclaration -> import ImportDeclarationIdentifier ;
+ImportDeclaration -> import static ImportDeclarationIdentifier ;
+```
+
 TypeDeclaration: 
     ClassOrInterfaceDeclaration
     ;
+    
+```
+TypeDeclaration -> ClassOrInterfaceDeclaration
+TypeDeclaration -> ;
+```
 
 ClassOrInterfaceDeclaration: 
     {Modifier} (ClassDeclaration | InterfaceDeclaration)
+
+```
+```
 
 ClassDeclaration: 
     NormalClassDeclaration

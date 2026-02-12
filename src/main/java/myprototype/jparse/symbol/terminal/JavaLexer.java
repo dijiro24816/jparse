@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.util.HexFormat;
 
+import myprototype.jparse.Lexer;
 import myprototype.jparse.Symbol;
 
 public class JavaLexer implements Lexer {
