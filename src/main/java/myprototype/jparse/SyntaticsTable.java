@@ -2,10 +2,7 @@ package myprototype.jparse;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 
 public class SyntaticsTable {
@@ -105,7 +102,7 @@ public class SyntaticsTable {
 			}
 			
 			
-			System.out.println("closure " + currentState + ": " + closure);
+//			System.out.println("closure " + currentState + ": " + closure);
 
 //			System.out.println(closure);
 			
@@ -113,7 +110,6 @@ public class SyntaticsTable {
 		}
 
 		for (StateKey derivativeKey : key.getDerivativeKeys(grammar)) {
-			System.out.println(derivativeKey);
 			String rootSymbol = derivativeKey.getRootSymbol();
 			if (grammar.isNonterminalSymbol(rootSymbol)) {
 				setNonterminalSection(currentState, grammar.getNonterminalSymbolIndexOf(rootSymbol),
@@ -251,7 +247,9 @@ public class SyntaticsTable {
 				if (j + 1 < this.terminalSectionColumnLength)
 					stringBuilder.append(',');
 			}
-			stringBuilder.append(System.lineSeparator());
+			
+			if (i + 1 < this.terminalSection.size())
+				stringBuilder.append(System.lineSeparator());
 		}
 
 		return stringBuilder.toString();
@@ -282,7 +280,9 @@ public class SyntaticsTable {
 				if (j + 1 < this.nonterminalSectionColumnLength)
 					stringBuilder.append(',');
 			}
-			stringBuilder.append(System.lineSeparator());
+			
+			if (i + 1 < this.nonterminalSection.size())
+				stringBuilder.append(System.lineSeparator());
 		}
 
 		return stringBuilder.toString();

@@ -1,11 +1,9 @@
 package myprototype.jparse;
 
 import java.io.ByteArrayInputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Stack;
 
 import myprototype.jparse.symbol.terminal.InvalidTokenException;
 import myprototype.jparse.symbol.terminal.JavaLexer;
@@ -15,127 +13,168 @@ import myprototype.jparse.symbol.terminal.JavaLexer;
  */
 
 public class App {
-	public static void main(String[] args) {
+	public static void main(String[] args) throws IOException, InvalidTokenException {
+		Grammar grammar = new Grammar("S", "$",
+				new Rule("S", "Statement"),
+				new Rule("Statement", "Expression"),
+				new Rule("Statement", "Assignment"),
+				new Rule("Expression", "Identifier"),
+				new Rule("Expression", "Expression", "+", "Expression"),
+				new Rule("Assignment", "Identifier", "=", "Expression"));
+		
+		String sourceCode = """
+				a = b + c + d
+				""";
+		Lexer lexer = new JavaLexer("$");
+		Parser parser = new Parser(new BufferedLexer(lexer), grammar, new SyntaticsTable(grammar));
+		Symbol symbol = parser.parse(new ByteArrayInputStream(sourceCode.getBytes()));
+		System.out.println(symbol);
+	}
+
+	public static void maina(String[] args) {
 		OperatorPrecedenceRule operatorPrecedenceRule = new OperatorPrecedenceRule();
 		operatorPrecedenceRule.add(PrecedenceDirection.Right, "=");
 		operatorPrecedenceRule.add(PrecedenceDirection.Left, "+", "-");
 		operatorPrecedenceRule.add(PrecedenceDirection.Left, "*", "/");
 
-//		Grammar grammar = new Grammar("S", "$", 
-//				new Rule("S", "Stmt"),
-//				new Rule("Stmt"),
-//				new Rule("Stmt", "Expr"),
-//				new Rule("Stmt", "Assg"),
-//				new Rule("Expr", "Identifier"),
-//				new Rule("Expr", "NUM"),
-//				new Rule(operatorPrecedenceRule.getInfo("+"), "Expr", "Expr", "+", "Expr"),
-//				new Rule(operatorPrecedenceRule.getInfo("-"), "Expr", "Expr", "-", "Expr"),
-//				new Rule(operatorPrecedenceRule.getInfo("*"), "Expr", "Expr", "*", "Expr"),
-//				new Rule(operatorPrecedenceRule.getInfo("/"), "Expr", "Expr", "/", "Expr"),
-//				new Rule(operatorPrecedenceRule.getInfo("="), "Assg", "Identifier", "=", "Expr")
-//				);
-
 		Grammar grammar = new Grammar("S", "$",
-				new Rule("S", "CompilationUnit"),
-				
-//				new Rule("S", "QualifiedIdentifier"),
-//				new Rule("CompilationUnit", "QualifiedIdentifierList"),
+				new Rule("S", "Stmt"),
+				new Rule("Stmt"),
+				new Rule("Stmt", "Expr"),
+				new Rule("Stmt", "Assg"),
+				new Rule("Expr", "Identifier"),
+				new Rule("Expr", "NUM"),
+				new Rule(operatorPrecedenceRule.getInfo("+"), "Expr", "Expr", "+", "Expr"),
+				new Rule(operatorPrecedenceRule.getInfo("-"), "Expr", "Expr", "-", "Expr"),
+				new Rule(operatorPrecedenceRule.getInfo("*"), "Expr", "Expr", "*", "Expr"),
+				new Rule(operatorPrecedenceRule.getInfo("/"), "Expr", "Expr", "/", "Expr"),
+				new Rule(operatorPrecedenceRule.getInfo("="), "Assg", "Identifier", "=", "Expr"));
 
-				
-				
-				new Rule("QualifiedIdentifier", "Identifier"),
-				new Rule("QualifiedIdentifier", "QualifiedIdentifier", ".", "Identifier"),
-//				QualifiedIdentifier -> Identifier
-//				QualifiedIdentifier -> QualifiedIdentifier . Identifier
-
-				new Rule("QualifiedIdentifierList", "QualifiedIdentifier"),
-				new Rule("QualifiedIdentifierList", "QualifiedIdentifierList", ",", "QualifiedIdentifier"),
-//				QualifiedIdentifierList -> QualifiedIdentifier
-//				QualifiedIdentifierList -> QualifiedIdentifierList , QualifiedIdentifier
-
-				new Rule("CompilationUnit"), new Rule("CompilationUnit", "package", "QualifiedIdentifier", ";"),
-				new Rule("CompilationUnit", "Annotations", "package", "QualifiedIdentifier", ";"),
-//				CompilationUnit -> 
-//				CompilationUnit -> package QualifiedIdentifier ;
-//				CompilationUnit -> Annotations package QualifiedIdentifier ;
-
-				new Rule("CompilationUnit", "ImportDeclarations"),
-				new Rule("CompilationUnit", "package", "QualifiedIdentifier", ";", "ImportDeclarations"),
-				new Rule("CompilationUnit", "Annotations", "package", "QualifiedIdentifier", ";", "ImportDeclarations"),
-//				CompilationUnit -> ImportDeclarations
-//				CompilationUnit -> package QualifiedIdentifier ; ImportDeclarations
-//				CompilationUnit -> Annotations package QualifiedIdentifier ; ImportDeclarations
-
-				new Rule("CompilationUnit", "TypeDeclarations"),
-				new Rule("CompilationUnit", "package", "QualifiedIdentifier", ";", "TypeDeclarations"),
-				new Rule("CompilationUnit", "Annotations", "package", "QualifiedIdentifier", ";", "TypeDeclarations"),
-//				CompilationUnit -> TypeDeclarations
-//				CompilationUnit -> package QualifiedIdentifier ; TypeDeclarations
-//				CompilationUnit -> Annotations package QualifiedIdentifier ; TypeDeclarations
-
-				new Rule("CompilationUnit", "ImportDeclarations", "TypeDeclarations"),
-				new Rule("CompilationUnit", "package", "QualifiedIdentifier", ";", "ImportDeclarations",
-						"TypeDeclarations"),
-				new Rule("CompilationUnit", "Annotations", "package", "QualifiedIdentifier", ";", "ImportDeclarations",
-						"TypeDeclarations"),
-//				CompilationUnit -> ImportDeclarations TypeDeclarations
-//				CompilationUnit -> package QualifiedIdentifier ; ImportDeclarations TypeDeclarations
-//				CompilationUnit -> Annotations package QualifiedIdentifier ; ImportDeclarations TypeDeclarations
-
-				new Rule("ImportDeclarations", "ImportDeclaration"),
-				new Rule("ImportDeclarations", "ImportDeclarations", "ImportDeclaration"),
-//				ImportDeclarations -> ImportDeclaration
-//				ImportDeclarations -> ImportDeclarations ImportDeclaration
-
-				new Rule("TypeDeclarations", "TypeDeclaration"),
-				new Rule("TypeDeclarations", "TypeDeclarations", "TypeDeclaration"),
-//				TypeDeclarations -> TypeDeclaration
-//				TypeDeclarations -> TypeDeclarations TypeDeclaration
-				
-				
-				new Rule("ImportDeclarationIdentifier", "Identifier"),
-//				new Rule("ImportDeclarationIdentifier", "ImportDeclarationIdentifier", ".", "Identifier"),
-//				new Rule("ImportDeclarationIdentifier", "ImportDeclarationIdentifier", ".", "*"),
-//				ImportDeclarationIdentifier -> Identifier
-//				ImportDeclarationIdentifier -> ImportDeclarationIdentifier . Identifier
-//				ImportDeclarationIdentifier -> ImportDeclarationIdentifier . *
-				
-				new Rule("ImportDeclaration", "import", "ImportDeclarationIdentifier", ";"),
-				new Rule("ImportDeclaration", "import", "static", "ImportDeclarationIdentifier", ";"),
-//				ImportDeclaration -> import ImportDeclarationIdentifier ;
-//				ImportDeclaration -> import static ImportDeclarationIdentifier ;
-				
-				new Rule("TypeDeclaration", "ClassOrInterfaceDeclaration"),
-				new Rule("TypeDeclaration", ";")
-//				TypeDeclaration -> ClassOrInterfaceDeclaration
-//				TypeDeclaration -> ;
-		);
+		//		Grammar grammar = new Grammar("S", "$",
+		//				new Rule("S", "CompilationUnit"),
+		//				
+		////				new Rule("S", "QualifiedIdentifier"),
+		////				new Rule("CompilationUnit", "QualifiedIdentifierList"),
+		//
+		//				
+		//				
+		//				new Rule("QualifiedIdentifier", "Identifier"),
+		//				new Rule("QualifiedIdentifier", "QualifiedIdentifier", ".", "Identifier"),
+		////				QualifiedIdentifier -> Identifier
+		////				QualifiedIdentifier -> QualifiedIdentifier . Identifier
+		//
+		//				new Rule("QualifiedIdentifierList", "QualifiedIdentifier"),
+		//				new Rule("QualifiedIdentifierList", "QualifiedIdentifierList", ",", "QualifiedIdentifier"),
+		////				QualifiedIdentifierList -> QualifiedIdentifier
+		////				QualifiedIdentifierList -> QualifiedIdentifierList , QualifiedIdentifier
+		//
+		//				new Rule("CompilationUnit"), new Rule("CompilationUnit", "package", "QualifiedIdentifier", ";"),
+		//				new Rule("CompilationUnit", "Annotations", "package", "QualifiedIdentifier", ";"),
+		////				CompilationUnit -> 
+		////				CompilationUnit -> package QualifiedIdentifier ;
+		////				CompilationUnit -> Annotations package QualifiedIdentifier ;
+		//
+		//				new Rule("CompilationUnit", "ImportDeclarations"),
+		//				new Rule("CompilationUnit", "package", "QualifiedIdentifier", ";", "ImportDeclarations"),
+		//				new Rule("CompilationUnit", "Annotations", "package", "QualifiedIdentifier", ";", "ImportDeclarations"),
+		////				CompilationUnit -> ImportDeclarations
+		////				CompilationUnit -> package QualifiedIdentifier ; ImportDeclarations
+		////				CompilationUnit -> Annotations package QualifiedIdentifier ; ImportDeclarations
+		//
+		//				new Rule("CompilationUnit", "TypeDeclarations"),
+		//				new Rule("CompilationUnit", "package", "QualifiedIdentifier", ";", "TypeDeclarations"),
+		//				new Rule("CompilationUnit", "Annotations", "package", "QualifiedIdentifier", ";", "TypeDeclarations"),
+		////				CompilationUnit -> TypeDeclarations
+		////				CompilationUnit -> package QualifiedIdentifier ; TypeDeclarations
+		////				CompilationUnit -> Annotations package QualifiedIdentifier ; TypeDeclarations
+		//
+		//				new Rule("CompilationUnit", "ImportDeclarations", "TypeDeclarations"),
+		//				new Rule("CompilationUnit", "package", "QualifiedIdentifier", ";", "ImportDeclarations",
+		//						"TypeDeclarations"),
+		//				new Rule("CompilationUnit", "Annotations", "package", "QualifiedIdentifier", ";", "ImportDeclarations",
+		//						"TypeDeclarations"),
+		////				CompilationUnit -> ImportDeclarations TypeDeclarations
+		////				CompilationUnit -> package QualifiedIdentifier ; ImportDeclarations TypeDeclarations
+		////				CompilationUnit -> Annotations package QualifiedIdentifier ; ImportDeclarations TypeDeclarations
+		//
+		//				new Rule("ImportDeclarations", "ImportDeclaration"),
+		//				new Rule("ImportDeclarations", "ImportDeclarations", "ImportDeclaration"),
+		////				ImportDeclarations -> ImportDeclaration
+		////				ImportDeclarations -> ImportDeclarations ImportDeclaration
+		//
+		//				new Rule("TypeDeclarations", "TypeDeclaration"),
+		//				new Rule("TypeDeclarations", "TypeDeclarations", "TypeDeclaration"),
+		////				TypeDeclarations -> TypeDeclaration
+		////				TypeDeclarations -> TypeDeclarations TypeDeclaration
+		//				
+		//				
+		//				new Rule("ImportDeclarationIdentifier", "Identifier"),
+		////				new Rule("ImportDeclarationIdentifier", "ImportDeclarationIdentifier", ".", "Identifier"),
+		////				new Rule("ImportDeclarationIdentifier", "ImportDeclarationIdentifier", ".", "*"),
+		////				ImportDeclarationIdentifier -> Identifier
+		////				ImportDeclarationIdentifier -> ImportDeclarationIdentifier . Identifier
+		////				ImportDeclarationIdentifier -> ImportDeclarationIdentifier . *
+		//				
+		//				new Rule("ImportDeclaration", "import", "ImportDeclarationIdentifier", ";"),
+		//				new Rule("ImportDeclaration", "import", "static", "ImportDeclarationIdentifier", ";"),
+		////				ImportDeclaration -> import ImportDeclarationIdentifier ;
+		////				ImportDeclaration -> import static ImportDeclarationIdentifier ;
+		//				
+		//				new Rule("TypeDeclaration", "ClassOrInterfaceDeclaration"),
+		//				new Rule("TypeDeclaration", ";")
+		////				TypeDeclaration -> ClassOrInterfaceDeclaration
+		////				TypeDeclaration -> ;
+		//		);
 
 		System.out.println("*** Grammar ***");
 		System.out.println(grammar);
 
+		System.out.println();
+		System.out.println("*** Syntatics Table ***");
 		SyntaticsTable syntaticsTable = new SyntaticsTable(grammar);
 
-		System.out.println(syntaticsTable.getActionsCSV(grammar));
-		System.out.println(syntaticsTable.getGotosCSV(grammar));
-//ImportDeclarations
-		String src = """
-						Annotations package QualifiedIdentifier ;
-						
-						import Identifier . Identifier . * ;
-						
-						TypeDeclarations
-				""" + " $";
+		try {
+			FileWriter writer = new FileWriter("actions.csv");
+			writer.write(syntaticsTable.getActionsCSV(grammar));
+			writer.flush();
+			writer.close();
+			System.out.println("actions.csv < ```");
+			System.out.println(syntaticsTable.getActionsCSV(grammar));
+			System.out.println("```");
 
+			writer = new FileWriter("gotos.csv");
+			writer.write(syntaticsTable.getGotosCSV(grammar));
+			writer.flush();
+			writer.close();
+			System.out.println("gotos.csv < ```");
+			System.out.println(syntaticsTable.getGotosCSV(grammar));
+			System.out.println("```");
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
+		//ImportDeclarations
+		//		String src = """
+		//						Annotations package QualifiedIdentifier ;
+		//						
+		//						import Identifier . Identifier . * ;
+		//						
+		//						TypeDeclarations
+		//				""" + " $";
+		String src = """
+				a = b + c + d
+				""";
+
+		System.out.println();
 		System.out.println("*** Source ***");
 		System.out.println("```");
-		System.out.println(src);
+		System.out.print(src);
 		System.out.println("```");
 
-
 		try {
+			System.out.println();
 			System.out.println("*** Loaded Token ***");
-			Lexer lexer = new TokenBasedLexer(src);
+			Lexer lexer = new JavaLexer("$");
 			InputStream inStrm = new ByteArrayInputStream(src.getBytes());
 			for (;;) {
 				Symbol symbol = lexer.getSymbol(inStrm);
@@ -156,20 +195,20 @@ public class App {
 		}
 
 		try {
-			Lexer lexer = new TokenBasedLexer(src);
+			Lexer lexer = new JavaLexer("$");
 			Parser parser = new Parser(new BufferedLexer(lexer), grammar, syntaticsTable);
+			System.out.println();
 			System.out.println("*** Parser Stack ***");
-			System.out.println(parser.parse(new ByteArrayInputStream(src.getBytes()), (rule, symbols) -> {
-				return null;
-			}));
+			System.out.println("Accept " + parser.parse(new ByteArrayInputStream(src.getBytes())));
 		} catch (IOException | InvalidTokenException e) {
 			e.printStackTrace();
 		}
 
+		System.out.println();
 		System.out.println("MSG: Finished!");
 	}
 
-	public static void maina(String[] args) throws CloneNotSupportedException {
+	public static void mainb(String[] args) throws CloneNotSupportedException {
 
 		// ArrayList<Sample> samples = new ArrayList<Sample>();
 		// samples.add(new Sample(1, 2));
@@ -335,22 +374,22 @@ public class App {
 		// System.exit(0);
 		// }
 
-//		ParserData parserData = new ScenarioWriter().getParserData(s, SymbolEnum.class);
-//
-//		System.out.println(parserData.getRuleTableString());
-//		System.out.println(parserData.getSyntaticsTableString());
-//		System.exit(0);
-//
-//		String src = "+ jkalsdfj klasdfj klasdfj kl 1 2";
-//
-//		try {
-//			Parser parser = new Parser(new Lexer(), parserData);
-//			InputStream inStrm = new ByteArrayInputStream(src.getBytes());
-//			parser.parse(inStrm);
-//			//			System.out.println("MSG: Finished!");
-//		} catch (IOException e) {
-//			System.out.println(e.getMessage());
-//			System.exit(0);
-//		}
+		//		ParserData parserData = new ScenarioWriter().getParserData(s, SymbolEnum.class);
+		//
+		//		System.out.println(parserData.getRuleTableString());
+		//		System.out.println(parserData.getSyntaticsTableString());
+		//		System.exit(0);
+		//
+		//		String src = "+ jkalsdfj klasdfj klasdfj kl 1 2";
+		//
+		//		try {
+		//			Parser parser = new Parser(new Lexer(), parserData);
+		//			InputStream inStrm = new ByteArrayInputStream(src.getBytes());
+		//			parser.parse(inStrm);
+		//			//			System.out.println("MSG: Finished!");
+		//		} catch (IOException e) {
+		//			System.out.println(e.getMessage());
+		//			System.exit(0);
+		//		}
 	}
 }

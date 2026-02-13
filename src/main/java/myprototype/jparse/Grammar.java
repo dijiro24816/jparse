@@ -1,9 +1,7 @@
 package myprototype.jparse;
 
-import java.io.ByteArrayInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -12,10 +10,6 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Stream;
-
-import myprototype.jparse.symbol.terminal.InvalidTokenException;
-import myprototype.jparse.symbol.terminal.JavaLexer;
 
 public class Grammar {
 	private String begSymbol;
@@ -169,11 +163,9 @@ public class Grammar {
 	}
 
 	public HashSet<Item> expandFirstItems() {
-
 		HashSet<Item> items = new HashSet<>(
 				expandSymbolsRules(getStartSymbol()).stream().map(e -> new Item(e)).toList());
 		HashSet<Item> dstItems = new HashSet<>();
-		System.out.println(items);
 		for (Item item : items) {
 			HashSet<String> lookaheadSet = getLookaheadSetFromItems(items, item.getRule().getProductSymbol());
 			lookaheadSet.add("$");
@@ -244,7 +236,7 @@ public class Grammar {
 			String currentSymbol = symbols.get(symbols.size() - 1);
 
 			for (Item item : items) {
-				if (item.isReachingLastSymbol() && item.getDotSymbol().equals(currentSymbol)) {
+				if (item.size() == 1 && item.getDotSymbol().equals(currentSymbol)) {
 					symbols.add(item.getProductSymbol());
 					found = true;
 					break;
@@ -297,7 +289,9 @@ public class Grammar {
 			stringBuilder.append(i);
 			stringBuilder.append(": ");
 			stringBuilder.append(this.rules.get(i));
-			stringBuilder.append(System.lineSeparator());
+			
+			if (i + 1 < this.rules.size())
+				stringBuilder.append(System.lineSeparator());
 		}
 
 		return stringBuilder.toString();
@@ -309,19 +303,19 @@ public class Grammar {
 		operatorPrecedenceRule.add(PrecedenceDirection.Left, "+", "-");
 		operatorPrecedenceRule.add(PrecedenceDirection.Left, "*", "/");
 
-//		String[] terminals = { "Identifier", "NUM" };
-		Grammar grammar = new Grammar("S", "$",
-//				new Rule("S", "QualifiedIdentifier"),
-				new Rule("S", "QualifiedIdentifierList"),
-
-				new Rule("QualifiedIdentifier", "Identifier"),
-				new Rule("QualifiedIdentifier", "QualifiedIdentifier", ".", "Identifier"),
-
-				new Rule("QualifiedIdentifierList", "QualifiedIdentifier"),
-				new Rule("QualifiedIdentifierList", "QualifiedIdentifierList", ",", "QualifiedIdentifier")
-//				QualifiedIdentifierList -> QualifiedIdentifier
-//				QualifiedIdentifierList -> QualifiedIdentifierList , QualifiedIdentifier
-		);
+		Grammar grammar = new Grammar("S", "$", 
+				new Rule("S", "Stmt"),
+				new Rule("Stmt"),
+				new Rule("Stmt", "Expr"),
+				new Rule("Stmt", "Assg"),
+				new Rule("Expr", "Identifier"),
+				new Rule("Expr", "NUM"),
+				new Rule(operatorPrecedenceRule.getInfo("+"), "Expr", "Expr", "+", "Expr"),
+				new Rule(operatorPrecedenceRule.getInfo("-"), "Expr", "Expr", "-", "Expr"),
+				new Rule(operatorPrecedenceRule.getInfo("*"), "Expr", "Expr", "*", "Expr"),
+				new Rule(operatorPrecedenceRule.getInfo("/"), "Expr", "Expr", "/", "Expr"),
+				new Rule(operatorPrecedenceRule.getInfo("="), "Assg", "Identifier", "=", "Expr")
+				);
 
 		System.out.println("*** Grammar ***");
 		System.out.println(grammar);

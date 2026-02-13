@@ -18,7 +18,13 @@ public class Parser {
 		this.lexer = lexer;
 	}
 	
-	public Object parse(InputStream inStrm, BiFunction<Rule, List<Symbol>, Object> compounder) throws IOException, InvalidTokenException {
+	public Symbol parse(InputStream inStrm) throws IOException, InvalidTokenException {
+		return parse(inStrm, (rule, stack) -> {
+			return null;
+		});
+	}
+	
+	public Symbol parse(InputStream inStrm, BiFunction<Rule, List<Symbol>, Object> compounder) throws IOException, InvalidTokenException {
 		StateSymbolStack stack = null;
 		Action action = new Action(ActionKind.Start, 0);
 		
@@ -35,7 +41,6 @@ public class Parser {
 				
 				stack.push(this.lexer.getSymbol(inStrm));
 				stack.push(action.getArgumentValue());
-				
 				
 				break;
 				
@@ -80,8 +85,8 @@ public class Parser {
 				return stack.pop();
 			}
 			
-//			System.out.println(this.lexer.peek(inStrm));
 			action = this.table.getAction(stack.getCurrentState(), this.lexer.peek(inStrm).getLabel());
+			
 		}
 	}
 }

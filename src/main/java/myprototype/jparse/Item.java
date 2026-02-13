@@ -21,6 +21,10 @@ public class Item {
 		return dot;
 	}
 	
+	public int size() {
+		return this.rule.size();
+	}
+	
 	public HashSet<String> getLookaheadSet() {
 		return this.lookaheadSet;
 	}

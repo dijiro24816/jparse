@@ -39,6 +39,10 @@ public class Rule {
 	public Rule(String productSymbol, String...symbols) {
 		this(new PrecedenceRuleInfo(), productSymbol, symbols);
 	}
+	
+	public int size() {
+		return this.symbols.size();
+	}
 
 	@Override
 	public String toString() {
