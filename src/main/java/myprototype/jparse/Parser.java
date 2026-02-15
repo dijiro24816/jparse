@@ -86,6 +86,12 @@ public class Parser {
 			}
 			
 			action = this.table.getAction(stack.getCurrentState(), this.lexer.peek(inStrm).getLabel());
+			if (action == null) {
+				System.out.println("Unexpected token " + this.lexer.peek(inStrm).getLabel());
+				System.exit(0);
+			}
+			
+			
 			
 		}
 	}

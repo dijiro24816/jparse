@@ -1,3 +1,64 @@
+```
+	 -> Identifier
+IdentifierPeriodRepeat -> IdentifierPeriodRepeat . Identifier
+
+
+ImportDeclarationRepeat -> ImportDeclaration
+ImportDeclarationRepeat -> ImportDeclarationRepeat ImportDeclaration
+
+TypeDeclarationRepeat -> TypeDeclaration
+TypeDeclarationRepeat -> TypeDeclarationRepeat TypeDeclaration
+
+IdentifierAsteriskPeriodRepeat -> Identifier
+IdentifierAsteriskPeriodRepeat -> IdentifierAsteriskPeriodRepeat . Identifier
+IdentifierAsteriskPeriodRepeat -> IdentifierAsteriskPeriodRepeat . *
+
+ModifierRepeat -> Modifier
+ModifierRepeat -> ModifierRepeat Modifier
+
+IdentifierTypeArgumentPeriodRepeat -> Identifier
+IdentifierTypeArgumentPeriodRepeat -> Identifier TypeArguments
+IdentifierTypeArgumentPeriodRepeat -> IdentifierTypeArgumentPeriodRepeat . Identifier
+IdentifierTypeArgumentPeriodRepeat -> IdentifierTypeArgumentPeriodRepeat . Identifier TypeArguments
+
+
+EmptySquareBrackets -> [ ]
+EmptySquareBrackets -> EmptySquareBrackets [ ]
+
+TypeArgument_CommaRepeat -> TypeArgument
+TypeArgument_CommaRepeat -> TypeArgument_CommaRepeat , TypeArgument
+
+
+ReferenceTypeCommaRepeat -> ReferenceType
+ReferenceTypeCommaRepeat -> ReferenceTypeCommaRepeat , ReferenceType
+
+TypeParameterCommaRepeat -> TypeParameter
+TypeParameterCommaRepeat -> TypeParameterCommaRepeat , TypeParameter
+
+ReferenceTypeAndRepeat -> ReferenceType
+ReferenceTypeAndRepeat -> ReferenceTypeAndRepeat & ReferenceType
+
+
+AnnotationRepeat -> Annotation
+AnnotationRepeat -> AnnotationRepeat Annotation
+
+ElementValuePairCommaRepeat -> ElementValuePair
+ElementValuePairCommaRepeat -> ElementValuePairCommaRepeat , ElementValuePair
+
+ElementValuesComma_Repeat -> 
+ElementValuesComma_Repeat -> ElementValues
+ElementValuesComma_Repeat -> ,
+ElementValuesComma_Repeat -> ElementValues ,
+ElementValuesComma_Repeat -> ElementValuesComma_Repeat ElementValues
+ElementValuesComma_Repeat -> ElementValuesComma_Repeat ,
+ElementValuesComma_Repeat -> ElementValuesComma_Repeat ElementValues ,
+
+ElementValue_CommaRepeat -> ElementValue
+ElementValue_CommaRepeat -> ElementValue_CommaRepeat , ElementValue
+
+```
+
+
 Identifier:
     IDENTIFIER
     
@@ -9,8 +70,7 @@ QualifiedIdentifier:
     Identifier { . Identifier }
     
 ```
-QualifiedIdentifier -> Identifier
-QualifiedIdentifier -> QualifiedIdentifier . Identifier
+QualifiedIdentifier -> IdentifierPeriodRepeat
 ```
 
 QualifiedIdentifierList: 
@@ -30,35 +90,27 @@ CompilationUnit ->
 CompilationUnit -> package QualifiedIdentifier ;
 CompilationUnit -> Annotations package QualifiedIdentifier ;
 
-CompilationUnit -> ImportDeclarations
-CompilationUnit -> package QualifiedIdentifier ; ImportDeclarations
-CompilationUnit -> Annotations package QualifiedIdentifier ; ImportDeclarations
+CompilationUnit -> ImportDeclarationRepeat
+CompilationUnit -> package QualifiedIdentifier ; ImportDeclarationRepeat
+CompilationUnit -> Annotations package QualifiedIdentifier ; ImportDeclarationRepeat
 
-CompilationUnit -> TypeDeclarations
-CompilationUnit -> package QualifiedIdentifier ; TypeDeclarations
-CompilationUnit -> Annotations package QualifiedIdentifier ; TypeDeclarations
+CompilationUnit -> TypeDeclarationRepeat
+CompilationUnit -> package QualifiedIdentifier ; TypeDeclarationRepeat
+CompilationUnit -> Annotations package QualifiedIdentifier ; TypeDeclarationRepeat
 
-CompilationUnit -> ImportDeclarations TypeDeclarations
-CompilationUnit -> package QualifiedIdentifier ; ImportDeclarations TypeDeclarations
-CompilationUnit -> Annotations package QualifiedIdentifier ; ImportDeclarations TypeDeclarations
-
-ImportDeclarations -> ImportDeclaration
-ImportDeclarations -> ImportDeclarations ImportDeclaration
-
-TypeDeclarations -> TypeDeclaration
-TypeDeclarations -> TypeDeclarations TypeDeclaration
+CompilationUnit -> ImportDeclarationRepeat TypeDeclarationRepeat
+CompilationUnit -> package QualifiedIdentifier ; ImportDeclarationRepeat TypeDeclarationRepeat
+CompilationUnit -> Annotations package QualifiedIdentifier ; ImportDeclarationRepeat TypeDeclarationRepeat
 ```
 
 ImportDeclaration: 
     import [static] Identifier { . Identifier } [. *] ;
 
 ```
-ImportDeclarationIdentifier -> Identifier
-ImportDeclarationIdentifier -> ImportDeclarationIdentifier . Identifier
-ImportDeclarationIdentifier -> ImportDeclarationIdentifier . *
-
-ImportDeclaration -> import ImportDeclarationIdentifier ;
-ImportDeclaration -> import static ImportDeclarationIdentifier ;
+ImportDeclaration -> import IdentifierPeriodRepeat ;
+ImportDeclaration -> import static IdentifierPeriodRepeat ;
+ImportDeclaration -> import IdentifierPeriodRepeat . * ;
+ImportDeclaration -> import static IdentifierPeriodRepeat . * ;
 ```
 
 TypeDeclaration: 
@@ -74,35 +126,84 @@ ClassOrInterfaceDeclaration:
     {Modifier} (ClassDeclaration | InterfaceDeclaration)
 
 ```
+
+ClassOrInterfaceDeclaration -> ClassDeclaration
+ClassOrInterfaceDeclaration -> InterfaceDeclaration
+ClassOrInterfaceDeclaration -> ModifierRepeat ClassDeclaration
+ClassOrInterfaceDeclaration -> ModifierRepeat InterfaceDeclaration
 ```
 
 ClassDeclaration: 
     NormalClassDeclaration
     EnumDeclaration
 
+```
+ClassDeclaration -> NormalClassDeclaration
+ClassDeclaration -> EnumDeclaration
+```
+
 InterfaceDeclaration: 
     NormalInterfaceDeclaration
     AnnotationTypeDeclaration
 
+```
+InterfaceDeclaration -> NormalInterfaceDeclaration
+InterfaceDeclaration -> AnnotationTypeDeclaration
+```
 
 
 NormalClassDeclaration: 
     class Identifier [TypeParameters]
                                 [extends Type] [implements TypeList] ClassBody
 
+```
+NormalClassDeclaration -> class Identifier ClassBody
+NormalClassDeclaration -> class Identifier TypeParameters ClassBody
+NormalClassDeclaration -> class Identifier extends Type ClassBody
+NormalClassDeclaration -> class Identifier TypeParameters extends Type ClassBody
+
+NormalClassDeclaration -> class Identifier implements TypeList ClassBody
+NormalClassDeclaration -> class Identifier TypeParameters implements TypeList ClassBody
+NormalClassDeclaration -> class Identifier extends Type implements TypeList ClassBody
+NormalClassDeclaration -> class Identifier TypeParameters extends Type implements TypeList ClassBody
+```
+
 EnumDeclaration:
     enum Identifier [implements TypeList] EnumBody
+
+```
+EnumDeclaration -> enum Identifier EnumBody
+EnumDeclaration -> enum Identifier implements TypeList EnumBody
+```
 
 NormalInterfaceDeclaration: 
     interface Identifier [TypeParameters] [extends TypeList] InterfaceBody
 
+```
+NormalInterfaceDeclaration -> interface Identifier InterfaceBody
+NormalInterfaceDeclaration -> interface Identifier TypeParameters InterfaceBody
+NormalInterfaceDeclaration -> interface Identifier extends TypeList InterfaceBody
+NormalInterfaceDeclaration -> interface Identifier TypeParameters extends TypeList InterfaceBody
+```
+
 AnnotationTypeDeclaration:
     @ interface Identifier AnnotationTypeBody
+
+```
+AnnotationTypeDeclaration -> @ interface Identifier AnnotationTypeBody
+```
 
 
 Type:
     BasicType {[]}
     ReferenceType  {[]}
+
+```
+Type -> BasicType
+Type -> BasicType EmptySquareBrackets
+Type -> ReferenceType
+Type -> ReferenceType EmptySquareBrackets
+```
 
 BasicType: 
     byte
@@ -114,44 +215,99 @@ BasicType:
     double
     boolean
 
+```
+BasicType -> byte
+BasicType -> short
+BasicType -> char
+BasicType -> int
+BasicType -> long
+BasicType -> float
+BasicType -> double
+BasicType -> boolean
+```
+
 ReferenceType:
     Identifier [TypeArguments] { . Identifier [TypeArguments] }
 
+```
+ReferenceType -> IdentifierTypeArgumentPeriodRepeat
+```
+
+
+
 TypeArguments: 
     < TypeArgument { , TypeArgument } >
+    
+```
+TypeArguments -> < TypeArgument_CommaRepeat >
+```
 
+-------------------------------------------------------------------------
 TypeArgument:  
     ReferenceType
     ? [ (extends | super) ReferenceType ]
 
+```
+TypeArgument -> ReferenceType
+TypeArgument -> ?
+TypeArgument -> ? extends ReferenceType
+TypeArgument -> ? super ReferenceType
+```
 
 NonWildcardTypeArguments:
     < TypeList >
 
+```
+NonWildcardTypeArguments -> < TypeList >
+```
+
 TypeList:  
     ReferenceType { , ReferenceType }
 
+```
+TypeList -> ReferenceTypeCommaRepeat
+```
 
 
 TypeArgumentsOrDiamond:
     < > 
     TypeArguments
 
+```
+TypeArgumentsOrDiamond -> < >
+TypeArgumentsOrDiamond -> TypeArguments
+```
+
 NonWildcardTypeArgumentsOrDiamond:
     < >
     NonWildcardTypeArguments
 
-
+```
+NonWildcardTypeArgumentsOrDiamond -> < >
+NonWildcardTypeArgumentsOrDiamond -> NonWildcardTypeArguments
+```
 
 TypeParameters:
     < TypeParameter { , TypeParameter } >
 
+```
+TypeParameters -> < TypeParameterCommaRepeat >
+```
+
 TypeParameter:
     Identifier [extends Bound]
+
+```
+TypeParameter -> Identifier
+TypeParameter -> Identifier extends Bound
+```
 
 Bound:  
     ReferenceType { & ReferenceType }
 
+```
+Bound -> ReferenceTypeAndRepeat
+```
 
 Modifier: 
     Annotation
@@ -167,33 +323,84 @@ Modifier:
     volatile
     strictfp
 
+```
+Modifier -> Annotation
+Modifier -> public
+Modifier -> protected
+Modifier -> private
+Modifier -> static
+Modifier -> abstract
+Modifier -> final
+Modifier -> native
+Modifier -> synchronized
+Modifier -> transient
+Modifier -> volatile
+Modifier -> strictfp
+```
+
 Annotations:
     Annotation {Annotation}
 
+```
+Annotations -> AnnotationRepeat
+```
+
 Annotation:
     @ QualifiedIdentifier [ ( [AnnotationElement] ) ]
+
+```
+Annotation -> @ QualifiedIdentifier
+Annotation -> @ QualifiedIdentifier ( )
+Annotation -> @ QualifiedIdentifier ( AnnotationElement )
+```
 
 AnnotationElement:
     ElementValuePairs
     ElementValue
 
+```
+AnnotationElement -> ElementValuePairs
+AnnotationElement -> ElementValue
+```
+
 ElementValuePairs:
     ElementValuePair { , ElementValuePair }
 
+```
+ElementValuePairz -> ElementValuePairCommaRepeat
+```
+
 ElementValuePair:
     Identifier = ElementValue
+
+```
+ElementValuePair -> Identifier = ElementValue
+```
     
 ElementValue:
     Annotation
     Expression1 
     ElementValueArrayInitializer
 
+```
+ElementValue -> Annotation
+ElementValue -> Expression1
+ElementValue -> ElementValueArrayInitializer
+```
+
 ElementValueArrayInitializer:
     { [ElementValues] [,] }
+
+```
+ElementValueArrayInitializer -> ElementValuesComma_Repeat
+```
 
 ElementValues:
     ElementValue { , ElementValue }
 
+```
+ElementValues -> ElementValue_CommaRepeat
+```
 
 ClassBody: 
     { { ClassBodyDeclaration } }

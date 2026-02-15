@@ -72,16 +72,11 @@ public class SyntaticsTable {
 	}
 
 	private int createState(Grammar grammar, HashMap<StateKey, Integer> keyStates, StateKey key) {
-//		System.out.println(key);
+
 		if (keyStates.containsKey(key))
 			return keyStates.get(key);
 
 		int currentState = getNewState();
-		
-//		if (currentState == 0) {
-//			System.out.println(key);
-//			System.exit(0);
-//		}
 
 		keyStates.put(key, currentState);
 		

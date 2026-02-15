@@ -51,6 +51,10 @@ public class Item {
 		return getRestSymbolsCount() == 1;
 	}
 	
+	public boolean isReplaceable() {
+		return getDot() == 0 && getRule().isReplaceable();
+	}
+	
 	public int getRestSymbolsCount() {
 		return this.rule.getSymbols().size() - this.dot;
 	}

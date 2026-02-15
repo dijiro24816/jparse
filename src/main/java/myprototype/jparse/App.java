@@ -13,15 +13,12 @@ import myprototype.jparse.symbol.terminal.JavaLexer;
  */
 
 public class App {
-	public static void main(String[] args) throws IOException, InvalidTokenException {
-		Grammar grammar = new Grammar("S", "$",
-				new Rule("S", "Statement"),
-				new Rule("Statement", "Expression"),
-				new Rule("Statement", "Assignment"),
-				new Rule("Expression", "Identifier"),
+	public static void maina(String[] args) throws IOException, InvalidTokenException {
+		Grammar grammar = new Grammar("S", "$", new Rule("S", "Statement"), new Rule("Statement", "Expression"),
+				new Rule("Statement", "Assignment"), new Rule("Expression", "Identifier"),
 				new Rule("Expression", "Expression", "+", "Expression"),
 				new Rule("Assignment", "Identifier", "=", "Expression"));
-		
+
 		String sourceCode = """
 				a = b + c + d
 				""";
@@ -31,100 +28,237 @@ public class App {
 		System.out.println(symbol);
 	}
 
-	public static void maina(String[] args) {
-		OperatorPrecedenceRule operatorPrecedenceRule = new OperatorPrecedenceRule();
-		operatorPrecedenceRule.add(PrecedenceDirection.Right, "=");
-		operatorPrecedenceRule.add(PrecedenceDirection.Left, "+", "-");
-		operatorPrecedenceRule.add(PrecedenceDirection.Left, "*", "/");
+	public static void main(String[] args) {
+		Grammar grammar = new Grammar("S", "$", new Rule("S", "CompilationUnit"),
+				new Rule("QualifiedIdentifier", "IdentifierPeriodRepeat"),
+				// QualifiedIdentifier -> IdentifierPeriodRepeat
+				
+				new Rule("QualifiedIdentifierList", "QualifiedIdentifier"),
+				new Rule("QualifiedIdentifierList", "QualifiedIdentifierList", ",", "QualifiedIdentifier"),
+				// QualifiedIdentifierList -> QualifiedIdentifier
+				// QualifiedIdentifierList -> QualifiedIdentifierList , QualifiedIdentifier
 
-		Grammar grammar = new Grammar("S", "$",
-				new Rule("S", "Stmt"),
-				new Rule("Stmt"),
-				new Rule("Stmt", "Expr"),
-				new Rule("Stmt", "Assg"),
-				new Rule("Expr", "Identifier"),
-				new Rule("Expr", "NUM"),
-				new Rule(operatorPrecedenceRule.getInfo("+"), "Expr", "Expr", "+", "Expr"),
-				new Rule(operatorPrecedenceRule.getInfo("-"), "Expr", "Expr", "-", "Expr"),
-				new Rule(operatorPrecedenceRule.getInfo("*"), "Expr", "Expr", "*", "Expr"),
-				new Rule(operatorPrecedenceRule.getInfo("/"), "Expr", "Expr", "/", "Expr"),
-				new Rule(operatorPrecedenceRule.getInfo("="), "Assg", "Identifier", "=", "Expr"));
+				new Rule("CompilationUnit"), new Rule("CompilationUnit", "package", "QualifiedIdentifier", ";"),
+				new Rule("CompilationUnit", "Annotations", "package", "QualifiedIdentifier", ";"),
+				// CompilationUnit ->
+				// CompilationUnit -> package QualifiedIdentifier ;
+				// CompilationUnit -> Annotations package QualifiedIdentifier ;
 
-		//		Grammar grammar = new Grammar("S", "$",
-		//				new Rule("S", "CompilationUnit"),
-		//				
-		////				new Rule("S", "QualifiedIdentifier"),
-		////				new Rule("CompilationUnit", "QualifiedIdentifierList"),
-		//
-		//				
-		//				
-		//				new Rule("QualifiedIdentifier", "Identifier"),
-		//				new Rule("QualifiedIdentifier", "QualifiedIdentifier", ".", "Identifier"),
-		////				QualifiedIdentifier -> Identifier
-		////				QualifiedIdentifier -> QualifiedIdentifier . Identifier
-		//
-		//				new Rule("QualifiedIdentifierList", "QualifiedIdentifier"),
-		//				new Rule("QualifiedIdentifierList", "QualifiedIdentifierList", ",", "QualifiedIdentifier"),
-		////				QualifiedIdentifierList -> QualifiedIdentifier
-		////				QualifiedIdentifierList -> QualifiedIdentifierList , QualifiedIdentifier
-		//
-		//				new Rule("CompilationUnit"), new Rule("CompilationUnit", "package", "QualifiedIdentifier", ";"),
-		//				new Rule("CompilationUnit", "Annotations", "package", "QualifiedIdentifier", ";"),
-		////				CompilationUnit -> 
-		////				CompilationUnit -> package QualifiedIdentifier ;
-		////				CompilationUnit -> Annotations package QualifiedIdentifier ;
-		//
-		//				new Rule("CompilationUnit", "ImportDeclarations"),
-		//				new Rule("CompilationUnit", "package", "QualifiedIdentifier", ";", "ImportDeclarations"),
-		//				new Rule("CompilationUnit", "Annotations", "package", "QualifiedIdentifier", ";", "ImportDeclarations"),
-		////				CompilationUnit -> ImportDeclarations
-		////				CompilationUnit -> package QualifiedIdentifier ; ImportDeclarations
-		////				CompilationUnit -> Annotations package QualifiedIdentifier ; ImportDeclarations
-		//
-		//				new Rule("CompilationUnit", "TypeDeclarations"),
-		//				new Rule("CompilationUnit", "package", "QualifiedIdentifier", ";", "TypeDeclarations"),
-		//				new Rule("CompilationUnit", "Annotations", "package", "QualifiedIdentifier", ";", "TypeDeclarations"),
-		////				CompilationUnit -> TypeDeclarations
-		////				CompilationUnit -> package QualifiedIdentifier ; TypeDeclarations
-		////				CompilationUnit -> Annotations package QualifiedIdentifier ; TypeDeclarations
-		//
-		//				new Rule("CompilationUnit", "ImportDeclarations", "TypeDeclarations"),
-		//				new Rule("CompilationUnit", "package", "QualifiedIdentifier", ";", "ImportDeclarations",
-		//						"TypeDeclarations"),
-		//				new Rule("CompilationUnit", "Annotations", "package", "QualifiedIdentifier", ";", "ImportDeclarations",
-		//						"TypeDeclarations"),
-		////				CompilationUnit -> ImportDeclarations TypeDeclarations
-		////				CompilationUnit -> package QualifiedIdentifier ; ImportDeclarations TypeDeclarations
-		////				CompilationUnit -> Annotations package QualifiedIdentifier ; ImportDeclarations TypeDeclarations
-		//
-		//				new Rule("ImportDeclarations", "ImportDeclaration"),
-		//				new Rule("ImportDeclarations", "ImportDeclarations", "ImportDeclaration"),
-		////				ImportDeclarations -> ImportDeclaration
-		////				ImportDeclarations -> ImportDeclarations ImportDeclaration
-		//
-		//				new Rule("TypeDeclarations", "TypeDeclaration"),
-		//				new Rule("TypeDeclarations", "TypeDeclarations", "TypeDeclaration"),
-		////				TypeDeclarations -> TypeDeclaration
-		////				TypeDeclarations -> TypeDeclarations TypeDeclaration
-		//				
-		//				
-		//				new Rule("ImportDeclarationIdentifier", "Identifier"),
-		////				new Rule("ImportDeclarationIdentifier", "ImportDeclarationIdentifier", ".", "Identifier"),
-		////				new Rule("ImportDeclarationIdentifier", "ImportDeclarationIdentifier", ".", "*"),
-		////				ImportDeclarationIdentifier -> Identifier
-		////				ImportDeclarationIdentifier -> ImportDeclarationIdentifier . Identifier
-		////				ImportDeclarationIdentifier -> ImportDeclarationIdentifier . *
-		//				
-		//				new Rule("ImportDeclaration", "import", "ImportDeclarationIdentifier", ";"),
-		//				new Rule("ImportDeclaration", "import", "static", "ImportDeclarationIdentifier", ";"),
-		////				ImportDeclaration -> import ImportDeclarationIdentifier ;
-		////				ImportDeclaration -> import static ImportDeclarationIdentifier ;
-		//				
-		//				new Rule("TypeDeclaration", "ClassOrInterfaceDeclaration"),
-		//				new Rule("TypeDeclaration", ";")
-		////				TypeDeclaration -> ClassOrInterfaceDeclaration
-		////				TypeDeclaration -> ;
-		//		);
+				new Rule("CompilationUnit", "ImportDeclarationRepeat"),
+				new Rule("CompilationUnit", "package", "QualifiedIdentifier", ";", "ImportDeclarationRepeat"),
+				new Rule("CompilationUnit", "Annotations", "package", "QualifiedIdentifier", ";", "ImportDeclarationRepeat"),
+				// CompilationUnit -> ImportDeclarationRepeat
+				// CompilationUnit -> package QualifiedIdentifier ; ImportDeclarationRepeat
+				// CompilationUnit -> Annotations package QualifiedIdentifier ;
+				// ImportDeclarations
+
+				new Rule("CompilationUnit", "TypeDeclarationRepeat"),
+				new Rule("CompilationUnit", "package", "QualifiedIdentifier", ";", "TypeDeclarationRepeat"),
+				new Rule("CompilationUnit", "Annotations", "package", "QualifiedIdentifier", ";", "TypeDeclarationRepeat"),
+				// CompilationUnit -> TypeDeclarationRepeat
+				// CompilationUnit -> package QualifiedIdentifier ; TypeDeclarationRepeat
+				// CompilationUnit -> Annotations package QualifiedIdentifier ; TypeDeclarationRepeat
+
+				new Rule("CompilationUnit", "ImportDeclarationRepeat", "TypeDeclarationRepeat"),
+				new Rule("CompilationUnit", "package", "QualifiedIdentifier", ";", "ImportDeclarationRepeat",
+						"TypeDeclarationRepeat"),
+				new Rule("CompilationUnit", "Annotations", "package", "QualifiedIdentifier", ";", "ImportDeclarationRepeat",
+						"TypeDeclarationRepeat"),
+				// CompilationUnit -> ImportDeclarationRepeat TypeDeclarationRepeat
+				// CompilationUnit -> package QualifiedIdentifier ; ImportDeclarationRepeat
+				// TypeDeclarationRepeat
+				// CompilationUnit -> Annotations package QualifiedIdentifier ;
+				// ImportDeclarations TypeDeclarationRepeat
+
+
+				new Rule("ImportDeclaration", "import", "IdentifierPeriodRepeat", ";"),
+				new Rule("ImportDeclaration", "import", "static", "IdentifierPeriodRepeat", ";"),
+				new Rule("ImportDeclaration", "import", "IdentifierPeriodRepeat", ".", "*", ";"),
+				new Rule("ImportDeclaration", "import", "static", "IdentifierPeriodRepeat", ".", "*", ";"),
+				// ImportDeclaration -> import IdentifierPeriodRepeat ;
+				// ImportDeclaration -> import static IdentifierPeriodRepeat ;
+				// ImportDeclaration -> import IdentifierPeriodRepeat . * ;
+				// ImportDeclaration -> import static IdentifierPeriodRepeat . * ;
+
+				new Rule("TypeDeclaration", "ClassOrInterfaceDeclaration"), new Rule("TypeDeclaration", ";"),
+				// TypeDeclaration -> ClassOrInterfaceDeclaration
+				// TypeDeclaration -> ;
+				
+				new Rule("ClassOrInterfaceDeclaration", "ClassDeclaration"),
+				new Rule("ClassOrInterfaceDeclaration", "InterfaceDeclaration"),
+				new Rule("ClassOrInterfaceDeclaration", "ModifierRepeat", "ClassDeclaration"),
+				new Rule("ClassOrInterfaceDeclaration", "ModifierRepeat", "InterfaceDeclaration"),
+				// ClassOrInterfaceDeclaration -> ClassDeclaration
+				// ClassOrInterfaceDeclaration -> InterfaceDeclaration
+				// ClassOrInterfaceDeclaration -> Modifiers ClassDeclaration
+				// ClassOrInterfaceDeclaration -> Modifiers InterfaceDeclaration
+				
+				new Rule("ClassDeclaration", "NormalClassDeclaration"),
+				new Rule("ClassDeclaration", "EnumDeclaration"),
+				// ClassDeclaration -> NormalClassDeclaration
+				// ClassDeclaration -> EnumDeclaration
+				
+				new Rule("InterfaceDeclaration", "NormalInterfaceDeclaration"),
+				new Rule("InterfaceDeclaration", "AnnotationTypeDeclaration"),
+				// InterfaceDeclaration -> NormalInterfaceDeclaration
+				// InterfaceDeclaration -> AnnotationTypeDeclaration
+				
+				new Rule("NormalClassDeclaration", "class", "Identifier", "ClassBody"),
+				new Rule("NormalClassDeclaration", "class", "Identifier", "TypeParameters", "ClassBody"),
+				new Rule("NormalClassDeclaration", "class", "Identifier", "extends", "Type", "ClassBody"),
+				new Rule("NormalClassDeclaration", "class", "Identifier", "TypeParameters", "extends", "Type", "ClassBody"),
+				// NormalClassDeclaration -> class Identifier ClassBody
+				// NormalClassDeclaration -> class Identifier TypeParameters ClassBody
+				// NormalClassDeclaration -> class Identifier extends Type ClassBody
+				// NormalClassDeclaration -> class Identifier TypeParameters extends Type ClassBody
+
+				new Rule("NormalClassDeclaration", "class", "Identifier", "implements", "TypeList", "ClassBody"),
+				new Rule("NormalClassDeclaration", "class", "Identifier", "TypeParameters", "implements", "TypeList", "ClassBody"),
+				new Rule("NormalClassDeclaration", "class", "Identifier", "extends", "Type", "implements", "TypeList", "ClassBody"),
+				new Rule("NormalClassDeclaration", "class", "Identifier", "TypeParameters", "extends", "Type", "implements", "TypeList", "ClassBody"),
+				// NormalClassDeclaration -> class Identifier implements TypeList ClassBody
+				// NormalClassDeclaration -> class Identifier TypeParameters implements TypeList ClassBody
+				// NormalClassDeclaration -> class Identifier extends Type implements TypeList ClassBody
+				// NormalClassDeclaration -> class Identifier TypeParameters extends Type implements TypeList ClassBody
+				
+				new Rule("EnumDeclaration", "enum", "Identifier", "EnumBody"),
+				new Rule("EnumDeclaration", "enum", "implements", "TypeList", "Identifier", "EnumBody"),
+				// EnumDeclaration -> enum Identifier EnumBody
+				// EnumDeclaration -> enum Identifier implements TypeList EnumBody
+				
+				new Rule("NormalInterfaceDeclaration", "interface", "Identifier", "InterfaceBody"),
+				new Rule("NormalInterfaceDeclaration", "interface", "Identifier", "TypeParameters", "InterfaceBody"),
+				new Rule("NormalInterfaceDeclaration", "interface", "Identifier", "extends", "TypeList", "InterfaceBody"),
+				new Rule("NormalInterfaceDeclaration", "interface", "Identifier", "TypeParameters", "extends", "TypeList", "InterfaceBody"),
+				// NormalInterfaceDeclaration -> interface Identifier InterfaceBody
+				// NormalInterfaceDeclaration -> interface Identifier TypeParameters InterfaceBody
+				// NormalInterfaceDeclaration -> interface Identifier extends TypeList InterfaceBody
+				// NormalInterfaceDeclaration -> interface Identifier TypeParameters extends TypeList InterfaceBody
+				
+				new Rule("AnnotationTypeDeclaration", "@", "interface", "Identifier", "AnnotationTypeBody"),
+				// AnnotationTypeDeclaration -> @ interface Identifier AnnotationTypeBody
+				
+				new Rule("Type", "BasicType"),
+				new Rule("Type", "BasicType", "EmptySquareBrackets"),
+				new Rule("Type", "ReferenceType"),
+				new Rule("Type", "ReferenceType", "EmptySquareBrackets"),
+				// Type -> BasicType
+				// Type -> BasicType EmptySquareBrackets
+				// Type -> ReferenceType
+				// Type -> ReferenceType EmptySquareBrackets
+				
+				
+				new Rule("BasicType", "byte"),
+				new Rule("BasicType", "short"),
+				new Rule("BasicType", "char"),
+				new Rule("BasicType", "int"),
+				new Rule("BasicType", "long"),
+				new Rule("BasicType", "float"),
+				new Rule("BasicType", "double"),
+				new Rule("BasicType", "boolean"),
+				// BasicType -> byte
+				// BasicType -> short
+				// BasicType -> char
+				// BasicType -> int
+				// BasicType -> long
+				// BasicType -> float
+				// BasicType -> double
+				// BasicType -> boolean
+				
+				new Rule("ReferenceType", "IdentifierTypeArgumentPeriodRepeat"),
+				// ReferenceType -> IdentifierTypeArgumentPeriodRepeat
+
+				new Rule("TypeArguments", "<", "TypeArgument_CommaRepeat", ">"),
+				// TypeArguments -> < TypeArgument_CommaRepeat >
+				
+				
+				// Original Rule
+				
+				new Rule("IdentifierPeriodRepeat", "Identifier"),
+				new Rule("IdentifierPeriodRepeat", "IdentifierPeriodRepeat", ".", "Identifier"),
+				// QualifiedIdentifier -> Identifier
+				// QualifiedIdentifier -> QualifiedIdentifier . Identifier
+
+				new Rule("ImportDeclarationRepeat", "ImportDeclaration"),
+				new Rule("ImportDeclarationRepeat", "ImportDeclarationRepeat", "ImportDeclaration"),
+				// ImportDeclarations -> ImportDeclaration
+				// ImportDeclarations -> ImportDeclarations ImportDeclaration
+
+				new Rule("TypeDeclarationRepeat", "TypeDeclaration"),
+				new Rule("TypeDeclarationRepeat", "TypeDeclarationRepeat", "TypeDeclaration"),
+				// TypeDeclarations -> TypeDeclaration
+				// TypeDeclarations -> TypeDeclarations TypeDeclaration
+
+				new Rule("ModifierRepeat", "Modifier"),
+				new Rule("ModifierRepeat", "ModifierRepeat", "Modifier"),
+				// Modifiers -> Modifier
+				// Modifiers -> Modifiers Modifier
+				
+				new Rule("IdentifierTypeArgumentPeriodRepeat", "Identifier"),
+				new Rule("IdentifierTypeArgumentPeriodRepeat", "Identifier", "TypeArguments"),
+				new Rule("IdentifierTypeArgumentPeriodRepeat", "IdentifierTypeArgumentPeriodRepeat", ".", "Identifier"),
+				new Rule("IdentifierTypeArgumentPeriodRepeat", "IdentifierTypeArgumentPeriodRepeat", ".", "Identifier", "TypeArguments"),
+				// IdentifierTypeArgumentPeriodRepeat -> Identifier 
+				// IdentifierTypeArgumentPeriodRepeat -> Identifier TypeArguments
+				// IdentifierTypeArgumentPeriodRepeat -> IdentifierTypeArgumentPeriodRepeat . Identifier
+				// IdentifierTypeArgumentPeriodRepeat -> IdentifierTypeArgumentPeriodRepeat . Identifier TypeArguments
+				
+				new Rule("EmptySquareBrackets", "[", "]"),
+				new Rule("EmptySquareBrackets", "EmptySquareBrackets", "[", "]"),
+				// EmptySquareBrackets -> []
+				// EmptySquareBrackets -> EmptySquareBrackets []
+				
+				new Rule("TypeArgument_CommaRepeat", "TypeArgument"),
+				new Rule("TypeArgument_CommaRepeat", "TypeArgument_CommaRepeat", ",", "TypeArgument"),
+				// TypeArgument_CommaRepeat -> TypeArgument
+				// TypeArgument_CommaRepeat -> TypeArgument_CommaRepeat , TypeArgument
+				
+				new Rule("ReferenceTypeCommaRepeat", "ReferenceType"),
+				new Rule("ReferenceTypeCommaRepeat", "ReferenceTypeCommaRepeat", ",", "ReferenceType"),
+				// ReferenceTypeCommaRepeat -> ReferenceType
+				// ReferenceTypeCommaRepeat -> ReferenceTypeCommaRepeat , ReferenceType
+				
+				new Rule("TypeParameterCommaRepeat", "TypeParameter"),
+				new Rule("TypeParameterCommaRepeat", "TypeParameterCommaRepeat", ",", "TypeParameter"),
+				// TypeParameterCommaRepeat -> TypeParameter
+				// TypeParameterCommaRepeat -> TypeParameterCommaRepeat , TypeParameter
+
+				new Rule("ReferenceTypeAndRepeat", "ReferenceType"),
+				new Rule("ReferenceTypeAndRepeat", "ReferenceTypeAndRepeat", "&", "ReferenceType"),
+				// ReferenceTypeAndRepeat -> ReferenceType
+				// ReferenceTypeAndRepeat -> ReferenceTypeAndRepeat & ReferenceType
+				
+				new Rule("AnnotationRepeat", "Annotation"),
+				new Rule("AnnotationRepeat", "AnnotationRepeat", "Annotation"),
+				// AnnotationRepeat -> Annotation
+				// AnnotationRepeat -> AnnotationRepeat Annotation
+
+				new Rule("ElementValuePairCommaRepeat", "ElementValuePair"),
+				new Rule("ElementValuePairCommaRepeat", "ElementValuePairCommaRepeat", ",", "ElementValuePair"),
+				// ElementValuePairCommaRepeat -> ElementValuePair
+				// ElementValuePairCommaRepeat -> ElementValuePairCommaRepeat , ElementValuePair
+				
+				new Rule("ElementValuesComma_Repeat"),
+				new Rule("ElementValuesComma_Repeat", "ElementValues"),
+				new Rule("ElementValuesComma_Repeat", ","),
+				new Rule("ElementValuesComma_Repeat", "ElementValues", ","),
+				new Rule("ElementValuesComma_Repeat", "ElementValuesComma_Repeat", "ElementValues"),
+				new Rule("ElementValuesComma_Repeat", "ElementValuesComma_Repeat", ","),
+				new Rule("ElementValuesComma_Repeat", "ElementValuesComma_Repeat", "ElementValues", ","),
+				// ElementValuesComma_Repeat -> 
+				// ElementValuesComma_Repeat -> ElementValues
+				// ElementValuesComma_Repeat -> ,
+				// ElementValuesComma_Repeat -> ElementValues ,
+				// ElementValuesComma_Repeat -> ElementValuesComma_Repeat ElementValues
+				// ElementValuesComma_Repeat -> ElementValuesComma_Repeat ,
+				// ElementValuesComma_Repeat -> ElementValuesComma_Repeat ElementValues ,
+
+				new Rule("ElementValue_CommaRepeat", "ElementValue"),
+				new Rule("ElementValue_CommaRepeat", "ElementValue_CommaRepeat", ",", "ElementValue")
+				// ElementValue_CommaRepeat -> ElementValue
+				// ElementValue_CommaRepeat -> ElementValue_CommaRepeat , ElementValue
+
+		);
 
 		System.out.println("*** Grammar ***");
 		System.out.println(grammar);
@@ -153,18 +287,15 @@ public class App {
 			e.printStackTrace();
 		}
 
-		//ImportDeclarations
-		//		String src = """
-		//						Annotations package QualifiedIdentifier ;
-		//						
-		//						import Identifier . Identifier . * ;
-		//						
-		//						TypeDeclarations
-		//				""" + " $";
 		String src = """
-				a = b + c + d
-				""";
+				Annotations package Identifier . Identifier ;
 
+				import Identifier . Identifier . * ;
+						
+				class Identifier ClassBody
+				
+				enum Identifier EnumBody
+				""" + "$" + System.lineSeparator();
 		System.out.println();
 		System.out.println("*** Source ***");
 		System.out.println("```");
@@ -174,7 +305,7 @@ public class App {
 		try {
 			System.out.println();
 			System.out.println("*** Loaded Token ***");
-			Lexer lexer = new JavaLexer("$");
+			Lexer lexer = new TokenBasedLexer(src);
 			InputStream inStrm = new ByteArrayInputStream(src.getBytes());
 			for (;;) {
 				Symbol symbol = lexer.getSymbol(inStrm);
@@ -195,7 +326,7 @@ public class App {
 		}
 
 		try {
-			Lexer lexer = new JavaLexer("$");
+			Lexer lexer = new TokenBasedLexer(src);
 			Parser parser = new Parser(new BufferedLexer(lexer), grammar, syntaticsTable);
 			System.out.println();
 			System.out.println("*** Parser Stack ***");
@@ -374,22 +505,23 @@ public class App {
 		// System.exit(0);
 		// }
 
-		//		ParserData parserData = new ScenarioWriter().getParserData(s, SymbolEnum.class);
+		// ParserData parserData = new ScenarioWriter().getParserData(s,
+		// SymbolEnum.class);
 		//
-		//		System.out.println(parserData.getRuleTableString());
-		//		System.out.println(parserData.getSyntaticsTableString());
-		//		System.exit(0);
+		// System.out.println(parserData.getRuleTableString());
+		// System.out.println(parserData.getSyntaticsTableString());
+		// System.exit(0);
 		//
-		//		String src = "+ jkalsdfj klasdfj klasdfj kl 1 2";
+		// String src = "+ jkalsdfj klasdfj klasdfj kl 1 2";
 		//
-		//		try {
-		//			Parser parser = new Parser(new Lexer(), parserData);
-		//			InputStream inStrm = new ByteArrayInputStream(src.getBytes());
-		//			parser.parse(inStrm);
-		//			//			System.out.println("MSG: Finished!");
-		//		} catch (IOException e) {
-		//			System.out.println(e.getMessage());
-		//			System.exit(0);
-		//		}
+		// try {
+		// Parser parser = new Parser(new Lexer(), parserData);
+		// InputStream inStrm = new ByteArrayInputStream(src.getBytes());
+		// parser.parse(inStrm);
+		// // System.out.println("MSG: Finished!");
+		// } catch (IOException e) {
+		// System.out.println(e.getMessage());
+		// System.exit(0);
+		// }
 	}
 }
