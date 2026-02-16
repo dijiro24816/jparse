@@ -1,5 +1,5 @@
 ```
-	 -> Identifier
+IdentifierPeriodRepea	-> Identifier
 IdentifierPeriodRepeat -> IdentifierPeriodRepeat . Identifier
 
 
