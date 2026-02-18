@@ -1,49 +1,43 @@
 ```
-IdentifierPeriodRepea	-> Identifier
-IdentifierPeriodRepeat -> IdentifierPeriodRepeat . Identifier
+PeriodIdentifier_Repeat	-> . Identifier
+PeriodIdentifier_Repeat -> PeriodIdentifier_Repeat . Identifier
+
+ImportDeclaration_Repeat -> ImportDeclaration
+ImportDeclaration_Repeat -> ImportDeclaration_Repeat ImportDeclaration
+
+TypeDeclaration_Repeat -> TypeDeclaration
+TypeDeclaration_Repeat -> TypeDeclaration_Repeat TypeDeclaration
+
+Modifier_Repeat -> Modifier
+Modifier_Repeat -> Modifier_Repeat Modifier
 
 
-ImportDeclarationRepeat -> ImportDeclaration
-ImportDeclarationRepeat -> ImportDeclarationRepeat ImportDeclaration
-
-TypeDeclarationRepeat -> TypeDeclaration
-TypeDeclarationRepeat -> TypeDeclarationRepeat TypeDeclaration
-
-IdentifierAsteriskPeriodRepeat -> Identifier
-IdentifierAsteriskPeriodRepeat -> IdentifierAsteriskPeriodRepeat . Identifier
-IdentifierAsteriskPeriodRepeat -> IdentifierAsteriskPeriodRepeat . *
-
-ModifierRepeat -> Modifier
-ModifierRepeat -> ModifierRepeat Modifier
-
-IdentifierTypeArgumentPeriodRepeat -> Identifier
-IdentifierTypeArgumentPeriodRepeat -> Identifier TypeArguments
-IdentifierTypeArgumentPeriodRepeat -> IdentifierTypeArgumentPeriodRepeat . Identifier
-IdentifierTypeArgumentPeriodRepeat -> IdentifierTypeArgumentPeriodRepeat . Identifier TypeArguments
+_PeriodIdentifierTypeArgument_Repeat -> . Identifier
+_PeriodIdentifierTypeArgument_Repeat -> . Identifier TypeArguments
 
 
-EmptySquareBrackets -> [ ]
-EmptySquareBrackets -> EmptySquareBrackets [ ]
+_EmptySquareBrackets_Repeat -> [ ]
+_EmptySquareBrackets_Repeat -> _EmptySquareBrackets_Repeat [ ]
 
-TypeArgument_CommaRepeat -> TypeArgument
-TypeArgument_CommaRepeat -> TypeArgument_CommaRepeat , TypeArgument
-
-
-ReferenceTypeCommaRepeat -> ReferenceType
-ReferenceTypeCommaRepeat -> ReferenceTypeCommaRepeat , ReferenceType
-
-TypeParameterCommaRepeat -> TypeParameter
-TypeParameterCommaRepeat -> TypeParameterCommaRepeat , TypeParameter
-
-ReferenceTypeAndRepeat -> ReferenceType
-ReferenceTypeAndRepeat -> ReferenceTypeAndRepeat & ReferenceType
+_CommaTypeArgument_Repeat -> , TypeArgument
+_CommaTypeArgument_Repeat -> _CommaTypeArgument_Repeat , TypeArgument
 
 
-AnnotationRepeat -> Annotation
-AnnotationRepeat -> AnnotationRepeat Annotation
+_CommaReferenceType_Repeat -> , ReferenceType
+_CommaReferenceType_Repeat -> _CommaReferenceType_Repeat , ReferenceType
 
-ElementValuePairCommaRepeat -> ElementValuePair
-ElementValuePairCommaRepeat -> ElementValuePairCommaRepeat , ElementValuePair
+_CommaTypeParameter_Repeat -> , TypeParameter
+_CommaTypeParameter_Repeat -> _CommaTypeParameter_Repeat , TypeParameter
+
+ReferenceType_AndRepeat -> ReferenceType
+ReferenceType_AndRepeat -> ReferenceType_AndRepeat & ReferenceType
+
+
+Annotation_Repeat -> Annotation
+Annotation_Repeat -> Annotation_Repeat Annotation
+
+ElementValuePair_CommaRepeat -> ElementValuePair
+ElementValuePair_CommaRepeat -> ElementValuePair_CommaRepeat , ElementValuePair
 
 ElementValuesComma_Repeat -> 
 ElementValuesComma_Repeat -> ElementValues
@@ -56,6 +50,18 @@ ElementValuesComma_Repeat -> ElementValuesComma_Repeat ElementValues ,
 ElementValue_CommaRepeat -> ElementValue
 ElementValue_CommaRepeat -> ElementValue_CommaRepeat , ElementValue
 
+
+
+
+
+
+
+ClassBodyDeclaration_Repeat -> ClassBodyDeclaration
+ClassBodyDeclaration_Repeat -> ClassBodyDeclaration_Repeat ClassBodyDeclaration
+
+
+CommaVariableDeclarator_Repeat -> , VariableDeclarator
+CommaVariableDeclarator_Repeat -> CommaVariableDeclarator_Repeat , VariableDeclarator
 ```
 
 
@@ -70,7 +76,7 @@ QualifiedIdentifier:
     Identifier { . Identifier }
     
 ```
-QualifiedIdentifier -> IdentifierPeriodRepeat
+QualifiedIdentifier -> Identifier PeriodIdentifier_Repeat
 ```
 
 QualifiedIdentifierList: 
@@ -90,27 +96,27 @@ CompilationUnit ->
 CompilationUnit -> package QualifiedIdentifier ;
 CompilationUnit -> Annotations package QualifiedIdentifier ;
 
-CompilationUnit -> ImportDeclarationRepeat
-CompilationUnit -> package QualifiedIdentifier ; ImportDeclarationRepeat
-CompilationUnit -> Annotations package QualifiedIdentifier ; ImportDeclarationRepeat
+CompilationUnit -> ImportDeclaration_Repeat
+CompilationUnit -> package QualifiedIdentifier ; ImportDeclaration_Repeat
+CompilationUnit -> Annotations package QualifiedIdentifier ; ImportDeclaration_Repeat
 
-CompilationUnit -> TypeDeclarationRepeat
-CompilationUnit -> package QualifiedIdentifier ; TypeDeclarationRepeat
-CompilationUnit -> Annotations package QualifiedIdentifier ; TypeDeclarationRepeat
+CompilationUnit -> TypeDeclaration_Repeat
+CompilationUnit -> package QualifiedIdentifier ; TypeDeclaration_Repeat
+CompilationUnit -> Annotations package QualifiedIdentifier ; TypeDeclaration_Repeat
 
-CompilationUnit -> ImportDeclarationRepeat TypeDeclarationRepeat
-CompilationUnit -> package QualifiedIdentifier ; ImportDeclarationRepeat TypeDeclarationRepeat
-CompilationUnit -> Annotations package QualifiedIdentifier ; ImportDeclarationRepeat TypeDeclarationRepeat
+CompilationUnit -> ImportDeclaration_Repeat TypeDeclaration_Repeat
+CompilationUnit -> package QualifiedIdentifier ; ImportDeclaration_Repeat TypeDeclaration_Repeat
+CompilationUnit -> Annotations package QualifiedIdentifier ; ImportDeclaration_Repeat TypeDeclaration_Repeat
 ```
 
 ImportDeclaration: 
     import [static] Identifier { . Identifier } [. *] ;
 
 ```
-ImportDeclaration -> import IdentifierPeriodRepeat ;
-ImportDeclaration -> import static IdentifierPeriodRepeat ;
-ImportDeclaration -> import IdentifierPeriodRepeat . * ;
-ImportDeclaration -> import static IdentifierPeriodRepeat . * ;
+ImportDeclaration -> import Identifier PeriodIdentifier_Repeat ;
+ImportDeclaration -> import static Identifier PeriodIdentifier_Repeat ;
+ImportDeclaration -> import Identifier PeriodIdentifier_Repeat . * ;
+ImportDeclaration -> import static Identifier PeriodIdentifier_Repeat . * ;
 ```
 
 TypeDeclaration: 
@@ -129,8 +135,8 @@ ClassOrInterfaceDeclaration:
 
 ClassOrInterfaceDeclaration -> ClassDeclaration
 ClassOrInterfaceDeclaration -> InterfaceDeclaration
-ClassOrInterfaceDeclaration -> ModifierRepeat ClassDeclaration
-ClassOrInterfaceDeclaration -> ModifierRepeat InterfaceDeclaration
+ClassOrInterfaceDeclaration -> Modifier_Repeat ClassDeclaration
+ClassOrInterfaceDeclaration -> Modifier_Repeat InterfaceDeclaration
 ```
 
 ClassDeclaration: 
@@ -200,9 +206,9 @@ Type:
 
 ```
 Type -> BasicType
-Type -> BasicType EmptySquareBrackets
+Type -> BasicType _EmptySquareBrackets_Repeat
 Type -> ReferenceType
-Type -> ReferenceType EmptySquareBrackets
+Type -> ReferenceType _EmptySquareBrackets_Repeat
 ```
 
 BasicType: 
@@ -230,7 +236,8 @@ ReferenceType:
     Identifier [TypeArguments] { . Identifier [TypeArguments] }
 
 ```
-ReferenceType -> IdentifierTypeArgumentPeriodRepeat
+ReferenceType -> Identifier _PeriodIdentifierTypeArgument_Repeat
+ReferenceType -> Identifier TypeArguments _PeriodIdentifierTypeArgument_Repeat
 ```
 
 
@@ -239,7 +246,7 @@ TypeArguments:
     < TypeArgument { , TypeArgument } >
     
 ```
-TypeArguments -> < TypeArgument_CommaRepeat >
+TypeArguments -> < TypeArgument _CommaTypeArgument_Repeat >
 ```
 
 -------------------------------------------------------------------------
@@ -265,7 +272,7 @@ TypeList:
     ReferenceType { , ReferenceType }
 
 ```
-TypeList -> ReferenceTypeCommaRepeat
+TypeList -> ReferenceType _CommaReferenceType_Repeat
 ```
 
 
@@ -291,7 +298,7 @@ TypeParameters:
     < TypeParameter { , TypeParameter } >
 
 ```
-TypeParameters -> < TypeParameterCommaRepeat >
+TypeParameters -> < TypeParameter _CommaTypeParameter_Repeat >
 ```
 
 TypeParameter:
@@ -306,7 +313,7 @@ Bound:
     ReferenceType { & ReferenceType }
 
 ```
-Bound -> ReferenceTypeAndRepeat
+Bound -> ReferenceType_AndRepeat
 ```
 
 Modifier: 
@@ -342,7 +349,7 @@ Annotations:
     Annotation {Annotation}
 
 ```
-Annotations -> AnnotationRepeat
+Annotations -> Annotation_Repeat
 ```
 
 Annotation:
@@ -367,7 +374,7 @@ ElementValuePairs:
     ElementValuePair { , ElementValuePair }
 
 ```
-ElementValuePairz -> ElementValuePairCommaRepeat
+ElementValuePairz -> ElementValuePair_CommaRepeat
 ```
 
 ElementValuePair:
@@ -402,13 +409,29 @@ ElementValues:
 ElementValues -> ElementValue_CommaRepeat
 ```
 
+
+-------------------------------------------------------------------------------------
+
 ClassBody: 
     { { ClassBodyDeclaration } }
+    
+```
+ClassBody -> { ClassBodyDeclaration_Repeat }
+```
+    
 
 ClassBodyDeclaration:
     ; 
     {Modifier} MemberDecl
     [static] Block
+
+```
+ClassBodyDeclaration -> ;
+ClassBodyDeclaration -> MemberDecl
+ClassBodyDeclaration -> Modifier_Repeat MemberDecl
+ClassBodyDeclaration -> Block
+ClassBodyDeclaration -> static Block
+```
 
 MemberDecl:
     MethodOrFieldDecl
@@ -418,18 +441,51 @@ MemberDecl:
     ClassDeclaration
     InterfaceDeclaration
 
+```
+MemberDecl -> MethodOrFieldDecl
+MemberDecl -> void Identifier VoidMethodDeclarationRest
+MemberDecl -> Identifier ConstructorDeclaratorRest
+MemberDecl -> GenericMethodOrConstructorDecl
+MemberDecl -> ClassDeclaration
+MemberDecl -> InterfaceDeclaration
+```
+
+
 MethodOrFieldDecl:
     Type Identifier MethodOrFieldRest
+
+```
+MethodOrFieldDecl -> Type Identifier MethodOrFieldRest
+```
+
 
 MethodOrFieldRest:  
     FieldDeclaratorsRest ;
     MethodDeclaratorRest
 
+```
+MethodOrFieldRest -> FieldDeclaratorsRest ;
+MethodOrFieldRest -> MethodDeclaratorRest
+```
+
+
 FieldDeclaratorsRest:  
     VariableDeclaratorRest { , VariableDeclarator }
 
+```
+FieldDeclaratorsRest -> VariableDeclaratorRest
+FieldDeclaratorsRest -> VariableDeclaratorRest CommaVariableDeclarator_Repeat
+```
+
 MethodDeclaratorRest:
     FormalParameters {[]} [throws QualifiedIdentifierList] (Block | ;)
+
+```
+MethodDeclaratorRest -> FormalParameters _EmptySquareBrackets_Repeat Block
+MethodDeclaratorRest -> FormalParameters _EmptySquareBrackets_Repeat ;
+MethodDeclaratorRest -> FormalParameters throws QualifiedIdentifierList _EmptySquareBrackets_Repeat Block
+MethodDeclaratorRest -> FormalParameters throws QualifiedIdentifierList EmptySquareBrackets_Repeat ;
+```
 
 VoidMethodDeclaratorRest:
     FormalParameters [throws QualifiedIdentifierList] (Block | ;)

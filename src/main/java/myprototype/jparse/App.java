@@ -30,8 +30,8 @@ public class App {
 
 	public static void main(String[] args) {
 		Grammar grammar = new Grammar("S", "$", new Rule("S", "CompilationUnit"),
-				new Rule("QualifiedIdentifier", "IdentifierPeriodRepeat"),
-				// QualifiedIdentifier -> IdentifierPeriodRepeat
+				new Rule("QualifiedIdentifier", "Identifier", "PeriodIdentifier_Repeat"),
+				// QualifiedIdentifier -> Identifier PeriodIdentifier_Repeat
 				
 				new Rule("QualifiedIdentifierList", "QualifiedIdentifier"),
 				new Rule("QualifiedIdentifierList", "QualifiedIdentifierList", ",", "QualifiedIdentifier"),
@@ -44,41 +44,41 @@ public class App {
 				// CompilationUnit -> package QualifiedIdentifier ;
 				// CompilationUnit -> Annotations package QualifiedIdentifier ;
 
-				new Rule("CompilationUnit", "ImportDeclarationRepeat"),
-				new Rule("CompilationUnit", "package", "QualifiedIdentifier", ";", "ImportDeclarationRepeat"),
-				new Rule("CompilationUnit", "Annotations", "package", "QualifiedIdentifier", ";", "ImportDeclarationRepeat"),
-				// CompilationUnit -> ImportDeclarationRepeat
-				// CompilationUnit -> package QualifiedIdentifier ; ImportDeclarationRepeat
+				new Rule("CompilationUnit", "ImportDeclaration_Repeat"),
+				new Rule("CompilationUnit", "package", "QualifiedIdentifier", ";", "ImportDeclaration_Repeat"),
+				new Rule("CompilationUnit", "Annotations", "package", "QualifiedIdentifier", ";", "ImportDeclaration_Repeat"),
+				// CompilationUnit -> ImportDeclaration_Repeat
+				// CompilationUnit -> package QualifiedIdentifier ; ImportDeclaration_Repeat
 				// CompilationUnit -> Annotations package QualifiedIdentifier ;
 				// ImportDeclarations
 
-				new Rule("CompilationUnit", "TypeDeclarationRepeat"),
-				new Rule("CompilationUnit", "package", "QualifiedIdentifier", ";", "TypeDeclarationRepeat"),
-				new Rule("CompilationUnit", "Annotations", "package", "QualifiedIdentifier", ";", "TypeDeclarationRepeat"),
-				// CompilationUnit -> TypeDeclarationRepeat
-				// CompilationUnit -> package QualifiedIdentifier ; TypeDeclarationRepeat
-				// CompilationUnit -> Annotations package QualifiedIdentifier ; TypeDeclarationRepeat
+				new Rule("CompilationUnit", "TypeDeclaration_Repeat"),
+				new Rule("CompilationUnit", "package", "QualifiedIdentifier", ";", "TypeDeclaration_Repeat"),
+				new Rule("CompilationUnit", "Annotations", "package", "QualifiedIdentifier", ";", "TypeDeclaration_Repeat"),
+				// CompilationUnit -> TypeDeclaration_Repeat
+				// CompilationUnit -> package QualifiedIdentifier ; TypeDeclaration_Repeat
+				// CompilationUnit -> Annotations package QualifiedIdentifier ; TypeDeclaration_Repeat
 
-				new Rule("CompilationUnit", "ImportDeclarationRepeat", "TypeDeclarationRepeat"),
-				new Rule("CompilationUnit", "package", "QualifiedIdentifier", ";", "ImportDeclarationRepeat",
-						"TypeDeclarationRepeat"),
-				new Rule("CompilationUnit", "Annotations", "package", "QualifiedIdentifier", ";", "ImportDeclarationRepeat",
-						"TypeDeclarationRepeat"),
-				// CompilationUnit -> ImportDeclarationRepeat TypeDeclarationRepeat
-				// CompilationUnit -> package QualifiedIdentifier ; ImportDeclarationRepeat
-				// TypeDeclarationRepeat
+				new Rule("CompilationUnit", "ImportDeclaration_Repeat", "TypeDeclaration_Repeat"),
+				new Rule("CompilationUnit", "package", "QualifiedIdentifier", ";", "ImportDeclaration_Repeat",
+						"TypeDeclaration_Repeat"),
+				new Rule("CompilationUnit", "Annotations", "package", "QualifiedIdentifier", ";", "ImportDeclaration_Repeat",
+						"TypeDeclaration_Repeat"),
+				// CompilationUnit -> ImportDeclaration_Repeat TypeDeclaration_Repeat
+				// CompilationUnit -> package QualifiedIdentifier ; ImportDeclaration_Repeat
+				// TypeDeclaration_Repeat
 				// CompilationUnit -> Annotations package QualifiedIdentifier ;
-				// ImportDeclarations TypeDeclarationRepeat
+				// ImportDeclarations TypeDeclaration_Repeat
 
 
-				new Rule("ImportDeclaration", "import", "IdentifierPeriodRepeat", ";"),
-				new Rule("ImportDeclaration", "import", "static", "IdentifierPeriodRepeat", ";"),
-				new Rule("ImportDeclaration", "import", "IdentifierPeriodRepeat", ".", "*", ";"),
-				new Rule("ImportDeclaration", "import", "static", "IdentifierPeriodRepeat", ".", "*", ";"),
-				// ImportDeclaration -> import IdentifierPeriodRepeat ;
-				// ImportDeclaration -> import static IdentifierPeriodRepeat ;
-				// ImportDeclaration -> import IdentifierPeriodRepeat . * ;
-				// ImportDeclaration -> import static IdentifierPeriodRepeat . * ;
+				new Rule("ImportDeclaration", "import", "Identifier", "PeriodIdentifier_Repeat", ";"),
+				new Rule("ImportDeclaration", "import", "static", "Identifier", "PeriodIdentifier_Repeat", ";"),
+				new Rule("ImportDeclaration", "import", "Identifier", "PeriodIdentifier_Repeat", ".", "*", ";"),
+				new Rule("ImportDeclaration", "import", "static", "Identifier", "PeriodIdentifier_Repeat", ".", "*", ";"),
+				// ImportDeclaration -> import Identifier PeriodIdentifier_Repeat ;
+				// ImportDeclaration -> import static Identifier PeriodIdentifier_Repeat ;
+				// ImportDeclaration -> import Identifier PeriodIdentifier_Repeat . * ;
+				// ImportDeclaration -> import static Identifier PeriodIdentifier_Repeat . * ;
 
 				new Rule("TypeDeclaration", "ClassOrInterfaceDeclaration"), new Rule("TypeDeclaration", ";"),
 				// TypeDeclaration -> ClassOrInterfaceDeclaration
@@ -86,8 +86,8 @@ public class App {
 				
 				new Rule("ClassOrInterfaceDeclaration", "ClassDeclaration"),
 				new Rule("ClassOrInterfaceDeclaration", "InterfaceDeclaration"),
-				new Rule("ClassOrInterfaceDeclaration", "ModifierRepeat", "ClassDeclaration"),
-				new Rule("ClassOrInterfaceDeclaration", "ModifierRepeat", "InterfaceDeclaration"),
+				new Rule("ClassOrInterfaceDeclaration", "Modifier_Repeat", "ClassDeclaration"),
+				new Rule("ClassOrInterfaceDeclaration", "Modifier_Repeat", "InterfaceDeclaration"),
 				// ClassOrInterfaceDeclaration -> ClassDeclaration
 				// ClassOrInterfaceDeclaration -> InterfaceDeclaration
 				// ClassOrInterfaceDeclaration -> Modifiers ClassDeclaration
@@ -139,13 +139,13 @@ public class App {
 				// AnnotationTypeDeclaration -> @ interface Identifier AnnotationTypeBody
 				
 				new Rule("Type", "BasicType"),
-				new Rule("Type", "BasicType", "EmptySquareBrackets"),
+				new Rule("Type", "BasicType", "_EmptySquareBrackets_Repeat"),
 				new Rule("Type", "ReferenceType"),
-				new Rule("Type", "ReferenceType", "EmptySquareBrackets"),
+				new Rule("Type", "ReferenceType", "_EmptySquareBrackets_Repeat"),
 				// Type -> BasicType
-				// Type -> BasicType EmptySquareBrackets
+				// Type -> BasicType _EmptySquareBrackets_Repeat
 				// Type -> ReferenceType
-				// Type -> ReferenceType EmptySquareBrackets
+				// Type -> ReferenceType _EmptySquareBrackets_Repeat
 				
 				
 				new Rule("BasicType", "byte"),
@@ -165,78 +165,185 @@ public class App {
 				// BasicType -> double
 				// BasicType -> boolean
 				
-				new Rule("ReferenceType", "IdentifierTypeArgumentPeriodRepeat"),
-				// ReferenceType -> IdentifierTypeArgumentPeriodRepeat
+				new Rule("ReferenceType", "Identifier", "_PeriodIdentifierTypeArgument_Repeat"),
+				new Rule("ReferenceType", "Identifier", "TypeArguments", "_PeriodIdentifierTypeArgument_Repeat"),
+				// ReferenceType -> Identifier _PeriodIdentifierTypeArgument_Repeat
+				// ReferenceType -> Identifier TypeArguments _PeriodIdentifierTypeArgument_Repeat
 
-				new Rule("TypeArguments", "<", "TypeArgument_CommaRepeat", ">"),
-				// TypeArguments -> < TypeArgument_CommaRepeat >
+				new Rule("TypeArguments", "<", "TypeArgument", "_CommaTypeArgument_Repeat", ">"),
+				// TypeArguments -> < _CommaTypeArgument_Repeat >
+				
+				
+				new Rule("TypeArgument", "ReferenceType"),
+				new Rule("TypeArgument", "? extends ReferenceType"),
+				new Rule("TypeArgument", "? super ReferenceType"),
+				// TypeArgument -> ReferenceType
+				// TypeArgument -> ?
+				// TypeArgument -> ? extends ReferenceType
+				// TypeArgument -> ? super ReferenceType
+				
+				
+				
+				new Rule("NonWildcardTypeArguments", "<", "TypeList", ">"),
+				// NonWildcardTypeArguments -> < TypeList >
+				
+				
+				new Rule("TypeList", "ReferenceType", "_CommaReferenceType_Repeat"),
+				// TypeList -> _CommaReferenceType_Repeat
+				
+				
+				new Rule("TypeArgumentsOrDiamond", "<", ">"),
+				new Rule("TypeArgumentsOrDiamond", "TypeArguments"),
+				// TypeArgumentsOrDiamond -> < >
+				// TypeArgumentsOrDiamond -> TypeArguments
+				
+				
+				
+				new Rule("NonWildcardTypeArgumentsOrDiamond", "<", ">"),
+				new Rule("NonWildcardTypeArgumentsOrDiamond", "NonWildcardTypeArguments"),
+				// NonWildcardTypeArgumentsOrDiamond -> < >
+				// NonWildcardTypeArgumentsOrDiamond -> NonWildcardTypeArguments
+				
+				
+				new Rule("TypeParameters", "<", "TypeParameter", "_CommaTypeParameter_Repeat", ">"),
+				// TypeParameters -> < TypeParameter _CommaTypeParameter_Repeat >
+				
+				
+				
+				new Rule("TypeParameter", "Identifier"),
+				new Rule("TypeParameter", "Identifier", "extends", "Bound"),
+				// TypeParameter -> Identifier
+				// TypeParameter -> Identifier extends Bound
+				
+				
+				new Rule("Bound", "AndReferenceType_Repeat"),
+				// Bound -> AndReferenceType_Repeat
+				
+				new Rule("Modifier", "Annotation"),
+				new Rule("Modifier", "public"),
+				new Rule("Modifier", "protected"),
+				new Rule("Modifier", "private"),
+				new Rule("Modifier", "static"),
+				new Rule("Modifier", "abstract"),
+				new Rule("Modifier", "final"),
+				new Rule("Modifier", "native"),
+				new Rule("Modifier", "synchronized"),
+				new Rule("Modifier", "transient"),
+				new Rule("Modifier", "volatile"),
+				new Rule("Modifier", "strictfp"),
+				// Modifier -> Annotation
+				// Modifier -> public
+				// Modifier -> protected
+				// Modifier -> private
+				// Modifier -> static
+				// Modifier -> abstract
+				// Modifier -> final
+				// Modifier -> native
+				// Modifier -> synchronized
+				// Modifier -> transient
+				// Modifier -> volatile
+				// Modifier -> strictfp
+				
+				
+				new Rule("Annotations", "Annotaion"),
+				// Annotations -> Annotation_Repeat
+				
+				
+				new Rule("Annotation", "@", "QualifiedIdentifier"),
+				new Rule("Annotation", "@", "QualifiedIdentifier", "(", ")"),
+				new Rule("Annotation", "@", "QualifiedIdentifier", "(", "AnnotationElement", ")"),
+				// Annotation -> @ QualifiedIdentifier
+				// Annotation -> @ QualifiedIdentifier ( )
+				// Annotation -> @ QualifiedIdentifier ( AnnotationElement )
+				
+				
+				new Rule("AnnotationElement ", "ElementValuePairs"),
+				new Rule("AnnotationElement ", "ElementValue"),
+				// AnnotationElement -> ElementValuePairs
+				// AnnotationElement -> ElementValue
+				
+				new Rule("ElementValuePairz", "ElementValuePair_CommaRepeat"),
+				// ElementValuePairz -> ElementValuePair_CommaRepeat
+				
+				new Rule("ElementValuePair", "Identifier", "=", "ElementValue"),
+				// ElementValuePair -> Identifier = ElementValue
+				
+				
+				new Rule("ElementValue", "Annotation"),
+				new Rule("ElementValue", "Expression1"),
+				new Rule("ElementValue", "ElementValueArrayInitializer"),
+				// ElementValue -> Annotation
+				// ElementValue -> Expression1
+				// ElementValue -> ElementValueArrayInitializer
+				
+				new Rule("ElementValueArrayInitializer", "ElementValuesComma_Repeat"),
+				// ElementValueArrayInitializer -> ElementValuesComma_Repeat
+				
+				new Rule("ElementValues", "ElementValue_CommaRepeat"),
+				// ElementValues -> ElementValue_CommaRepeat
 				
 				
 				// Original Rule
 				
-				new Rule("IdentifierPeriodRepeat", "Identifier"),
-				new Rule("IdentifierPeriodRepeat", "IdentifierPeriodRepeat", ".", "Identifier"),
+				new Rule("PeriodIdentifier_Repeat", ".", "Identifier"),
+				new Rule("PeriodIdentifier_Repeat", "PeriodIdentifier_Repeat", ".", "Identifier"),
 				// QualifiedIdentifier -> Identifier
 				// QualifiedIdentifier -> QualifiedIdentifier . Identifier
 
-				new Rule("ImportDeclarationRepeat", "ImportDeclaration"),
-				new Rule("ImportDeclarationRepeat", "ImportDeclarationRepeat", "ImportDeclaration"),
+				new Rule("ImportDeclaration_Repeat", "ImportDeclaration"),
+				new Rule("ImportDeclaration_Repeat", "ImportDeclaration_Repeat", "ImportDeclaration"),
 				// ImportDeclarations -> ImportDeclaration
 				// ImportDeclarations -> ImportDeclarations ImportDeclaration
 
-				new Rule("TypeDeclarationRepeat", "TypeDeclaration"),
-				new Rule("TypeDeclarationRepeat", "TypeDeclarationRepeat", "TypeDeclaration"),
+				new Rule("TypeDeclaration_Repeat", "TypeDeclaration"),
+				new Rule("TypeDeclaration_Repeat", "TypeDeclaration_Repeat", "TypeDeclaration"),
 				// TypeDeclarations -> TypeDeclaration
 				// TypeDeclarations -> TypeDeclarations TypeDeclaration
 
-				new Rule("ModifierRepeat", "Modifier"),
-				new Rule("ModifierRepeat", "ModifierRepeat", "Modifier"),
+				new Rule("Modifier_Repeat", "Modifier"),
+				new Rule("Modifier_Repeat", "Modifier_Repeat", "Modifier"),
 				// Modifiers -> Modifier
 				// Modifiers -> Modifiers Modifier
 				
-				new Rule("IdentifierTypeArgumentPeriodRepeat", "Identifier"),
-				new Rule("IdentifierTypeArgumentPeriodRepeat", "Identifier", "TypeArguments"),
-				new Rule("IdentifierTypeArgumentPeriodRepeat", "IdentifierTypeArgumentPeriodRepeat", ".", "Identifier"),
-				new Rule("IdentifierTypeArgumentPeriodRepeat", "IdentifierTypeArgumentPeriodRepeat", ".", "Identifier", "TypeArguments"),
-				// IdentifierTypeArgumentPeriodRepeat -> Identifier 
-				// IdentifierTypeArgumentPeriodRepeat -> Identifier TypeArguments
-				// IdentifierTypeArgumentPeriodRepeat -> IdentifierTypeArgumentPeriodRepeat . Identifier
-				// IdentifierTypeArgumentPeriodRepeat -> IdentifierTypeArgumentPeriodRepeat . Identifier TypeArguments
+				new Rule("_PeriodIdentifierTypeArgument_Repeat", ".", "Identifier"),
+				new Rule("_PeriodIdentifierTypeArgument_Repeat", ".", "Identifier", "TypeArguments"),
+				// _PeriodIdentifierTypeArgument_Repeat -> . Identifier 
+				// _PeriodIdentifierTypeArgument_Repeat -> . Identifier TypeArguments
 				
-				new Rule("EmptySquareBrackets", "[", "]"),
-				new Rule("EmptySquareBrackets", "EmptySquareBrackets", "[", "]"),
-				// EmptySquareBrackets -> []
-				// EmptySquareBrackets -> EmptySquareBrackets []
+				new Rule("_EmptySquareBrackets_Repeat", "[", "]"),
+				new Rule("_EmptySquareBrackets_Repeat", "_EmptySquareBrackets_Repeat", "[", "]"),
+				// _EmptySquareBrackets_Repeat -> []
+				// _EmptySquareBrackets_Repeat -> _EmptySquareBrackets_Repeat []
 				
-				new Rule("TypeArgument_CommaRepeat", "TypeArgument"),
-				new Rule("TypeArgument_CommaRepeat", "TypeArgument_CommaRepeat", ",", "TypeArgument"),
-				// TypeArgument_CommaRepeat -> TypeArgument
-				// TypeArgument_CommaRepeat -> TypeArgument_CommaRepeat , TypeArgument
+				new Rule("_CommaTypeArgument_Repeat", ",", "TypeArgument"),
+				new Rule("_CommaTypeArgument_Repeat", "_CommaTypeArgument_Repeat", ",", "TypeArgument"),
+				// _CommaTypeArgument_Repeat -> , TypeArgument
+				// _CommaTypeArgument_Repeat -> _CommaTypeArgument_Repeat , TypeArgument
 				
-				new Rule("ReferenceTypeCommaRepeat", "ReferenceType"),
-				new Rule("ReferenceTypeCommaRepeat", "ReferenceTypeCommaRepeat", ",", "ReferenceType"),
-				// ReferenceTypeCommaRepeat -> ReferenceType
-				// ReferenceTypeCommaRepeat -> ReferenceTypeCommaRepeat , ReferenceType
+				new Rule("_CommaReferenceType_Repeat", "ReferenceType"),
+				new Rule("_CommaReferenceType_Repeat", "_CommaReferenceType_Repeat", ",", "ReferenceType"),
+				// _CommaReferenceType_Repeat -> , ReferenceType
+				// _CommaReferenceType_Repeat -> _CommaReferenceType_Repeat , ReferenceType
 				
-				new Rule("TypeParameterCommaRepeat", "TypeParameter"),
-				new Rule("TypeParameterCommaRepeat", "TypeParameterCommaRepeat", ",", "TypeParameter"),
-				// TypeParameterCommaRepeat -> TypeParameter
-				// TypeParameterCommaRepeat -> TypeParameterCommaRepeat , TypeParameter
+				new Rule("_CommaTypeParameter_Repeat", ",", "TypeParameter"),
+				new Rule("_CommaTypeParameter_Repeat", "_CommaTypeParameter_Repeat", ",", "TypeParameter"),
+				// _CommaTypeParameter_Repeat -> , TypeParameter
+				// _CommaTypeParameter_Repeat -> _CommaTypeParameter_Repeat , TypeParameter
 
-				new Rule("ReferenceTypeAndRepeat", "ReferenceType"),
-				new Rule("ReferenceTypeAndRepeat", "ReferenceTypeAndRepeat", "&", "ReferenceType"),
-				// ReferenceTypeAndRepeat -> ReferenceType
-				// ReferenceTypeAndRepeat -> ReferenceTypeAndRepeat & ReferenceType
+				new Rule("AndReferenceType_Repeat", "ReferenceType"),
+				new Rule("AndReferenceType_Repeat", "AndReferenceType_Repeat", "&", "ReferenceType"),
+				// AndReferenceType_Repeat -> ReferenceType
+				// AndReferenceType_Repeat -> AndReferenceType_Repeat & ReferenceType
 				
-				new Rule("AnnotationRepeat", "Annotation"),
-				new Rule("AnnotationRepeat", "AnnotationRepeat", "Annotation"),
-				// AnnotationRepeat -> Annotation
-				// AnnotationRepeat -> AnnotationRepeat Annotation
+				new Rule("Annotation_Repeat", "Annotation"),
+				new Rule("Annotation_Repeat", "Annotation_Repeat", "Annotation"),
+				// Annotation_Repeat -> Annotation
+				// Annotation_Repeat -> Annotation_Repeat Annotation
 
-				new Rule("ElementValuePairCommaRepeat", "ElementValuePair"),
-				new Rule("ElementValuePairCommaRepeat", "ElementValuePairCommaRepeat", ",", "ElementValuePair"),
-				// ElementValuePairCommaRepeat -> ElementValuePair
-				// ElementValuePairCommaRepeat -> ElementValuePairCommaRepeat , ElementValuePair
+				new Rule("ElementValuePair_CommaRepeat", "ElementValuePair"),
+				new Rule("ElementValuePair_CommaRepeat", "ElementValuePair_CommaRepeat", ",", "ElementValuePair"),
+				// ElementValuePair_CommaRepeat -> ElementValuePair
+				// ElementValuePair_CommaRepeat -> ElementValuePair_CommaRepeat , ElementValuePair
 				
 				new Rule("ElementValuesComma_Repeat"),
 				new Rule("ElementValuesComma_Repeat", "ElementValues"),
@@ -254,15 +361,26 @@ public class App {
 				// ElementValuesComma_Repeat -> ElementValuesComma_Repeat ElementValues ,
 
 				new Rule("ElementValue_CommaRepeat", "ElementValue"),
-				new Rule("ElementValue_CommaRepeat", "ElementValue_CommaRepeat", ",", "ElementValue")
+				new Rule("ElementValue_CommaRepeat", "ElementValue_CommaRepeat", ",", "ElementValue"),
 				// ElementValue_CommaRepeat -> ElementValue
 				// ElementValue_CommaRepeat -> ElementValue_CommaRepeat , ElementValue
 
+				
+				new Rule("ClassBodyDeclaration_Repeat", "ClassBodyDeclaration"),
+				new Rule("ClassBodyDeclaration_Repeat", "ClassBodyDeclaration_Repeat", "ClassBodyDeclaration"),
+				// ClassBodyDeclaration_Repeat -> ClassBodyDeclaration
+				// ClassBodyDeclaration_Repeat -> ClassBodyDeclaration_Repeat ClassBodyDeclaration
+				
+				
+				new Rule("CommaVariableDeclarator_Repeat", ",", "VariableDeclarator"),
+				new Rule("CommaVariableDeclarator_Repeat", "CommaVariableDeclarator_Repeat", ",", "VariableDeclarator")
+				// CommaVariableDeclarator_Repeat -> , VariableDeclarator
+				// CommaVariableDeclarator_Repeat -> CommaVariableDeclarator_Repeat , VariableDeclarator
 		);
 
 		System.out.println("*** Grammar ***");
 		System.out.println(grammar);
-
+		
 		System.out.println();
 		System.out.println("*** Syntatics Table ***");
 		SyntaticsTable syntaticsTable = new SyntaticsTable(grammar);
@@ -275,6 +393,9 @@ public class App {
 			System.out.println("actions.csv < ```");
 			System.out.println(syntaticsTable.getActionsCSV(grammar));
 			System.out.println("```");
+			
+			
+			System.out.println("hello");
 
 			writer = new FileWriter("gotos.csv");
 			writer.write(syntaticsTable.getGotosCSV(grammar));
