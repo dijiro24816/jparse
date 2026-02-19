@@ -98,6 +98,31 @@ _VariableInitializer_CommaVariableInitializer_Repeat_Comma_Repeat -> _VariableIn
 _BlockStatement_Repeat -> BlockStatement
 _BlockStatement_Repeat -> _BlockStatement_Repeat BlockStatement
 
+
+
+
+_CatchClause_Repeat -> CatchClause
+_CatchClause_Repeat -> _CatchClause_Repeat CatchClause
+
+
+
+
+_OrQualifiedIdentifier_Repeat -> | QualifiedIdentifier
+_OrQualifiedIdentifier_Repeat -> _OrQualifiedIdentifier_Repeat | QualifiedIdentifier
+
+
+_SemicolonResource_Repeat -> ; Resource
+_SemicolonResource_Repeat -> _SemicolonResource_Repeat ; Resource
+
+
+
+_SwitchBlockStatementGroup_Repeat -> SwitchBlockStatementGroup
+_SwitchBlockStatementGroup_Repeat -> _SwitchBlockStatementGroup_Repeat SwitchBlockStatementGroup
+
+
+
+_SwitchLabel_Repeat -> SwitchLabel
+_SwitchLabel_Repeat -> _SwitchLabel_Repeat SwitchLabel
 ```
 
 
@@ -864,50 +889,122 @@ StatementExpression -> Expression
 Catches:
     CatchClause { CatchClause }
 
+-------------------------------------------
+
+```
+Catches -> CatchClause
+Catches -> CatchClause _CatchClause_Repeat
+```
+
 CatchClause:  
     catch ( {VariableModifier} CatchType Identifier ) Block
+
+```
+CatchClause -> catch ( CatchType Identifier ) Block
+CatchClause -> catch ( _VariableModifier_Repeat CatchType Identifier ) Block
+```
 
 CatchType:
     QualifiedIdentifier { | QualifiedIdentifier }
 
+```
+CatchType -> QualifiedIdentifier
+CatchType -> QualifiedIdentifier _OrQualifiedIdentifier_Repeat
+```
+
 Finally:
     finally Block
+
+```
+Finally -> finally Block
+```
 
 ResourceSpecification:
     ( Resources [;] )
 
+```
+ResourceSpecification -> ( Resources )
+ResourceSpecification -> ( Resources ; )
+```
+
 Resources:
     Resource { ; Resource }
 
+```
+Resources -> Resource _SemicolonResource_Repeat
+```
+
 Resource:
     {VariableModifier} ReferenceType VariableDeclaratorId = Expression 
+
+```
+Resource -> ReferenceType VariableDeclaratorId = Expression
+Resource -> _VariableModifier_Repeat ReferenceType VariableDeclaratorId = Expression
+```
 
 
 SwitchBlockStatementGroups: 
     { SwitchBlockStatementGroup }
 
+```
+SwitchBlockStatementGroups -> 
+SwitchBlockStatementGroups -> _SwitchBlockStatementGroup_Repeat
+```
+
+
 SwitchBlockStatementGroup: 
     SwitchLabels BlockStatements
+    
+```
+SwitchBlockStatementGroup -> SwitchLabels BlockStatements
+```
 
 SwitchLabels:
     SwitchLabel { SwitchLabel }
+
+```
+SwitchLabels -> SwitchLabel
+SwitchLabels -> SwitchLabel _SwitchLabel_Repeat
+```
 
 SwitchLabel: 
     case Expression :
     case EnumConstantName :
     default :
 
+```
+SwitchLabel -> case Expression :
+switchLabel -> case EnumConstantName :
+switchLabel -> default :
+```
+
 EnumConstantName:
     Identifier
+
+
+```
+EnumConstantName -> Identifier
+```
 
 
 
 ForControl:
     ForVarControl
     ForInit ; [Expression] ; [ForUpdate]
+    
+```
+ForControl -> ForVarControl
+ForControl -> ForInit ; ; 
+ForControl -> ForInit ; Expression ; 
+ForControl -> ForInit ; ForUpdate ; 
+ForControl -> ForInit ; Expression ; ForUpdate
+```
 
 ForVarControl:
     {VariableModifier} Type VariableDeclaratorId  ForVarControlRest
+
+``
+
 
 ForVarControlRest:
     ForVariableDeclaratorsRest ; [Expression] ; [ForUpdate]

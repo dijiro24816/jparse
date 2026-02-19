@@ -726,10 +726,40 @@ public class App {
 				
 
                 new Rule("_BlockStatement_Repeat", "BlockStatement"),
-                new Rule("_BlockStatement_Repeat", "_BlockStatement_Repeat", "BlockStatement")
+                new Rule("_BlockStatement_Repeat", "_BlockStatement_Repeat", "BlockStatement"),
                 // _BlockStatement_Repeat -> BlockStatement
                 // _BlockStatement_Repeat -> _BlockStatement_Repeat BlockStatement
+                
+                
+
+                new Rule("_CatchClause_Repeat", "CatchClause"),
+                new Rule("_CatchClause_Repeat", "_CatchClause_Repeat", "CatchClause"),
+                // _CatchClause_Repeat -> CatchClause
+                // _CatchClause_Repeat -> _CatchClause_Repeat CatchClause
+                
+                
+                new Rule("_OrQualifiedIdentifier_Repeat", "|", "QualifiedIdentifier"),
+                new Rule("_OrQualifiedIdentifier_Repeat", "_OrQualifiedIdentifier_Repeat", "|", "QualifiedIdentifier"),
+                // _OrQualifiedIdentifier_Repeat -> | QualifiedIdentifier
+                // _OrQualifiedIdentifier_Repeat -> _OrQualifiedIdentifier_Repeat | QualifiedIdentifier
 				
+                new Rule("_SemicolonResource_Repeat", ";", "Resource"),
+                new Rule("_SemicolonResource_Repeat", "_SemicolonResource_Repeat", ";", "Resource"),
+                // _SemicolonResource_Repeat -> ; Resource
+                // _SemicolonResource_Repeat -> _SemicolonResource_Repeat ; Resource
+                
+                
+                new Rule("_SwitchBlockStatementGroup_Repeat", "SwitchBlockStatementGroup"),
+                new Rule("_SwitchBlockStatementGroup_Repeat", "_SwitchBlockStatementGroup_Repeat", "SwitchBlockStatementGroup"),
+                // _SwitchBlockStatementGroup_Repeat -> SwitchBlockStatementGroup
+                // _SwitchBlockStatementGroup_Repeat -> _SwitchBlockStatementGroup_Repeat SwitchBlockStatementGroup
+                
+                
+                new Rule("_SwitchLabel_Repeat", "SwitchLabel"),
+                new Rule("_SwitchLabel_Repeat", "_SwitchLabel_Repeat", "SwitchLabel")
+                // _SwitchLabel_Repeat -> SwitchLabel
+                // _SwitchLabel_Repeat -> _SwitchLabel_Repeat SwitchLabel
+
 		);
 		
 		System.out.println("*** Grammar ***");
