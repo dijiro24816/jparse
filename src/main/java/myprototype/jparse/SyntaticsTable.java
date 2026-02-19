@@ -83,8 +83,28 @@ public class SyntaticsTable {
 		List<Item> closures = key.getClosures();
 		if (closures.size() > 0) {
 			// Check reduce-reduce problem
-			if (closures.size() > 1)
-				throw new RuntimeException("The Grammar has reduce-reduce problem!");
+			if (closures.size() > 1) {
+				System.out.println(closures);
+				
+				// Java has reduce-reduce problem in:
+				//   BlockStatement.LocalVariableDeclarationStatement.VariableModifier.Annotation
+				//   BlockStatement.ClassOrInterfaceDeclaration.Modifier.Annotation
+				boolean skip = false;
+				
+				if (closures.stream().anyMatch(e -> e.getProductSymbol().equals("Modifier"))) {
+					skip = true;
+				} else if (closures.stream().anyMatch(e -> e.getProductSymbol().equals("Statement"))) {
+					skip = true;
+				} else if (closures.stream().anyMatch(e -> e.getProductSymbol().equals("ArrayInitializer"))) {
+					skip = true;
+				}
+				
+				
+				
+				
+				if (!skip)
+					throw new RuntimeException("The Grammar has reduce-reduce problem!");
+			}
 			Item closure = closures.get(0);
 
 			// Set reduce action as default

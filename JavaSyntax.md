@@ -29,26 +29,26 @@ _CommaReferenceType_Repeat -> _CommaReferenceType_Repeat , ReferenceType
 _CommaTypeParameter_Repeat -> , TypeParameter
 _CommaTypeParameter_Repeat -> _CommaTypeParameter_Repeat , TypeParameter
 
-ReferenceType_AndRepeat -> ReferenceType
-ReferenceType_AndRepeat -> ReferenceType_AndRepeat & ReferenceType
+_AndReferenceType_Repeat -> & ReferenceType
+_AndReferenceType_Repeat -> _AndReferenceType_Repeat & ReferenceType
 
 
-Annotation_Repeat -> Annotation
-Annotation_Repeat -> Annotation_Repeat Annotation
+_Annotation_Repeat -> Annotation
+_Annotation_Repeat -> _Annotation_Repeat Annotation
 
-ElementValuePair_CommaRepeat -> ElementValuePair
-ElementValuePair_CommaRepeat -> ElementValuePair_CommaRepeat , ElementValuePair
+_CommaElementValuePair_Repeat -> , ElementValuePair
+_CommaElementValuePair_Repeat -> _CommaElementValuePair_Repeat , ElementValuePair
 
-ElementValuesComma_Repeat -> 
-ElementValuesComma_Repeat -> ElementValues
-ElementValuesComma_Repeat -> ,
-ElementValuesComma_Repeat -> ElementValues ,
-ElementValuesComma_Repeat -> ElementValuesComma_Repeat ElementValues
-ElementValuesComma_Repeat -> ElementValuesComma_Repeat ,
-ElementValuesComma_Repeat -> ElementValuesComma_Repeat ElementValues ,
+_ElementValuesComma_Repeat -> 
+_ElementValuesComma_Repeat -> ElementValues
+_ElementValuesComma_Repeat -> ,
+_ElementValuesComma_Repeat -> ElementValues ,
+_ElementValuesComma_Repeat -> _ElementValuesComma_Repeat ElementValues
+_ElementValuesComma_Repeat -> _ElementValuesComma_Repeat ,
+_ElementValuesComma_Repeat -> _ElementValuesComma_Repeat ElementValues ,
 
-ElementValue_CommaRepeat -> ElementValue
-ElementValue_CommaRepeat -> ElementValue_CommaRepeat , ElementValue
+_CommaElementValue_Repeat -> ElementValue
+_CommaElementValue_Repeat -> _CommaElementValue_Repeat , ElementValue
 
 
 
@@ -62,6 +62,42 @@ ClassBodyDeclaration_Repeat -> ClassBodyDeclaration_Repeat ClassBodyDeclaration
 
 CommaVariableDeclarator_Repeat -> , VariableDeclarator
 CommaVariableDeclarator_Repeat -> CommaVariableDeclarator_Repeat , VariableDeclarator
+
+
+
+_InterfaceBodyDeclaration_Repeat -> InterfaceBodyDeclaration
+_InterfaceBodyDeclaration_Repeat -> _InterfaceBodyDeclaration_Repeat InterfaceBodyDeclaration
+
+
+_CommaConstantDeclarator_Repeat -> , ConstantDeclarator
+_CommaConstantDeclarator_Repeat -> _CommaConstantDeclarator_Repeat , ConstantDeclarator
+
+_VariableModifier_Repeat -> VariableModifier
+_VariableModifier_Repeat -> _VariableModifier_Repeat VariableModifier
+
+
+
+_CommaVariableDeclarator_Repeat -> , VariableDeclarator
+_CommaVariableDeclarator_Repeat -> _CommaVariableDeclarator_Repeat VariableDeclarator
+
+
+
+_CommaVariableInitializer_Repeat -> , VariableInitializer
+_CommaVariableInitializer_Repeat -> _CommaVariableInitializer_Repeat , VariableInitializer
+_VariableInitializer_CommaVariableInitializer_Repeat_Comma_Repeat -> 
+_VariableInitializer_CommaVariableInitializer_Repeat_Comma_Repeat -> VariableInitializer _CommaVariableInitializer_Repeat
+_VariableInitializer_CommaVariableInitializer_Repeat_Comma_Repeat -> ,
+_VariableInitializer_CommaVariableInitializer_Repeat_Comma_Repeat -> VariableInitializer _CommaVariableInitializer_Repeat ,
+_VariableInitializer_CommaVariableInitializer_Repeat_Comma_Repeat -> _VariableInitializer_CommaVariableInitializer_Repeat_Comma_Repeat VariableInitializer _CommaVariableInitializer_Repeat
+_VariableInitializer_CommaVariableInitializer_Repeat_Comma_Repeat -> _VariableInitializer_CommaVariableInitializer_Repeat_Comma_Repeat ,
+_VariableInitializer_CommaVariableInitializer_Repeat_Comma_Repeat -> _VariableInitializer_CommaVariableInitializer_Repeat_Comma_Repeat VariableInitializer _CommaVariableInitializer_Repeat ,
+
+
+
+
+_BlockStatement_Repeat -> BlockStatement
+_BlockStatement_Repeat -> _BlockStatement_Repeat BlockStatement
+
 ```
 
 
@@ -113,6 +149,11 @@ ImportDeclaration:
     import [static] Identifier { . Identifier } [. *] ;
 
 ```
+ImportDeclaration -> import Identifier ;
+ImportDeclaration -> import static Identifier ;
+ImportDeclaration -> import Identifier . * ;
+ImportDeclaration -> import static Identifier . * ;
+
 ImportDeclaration -> import Identifier PeriodIdentifier_Repeat ;
 ImportDeclaration -> import static Identifier PeriodIdentifier_Repeat ;
 ImportDeclaration -> import Identifier PeriodIdentifier_Repeat . * ;
@@ -236,6 +277,8 @@ ReferenceType:
     Identifier [TypeArguments] { . Identifier [TypeArguments] }
 
 ```
+ReferenceType -> Identifier
+ReferenceType -> Identifier TypeArguments
 ReferenceType -> Identifier _PeriodIdentifierTypeArgument_Repeat
 ReferenceType -> Identifier TypeArguments _PeriodIdentifierTypeArgument_Repeat
 ```
@@ -246,6 +289,7 @@ TypeArguments:
     < TypeArgument { , TypeArgument } >
     
 ```
+TypeArguments -> < TypeArgument >
 TypeArguments -> < TypeArgument _CommaTypeArgument_Repeat >
 ```
 
@@ -272,6 +316,7 @@ TypeList:
     ReferenceType { , ReferenceType }
 
 ```
+TypeList -> ReferenceType
 TypeList -> ReferenceType _CommaReferenceType_Repeat
 ```
 
@@ -298,6 +343,7 @@ TypeParameters:
     < TypeParameter { , TypeParameter } >
 
 ```
+TypeParameters -> < TypeParameter >
 TypeParameters -> < TypeParameter _CommaTypeParameter_Repeat >
 ```
 
@@ -313,7 +359,8 @@ Bound:
     ReferenceType { & ReferenceType }
 
 ```
-Bound -> ReferenceType_AndRepeat
+Bound -> ReferenceType
+Bound -> ReferenceType _AndReferenceType_Repeat
 ```
 
 Modifier: 
@@ -349,7 +396,8 @@ Annotations:
     Annotation {Annotation}
 
 ```
-Annotations -> Annotation_Repeat
+Annotations -> Annotation
+Annotations -> Annotation _Annotation_Repeat
 ```
 
 Annotation:
@@ -374,7 +422,8 @@ ElementValuePairs:
     ElementValuePair { , ElementValuePair }
 
 ```
-ElementValuePairz -> ElementValuePair_CommaRepeat
+ElementValuePairs -> ElementValuePair
+ElementValuePairs -> ElementValuePair _CommaElementValuePair_Repeat
 ```
 
 ElementValuePair:
@@ -399,14 +448,16 @@ ElementValueArrayInitializer:
     { [ElementValues] [,] }
 
 ```
-ElementValueArrayInitializer -> ElementValuesComma_Repeat
+ElementValueArrayInitializer ->
+ElementValueArrayInitializer -> _ElementValuesComma_Repeat
 ```
 
 ElementValues:
     ElementValue { , ElementValue }
 
 ```
-ElementValues -> ElementValue_CommaRepeat
+ElementValues -> ElementValue
+ElementValues -> ElementValue _CommaElementValue_Repeat
 ```
 
 
@@ -416,6 +467,7 @@ ClassBody:
     { { ClassBodyDeclaration } }
     
 ```
+ClassBody -> { }
 ClassBody -> { ClassBodyDeclaration_Repeat }
 ```
     
@@ -443,7 +495,7 @@ MemberDecl:
 
 ```
 MemberDecl -> MethodOrFieldDecl
-MemberDecl -> void Identifier VoidMethodDeclarationRest
+MemberDecl -> void Identifier VoidMethodDeclaratorRest
 MemberDecl -> Identifier ConstructorDeclaratorRest
 MemberDecl -> GenericMethodOrConstructorDecl
 MemberDecl -> ClassDeclaration
@@ -484,29 +536,68 @@ MethodDeclaratorRest:
 MethodDeclaratorRest -> FormalParameters _EmptySquareBrackets_Repeat Block
 MethodDeclaratorRest -> FormalParameters _EmptySquareBrackets_Repeat ;
 MethodDeclaratorRest -> FormalParameters throws QualifiedIdentifierList _EmptySquareBrackets_Repeat Block
-MethodDeclaratorRest -> FormalParameters throws QualifiedIdentifierList EmptySquareBrackets_Repeat ;
+MethodDeclaratorRest -> FormalParameters throws QualifiedIdentifierList _EmptySquareBrackets_Repeat ;
+
+MethodDeclaratorRest -> FormalParameters Block
+MethodDeclaratorRest -> FormalParameters ;
+MethodDeclaratorRest -> FormalParameters throws QualifiedIdentifierList Block
+MethodDeclaratorRest -> FormalParameters throws QualifiedIdentifierList ;
 ```
 
 VoidMethodDeclaratorRest:
     FormalParameters [throws QualifiedIdentifierList] (Block | ;)
 
+```
+VoidMethodDeclaratorRest -> FormalParameters Block
+VoidMethodDeclaratorRest -> FormalParameters ;
+VoidMethodDeclaratorRest -> throws QualifiedIdentifierList FormalParameters Block
+VoidMethodDeclaratorRest -> throws QualifiedIdentifierList FormalParameters ;
+```
+
 ConstructorDeclaratorRest:
     FormalParameters [throws QualifiedIdentifierList] Block
 
+```
+ConstructorDeclaratorRest -> FormalParameters Block
+ConstructorDeclaratorRest -> FormalParameters throws QualifiedIdentifierList Block
+```
+
+
 GenericMethodOrConstructorDecl:
     TypeParameters GenericMethodOrConstructorRest
+
+```
+GenericMethodOrConstructorDecl -> TypeParameters GenericMethodOrConstructorRest
+```
 
 GenericMethodOrConstructorRest:
     (Type | void) Identifier MethodDeclaratorRest
     Identifier ConstructorDeclaratorRest
 
+```
+GenericMethodOrConstructorRest -> Type Identifier MethodDeclaratorRest
+GenericMethodOrConstructorRest -> void Identifier MethodDeclaratorRest
+GenericMethodOrConstructorRest -> Identifier ConstructorDeclaratorRest
+```
 
 InterfaceBody: 
     { { InterfaceBodyDeclaration } }
 
+```
+InterfaceBody -> { }
+InterfaceBody -> { _InterfaceBodyDeclaration_Repeat }
+```
+
 InterfaceBodyDeclaration:
     ; 
     {Modifier} InterfaceMemberDecl
+
+```
+InterfaceBodyDeclaration -> ;
+InterfaceBodyDeclaration -> InterfaceMemberDecl
+InterfaceBodyDeclaration -> Modifier_Repeat InterfaceMemberDecl
+```
+
 
 InterfaceMemberDecl:
     InterfaceMethodOrFieldDecl
@@ -515,83 +606,204 @@ InterfaceMemberDecl:
     ClassDeclaration
     InterfaceDeclaration
 
+```
+InterfaceMemberDecl -> InterfaceMethodOrFieldDecl
+InterfaceMemberDecl -> void Identifier VoidInterfaceMethodDeclaratorRest
+InterfaceMemberDecl -> InterfaceGenericMethodDecl
+InterfaceMemberDecl -> ClassDeclaration
+InterfaceMemberDecl -> InterfaceDeclaration
+```
+
 InterfaceMethodOrFieldDecl:
     Type Identifier InterfaceMethodOrFieldRest
+
+```
+InterfaceMethodOrFieldDecl -> Type Identifier InterfaceMethodOrFieldRest
+```
+
 
 InterfaceMethodOrFieldRest:
     ConstantDeclaratorsRest ;
     InterfaceMethodDeclaratorRest
 
+
+```
+InterfaceMethodOrFieldRest -> ConstantDeclaratorsRest ;
+InterfaceMethodOrFieldRest -> InterfaceMethodDeclaratorRest
+```
+
 ConstantDeclaratorsRest: 
     ConstantDeclaratorRest { , ConstantDeclarator }
+
+```
+ConstantDeclaratorsRest -> ConstantDeclaratorRest
+ConstantDeclaratorsRest -> ConstantDeclaratorRest _CommaConstantDeclarator_Repeat
+```
 
 ConstantDeclaratorRest: 
     {[]} = VariableInitializer
 
+```
+ConstantDeclaratorRest -> = VariableInitializer
+ConstantDeclaratorRest -> _EmptySquareBrackets_Repeat = VariableInitializer
+```
+
 ConstantDeclarator: 
     Identifier ConstantDeclaratorRest
+
+
+```
+ConstantDeclarator -> Identifier ConstantDeclaratorRest
+```
 
 InterfaceMethodDeclaratorRest:
     FormalParameters {[]} [throws QualifiedIdentifierList] ; 
 
+```
+InterfaceMethodDeclaratorRest -> FormalParameters ;
+InterfaceMethodDeclaratorRest -> FormalParameters _EmptySquareBrackets_Repeat ;
+InterfaceMethodDeclaratorRest -> FormalParameters throws QualifiedIdentifierList ;
+InterfaceMethodDeclaratorRest -> FormalParameters _EmptySquareBrackets_Repeat throws QualifiedIdentifierList ;
+```
+
 VoidInterfaceMethodDeclaratorRest:
     FormalParameters [throws QualifiedIdentifierList] ;  
 
+```
+VoidInterfaceMethodDeclaratorRest -> FormalParameters ;  
+VoidInterfaceMethodDeclaratorRest -> FormalParameters throws QualifiedIdentifierList ;  
+```
+
 InterfaceGenericMethodDecl:
     TypeParameters (Type | void) Identifier InterfaceMethodDeclaratorRest
+
+```
+InterfaceGenericMethodDecl -> TypeParameters Type Identifier InterfaceMethodDeclaratorRest
+InterfaceGenericMethodDecl -> TypeParameters void Identifier InterfaceMethodDeclaratorRest
+```
+
 
 
 FormalParameters: 
     ( [FormalParameterDecls] )
 
+
+```
+FormalParameters -> ( )
+FormalParameters -> ( FormalParameterDecls )
+```
+
 FormalParameterDecls: 
     {VariableModifier}  Type FormalParameterDeclsRest
+
+```
+FormalParameterDecls -> Type FormalParameterDeclsRest
+FormalParameterDecls -> _VariableModifier_Repeat Type FormalParameterDeclsRest
+```
 
 VariableModifier:
     final
     Annotation
 
+```
+VariableModifier -> final
+VariableModifier -> Annotation
+```
+
 FormalParameterDeclsRest: 
     VariableDeclaratorId [, FormalParameterDecls]
     ... VariableDeclaratorId
 
-
+```
+FormalParameterDeclsRest -> VariableDeclaratorId
+FormalParameterDeclsRest -> VariableDeclaratorId , FormalParameterDecls
+FormalParameterDeclsRest -> ... VariableDeclaratorId
+```
 
 VariableDeclaratorId:
     Identifier {[]}
 
-
+```
+VariableDeclaratorId -> Identifier
+VariableDeclaratorId -> _EmptySquareBrackets_Repeat Identifier
+```
 
 VariableDeclarators:
     VariableDeclarator { , VariableDeclarator }
 
+```
+VariableDeclarators -> VariableDeclarator
+VariableDeclarators -> VariableDeclarator _CommaVariableDeclarator_Repeat
+```
+
 VariableDeclarator:
     Identifier VariableDeclaratorRest
 
+```
+VariableDeclarator -> Identifier VariableDeclaratorRest
+```
+
 VariableDeclaratorRest:
     {[]} [ = VariableInitializer ]
+
+```
+VariableDeclaratorRest -> 
+VariableDeclaratorRest -> _EmptySquareBrackets_Repeat
+VariableDeclaratorRest -> = VariableInitializer
+VariableDeclaratorRest -> _EmptySquareBrackets_Repeat = VariableInitializer
+```
 
 VariableInitializer:
     ArrayInitializer
     Expression
 
+```
+VariableInitializer -> ArrayInitializer
+VariableInitializer -> Expression
+```
+
 ArrayInitializer:
     { [ VariableInitializer { , VariableInitializer } [,] ] }
 
+```
+ArrayInitializer -> 
+ArrayInitializer -> _VariableInitializer_CommaVariableInitializer_Repeat_Comma_Repeat
+```
 
 Block: 
     { BlockStatements }
 
+```
+Block -> { BlockStatements }
+```
+
 BlockStatements: 
     { BlockStatement }
+
+```
+BlockStatements ->
+BlockStatements -> _BlockStatement_Repeat
+```
 
 BlockStatement:
     LocalVariableDeclarationStatement
     ClassOrInterfaceDeclaration
     [Identifier :] Statement
 
+```
+BlockStatement -> LocalVariableDeclarationStatement
+BlockStatement -> ClassOrInterfaceDeclaration
+BlockStatement -> Statement
+BlockStatement -> Identifier : Statement
+```
+
 LocalVariableDeclarationStatement:
     { VariableModifier }  Type VariableDeclarators ;
+
+```
+LocalVariableDeclarationStatement -> Type VariableDeclarators ;
+LocalVariableDeclarationStatement -> _VariableModifier_Repeat Type VariableDeclarators ;
+```
 
 Statement:
     Block
@@ -612,9 +824,42 @@ Statement:
     try Block (Catches | [Catches] Finally)
     try ResourceSpecification Block [Catches] [Finally]
 
+```
+Statement -> Block
+Statement -> Identifier : Statement
+Statement -> StatementExpression ;
+Statement -> if ParExpression Statement
+Statement -> if ParExpression Statement else Statement
+Statement -> assert Expression ;
+Statement -> assert Expression : Expression ;
+Statement -> switch ParExpression { SwitchBlockStatementGroups } 
+Statement -> while ParExpression Statement
+Statement -> do Statement while ParExpression ;
+Statement -> for ( ForControl ) Statement
+Statement -> break ;
+Statement -> break Identifier ;
+Statement -> continue ;
+Statement -> continue Identifier ;
+Statement -> return ;
+Statement -> return Expression ;
+Statement -> throw Expression ;
+Statement -> synchronized ParExpression Block
+Statement -> try Block Catches
+Statement -> try Block Finally
+Statement -> try Block Catches Finally
+Statement -> try ResourceSpecification Block
+Statement -> try ResourceSpecification Block Catches
+Statement -> try ResourceSpecification Block Finally
+Statement -> try ResourceSpecification Block Catches Finally
+```
+
+
 StatementExpression: 
     Expression
 
+```
+StatementExpression -> Expression
+```
 
 Catches:
     CatchClause { CatchClause }
@@ -846,7 +1091,7 @@ AnnotationTypeElementDeclaration:
     {Modifier} AnnotationTypeElementRest
 
 AnnotationTypeElementRest:
-    Type Identifier AnnotationMethodOrConstantRest ;
+    Type Identifier AnnotationConstantRest ;
     ClassDeclaration
     InterfaceDeclaration
     EnumDeclaration  

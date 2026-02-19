@@ -71,10 +71,18 @@ public class App {
 				// ImportDeclarations TypeDeclaration_Repeat
 
 
+				new Rule("ImportDeclaration", "import", "Identifier", ";"),
+				new Rule("ImportDeclaration", "import", "static", "Identifier", ";"),
+				new Rule("ImportDeclaration", "import", "Identifier", ".", "*", ";"),
+				new Rule("ImportDeclaration", "import", "static", "Identifier", ".", "*", ";"),
 				new Rule("ImportDeclaration", "import", "Identifier", "PeriodIdentifier_Repeat", ";"),
 				new Rule("ImportDeclaration", "import", "static", "Identifier", "PeriodIdentifier_Repeat", ";"),
 				new Rule("ImportDeclaration", "import", "Identifier", "PeriodIdentifier_Repeat", ".", "*", ";"),
 				new Rule("ImportDeclaration", "import", "static", "Identifier", "PeriodIdentifier_Repeat", ".", "*", ";"),
+				// ImportDeclaration -> import Identifier ;
+				// ImportDeclaration -> import static Identifier ;
+				// ImportDeclaration -> import Identifier . * ;
+				// ImportDeclaration -> import static Identifier . * ;
 				// ImportDeclaration -> import Identifier PeriodIdentifier_Repeat ;
 				// ImportDeclaration -> import static Identifier PeriodIdentifier_Repeat ;
 				// ImportDeclaration -> import Identifier PeriodIdentifier_Repeat . * ;
@@ -165,13 +173,19 @@ public class App {
 				// BasicType -> double
 				// BasicType -> boolean
 				
+				new Rule("ReferenceType", "Identifier"),
+				new Rule("ReferenceType", "Identifier", "TypeArguments"),
 				new Rule("ReferenceType", "Identifier", "_PeriodIdentifierTypeArgument_Repeat"),
 				new Rule("ReferenceType", "Identifier", "TypeArguments", "_PeriodIdentifierTypeArgument_Repeat"),
+				// ReferenceType -> Identifier
+				// ReferenceType -> Identifier TypeArguments
 				// ReferenceType -> Identifier _PeriodIdentifierTypeArgument_Repeat
 				// ReferenceType -> Identifier TypeArguments _PeriodIdentifierTypeArgument_Repeat
 
+				new Rule("TypeArguments", "<", "TypeArgument", ">"),
 				new Rule("TypeArguments", "<", "TypeArgument", "_CommaTypeArgument_Repeat", ">"),
-				// TypeArguments -> < _CommaTypeArgument_Repeat >
+				// TypeArguments -> < TypeArgument >
+				// TypeArguments -> < TypeArgument _CommaTypeArgument_Repeat >
 				
 				
 				new Rule("TypeArgument", "ReferenceType"),
@@ -188,8 +202,10 @@ public class App {
 				// NonWildcardTypeArguments -> < TypeList >
 				
 				
+				new Rule("TypeList", "ReferenceType"),
 				new Rule("TypeList", "ReferenceType", "_CommaReferenceType_Repeat"),
-				// TypeList -> _CommaReferenceType_Repeat
+				// TypeList -> ReferenceType
+				// TypeList -> ReferenceType _CommaReferenceType_Repeat
 				
 				
 				new Rule("TypeArgumentsOrDiamond", "<", ">"),
@@ -205,7 +221,9 @@ public class App {
 				// NonWildcardTypeArgumentsOrDiamond -> NonWildcardTypeArguments
 				
 				
+				new Rule("TypeParameters", "<", "TypeParameter", ">"),
 				new Rule("TypeParameters", "<", "TypeParameter", "_CommaTypeParameter_Repeat", ">"),
+				// TypeParameters -> < TypeParameter >
 				// TypeParameters -> < TypeParameter _CommaTypeParameter_Repeat >
 				
 				
@@ -216,8 +234,10 @@ public class App {
 				// TypeParameter -> Identifier extends Bound
 				
 				
-				new Rule("Bound", "AndReferenceType_Repeat"),
-				// Bound -> AndReferenceType_Repeat
+				new Rule("Bound", "ReferenceType"),
+				new Rule("Bound", "ReferenceType", "_AndReferenceType_Repeat"),
+				// Bound -> ReferenceType
+				// Bound -> ReferenceType _AndReferenceType_Repeat
 				
 				new Rule("Modifier", "Annotation"),
 				new Rule("Modifier", "public"),
@@ -246,7 +266,9 @@ public class App {
 				
 				
 				new Rule("Annotations", "Annotaion"),
-				// Annotations -> Annotation_Repeat
+				new Rule("Annotations", "Annotaion", "_Annotation_Repeat"),
+				// Annotations -> Annotation _Annotation_Repeat
+				// Annotations -> _Annotation_Repeat
 				
 				
 				new Rule("Annotation", "@", "QualifiedIdentifier"),
@@ -262,8 +284,10 @@ public class App {
 				// AnnotationElement -> ElementValuePairs
 				// AnnotationElement -> ElementValue
 				
-				new Rule("ElementValuePairz", "ElementValuePair_CommaRepeat"),
-				// ElementValuePairz -> ElementValuePair_CommaRepeat
+				new Rule("ElementValuePairs", "ElementValuePair"),
+				new Rule("ElementValuePairs", "ElementValuePair", "_CommaElementValuePair_Repeat"),
+				// ElementValuePairs -> ElementValuePair
+				// ElementValuePairs -> ElementValuePair _CommaElementValuePair_Repeat
 				
 				new Rule("ElementValuePair", "Identifier", "=", "ElementValue"),
 				// ElementValuePair -> Identifier = ElementValue
@@ -276,12 +300,291 @@ public class App {
 				// ElementValue -> Expression1
 				// ElementValue -> ElementValueArrayInitializer
 				
-				new Rule("ElementValueArrayInitializer", "ElementValuesComma_Repeat"),
-				// ElementValueArrayInitializer -> ElementValuesComma_Repeat
+				new Rule("ElementValueArrayInitializer"),
+				new Rule("ElementValueArrayInitializer", "_ElementValuesComma_Repeat"),
+				// ElementValueArrayInitializer ->
+				// ElementValueArrayInitializer -> _ElementValuesComma_Repeat
 				
-				new Rule("ElementValues", "ElementValue_CommaRepeat"),
-				// ElementValues -> ElementValue_CommaRepeat
+				new Rule("ElementValues", "ElementValue"),
+				new Rule("ElementValues", "ElementValue", "_CommaElementValue_Repeat"),
+				// ElementValues -> ElementValue
+				// ElementValues -> ElementValue _CommaElementValue_Repeat
 				
+				new Rule("ClassBody", "{", "}"),
+				new Rule("ClassBody", "{", "ClassBodyDeclaration_Repeat", "}"),
+				// ClassBody -> { }
+				// ClassBody -> { ClassBodyDeclaration_Repeat }
+				
+				new Rule("ClassBodyDeclaration", ";"),
+				new Rule("ClassBodyDeclaration", "MemberDecl"),
+				new Rule("ClassBodyDeclaration", "Modifier_Repeat", "MemberDecl"),
+				new Rule("ClassBodyDeclaration", "Block"),
+				new Rule("ClassBodyDeclaration", "static", "Block"),
+				// ClassBodyDeclaration -> ;
+				// ClassBodyDeclaration -> MemberDecl
+				// ClassBodyDeclaration -> Modifier_Repeat MemberDecl
+				// ClassBodyDeclaration -> Block
+				// ClassBodyDeclaration -> static Block
+				
+				new Rule("MemberDecl", "MethodOrFieldDecl"),
+				new Rule("MemberDecl", "void", "Identifier", "VoidMethodDeclaratorRest"),
+				new Rule("MemberDecl", "Identifier", "ConstructorDeclaratorRest"),
+				new Rule("MemberDecl", "GenericMethodOrConstructorDecl"),
+				new Rule("MemberDecl", "ClassDeclaration"),
+				new Rule("MemberDecl", "InterfaceDeclaration"),
+				// MemberDecl -> MethodOrFieldDecl
+				// MemberDecl -> void Identifier VoidMethodDeclaratorRest
+				// MemberDecl -> Identifier ConstructorDeclaratorRest
+				// MemberDecl -> GenericMethodOrConstructorDecl
+				// MemberDecl -> ClassDeclaration
+				// MemberDecl -> InterfaceDeclaration
+				
+				new Rule("MethodOrFieldDecl", "Type", "Identifier", "MethodOrFieldRest"),
+				// MethodOrFieldDecl -> Type Identifier MethodOrFieldRest
+				
+				new Rule("MethodOrFieldRest", "FIeldDeclaratorsRest", ";"),
+				new Rule("MethodOrFieldRest", "MethodDeclaratorsRest"),
+				// MethodOrFieldRest -> FieldDeclaratorsRest ;
+				// MethodOrFieldRest -> MethodDeclaratorRest
+				
+				new Rule("FieldDeclaratorsRest", "VariableDeclaratorRest"),
+				new Rule("FieldDeclaratorsRest", "VariableDeclaratorRest", "CommaVariableDeclarator_Repeat"),
+				// FieldDeclaratorsRest -> VariableDeclaratorRest
+				// FieldDeclaratorsRest -> VariableDeclaratorRest CommaVariableDeclarator_Repeat
+				
+				new Rule("MethodDeclaratorRest", "FormalParameters", "_EmptySquareBrackets_Repeat", "Block"),
+				new Rule("MethodDeclaratorRest", "FormalParameters", "_EmptySquareBrackets_Repeat", ";"),
+				new Rule("MethodDeclaratorRest", "FormalParameters", "throws", "QualifiedIdentifierList", "_EmptySquareBrackets_Repeat", "Block"),
+				new Rule("MethodDeclaratorRest", "FormalParameters", "throws", "QualifiedIdentifierList", "_EmptySquareBrackets_Repeat", ";"),
+				new Rule("MethodDeclaratorRest", "FormalParameters", "Block"),
+				new Rule("MethodDeclaratorRest", "FormalParameters", ";"),
+				new Rule("MethodDeclaratorRest", "FormalParameters", "throws", "QualifiedIdentifierList", "Block"),
+				new Rule("MethodDeclaratorRest", "FormalParameters", "throws", "QualifiedIdentifierList", ";"),
+				// MethodDeclaratorRest -> FormalParameters _EmptySquareBrackets_Repeat Block
+				// MethodDeclaratorRest -> FormalParameters _EmptySquareBrackets_Repeat ;
+				// MethodDeclaratorRest -> FormalParameters throws QualifiedIdentifierList _EmptySquareBrackets_Repeat Block
+				// MethodDeclaratorRest -> FormalParameters throws QualifiedIdentifierList _EmptySquareBrackets_Repeat ;
+				// MethodDeclaratorRest -> FormalParameters Block
+				// MethodDeclaratorRest -> FormalParameters ;
+				// MethodDeclaratorRest -> FormalParameters throws QualifiedIdentifierList Block
+				// MethodDeclaratorRest -> FormalParameters throws QualifiedIdentifierList ;
+				
+				new Rule("VoidMethodDeclaratorRest", "FormalParameters", "Block"),
+				new Rule("VoidMethodDeclaratorRest", "FormalParameters", ";"),
+				new Rule("VoidMethodDeclaratorRest", "throws", "QualifiedIdentifierList", "FormalParameters", "Block"),
+				new Rule("VoidMethodDeclaratorRest", "throws", "QualifiedIdentifierList", "FormalParameters", ";"),
+				// VoidMethodDeclaratorRest -> FormalParameters Block
+				// VoidMethodDeclaratorRest -> FormalParameters ;
+				// VoidMethodDeclaratorRest -> throws QualifiedIdentifierList FormalParameters Block
+				// VoidMethodDeclaratorRest -> throws QualifiedIdentifierList FormalParameters ;
+				
+				new Rule("ConstructorDeclaratorRest", "FormalParameters", "Block"),
+				new Rule("ConstructorDeclaratorRest", "throws", "QualifiedIdentifierList", "FormalParameters", "Block"),
+				// ConstructorDeclaratorRest -> FormalParameters Block
+				// ConstructorDeclaratorRest -> FormalParameters throws QualifiedIdentifierList Block
+				
+				new Rule("GenericMethodOrConstructorDecl", "TypeParameters", "GenericMethodOrConstructorRest"),
+				// GenericMethodOrConstructorDecl -> TypeParameters GenericMethodOrConstructorRest
+				
+				new Rule("GenericMethodOrConstructorRest", "Type", "Identifier", "MethodDeclaratorRest"),
+				new Rule("GenericMethodOrConstructorRest", "void", "Identifier", "MethodDeclaratorRest"),
+				new Rule("GenericMethodOrConstructorRest", "Identifier", "ConstructorDeclaratorRest"),
+				// GenericMethodOrConstructorRest -> Type Identifier MethodDeclaratorRest
+				// GenericMethodOrConstructorRest -> void Identifier MethodDeclaratorRest
+				// GenericMethodOrConstructorRest -> Identifier ConstructorDeclaratorRest
+				
+				new Rule("InterfaceBody", "{", "}"),
+				new Rule("InterfaceBody", "{", "_InterfaceBodyDeclaration_Repeat", "}"),
+				// InterfaceBody -> { }
+				// InterfaceBody -> { _InterfaceBodyDeclaration_Repeat }
+				
+				new Rule("InterfaceBodyDeclaration", ";"),
+				new Rule("InterfaceBodyDeclaration", "InterfaceMemberDecl"),
+				new Rule("InterfaceBodyDeclaration", "Modifier_Repeat", "InterfaceMemberDecl"),
+				// InterfaceBodyDeclaration -> ;
+				// InterfaceBodyDeclaration -> InterfaceMemberDecl
+				// InterfaceBodyDeclaration -> Modifier_Repeat InterfaceMemberDecl
+				
+				new Rule("InterfaceMemberDecl", "InterfaceMethodOrFieldDecl"),
+				new Rule("InterfaceMemberDecl", "void", "Identifier", "VoidInterfaceMethodDeclaratorRest"),
+				new Rule("InterfaceMemberDecl", "InterfaceGenericMethodDecl"),
+				new Rule("InterfaceMemberDecl", "InterfaceDeclaration"),
+				// InterfaceMemberDecl -> InterfaceMethodOrFieldDecl
+				// InterfaceMemberDecl -> void Identifier VoidInterfaceMethodDeclaratorRest
+				// InterfaceMemberDecl -> InterfaceGenericMethodDecl
+				// InterfaceMemberDecl -> ClassDeclaration
+				// InterfaceMemberDecl -> InterfaceDeclaration
+				
+				new Rule("InterfaceMethodOrFieldDecl", "Type", "Identifier", "InterfaceMethodOrFieldRest"),
+				// InterfaceMethodOrFieldDecl -> Type Identifier InterfaceMethodOrFieldRest
+				
+				new Rule("InterfaceMethodOrFieldRest", "ConstantDeclaratorsRest", ";"),
+				new Rule("InterfaceMethodOrFieldRest", "InterfaceMethodDeclaratorRest"),
+				// InterfaceMethodOrFieldRest -> ConstantDeclaratorsRest ;
+				// InterfaceMethodOrFieldRest -> InterfaceMethodDeclaratorRest
+				
+				new Rule("ConstantDeclaratorsRest", "ConstantDeclaratorRest"),
+				new Rule("ConstantDeclaratorsRest", "ConstantDeclaratorRest", "_CommaConstantDeclarator_Repeat"),
+				// ConstantDeclaratorsRest -> ConstantDeclaratorRest
+				// ConstantDeclaratorsRest -> ConstantDeclaratorRest _CommaConstantDeclarator_Repeat
+				
+				new Rule("ConstantDeclaratorRest", "=", "VariableInitializer"),
+				new Rule("ConstantDeclaratorRest", "_EmptySquareBrackets_Repeat", "=", "VariableInitializer"),
+				// ConstantDeclaratorRest -> = VariableInitializer
+				// ConstantDeclaratorRest -> _EmptySquareBrackets_Repeat = VariableInitializer
+				
+				new Rule("ConstantDeclarator", "Identifier", "ConstantDeclaratorRest"), 
+				// ConstantDeclarator -> Identifier ConstantDeclaratorRest
+				
+				new Rule("InterfaceMethodDeclaratorRest", "FormalParameters", ";"),
+				new Rule("InterfaceMethodDeclaratorRest", "FormalParameters", "_EmptySquareBrackets_Repeat", ";"),
+				new Rule("InterfaceMethodDeclaratorRest", "FormalParameters", "throws", "QualifiedIdentifierListt", ";"),
+				new Rule("InterfaceMethodDeclaratorRest", "FormalParameters", "_EmptySquareBrackets_Repeat", "throws", "QualifiedIdentifierListt", ";"),
+				// InterfaceMethodDeclaratorRest -> FormalParameters ;	
+				// InterfaceMethodDeclaratorRest -> FormalParameters _EmptySquareBrackets_Repeat ;
+				// InterfaceMethodDeclaratorRest -> FormalParameters throws QualifiedIdentifierList ;
+				// InterfaceMethodDeclaratorRest -> FormalParameters _EmptySquareBrackets_Repeat throws QualifiedIdentifierListt ;
+				
+				new Rule("VoidInterfaceMethodDeclaratorRest", "FormalParameters", ";"),
+				new Rule("VoidInterfaceMethodDeclaratorRest", "FormalParameters", "throws", "QualifiedIdentifierList", ";"),
+				// VoidInterfaceMethodDeclaratorRest -> FormalParameters ;  
+				// VoidInterfaceMethodDeclaratorRest -> FormalParameters throws QualifiedIdentifierList ;  
+				
+				new Rule("InterfaceGenericMethodDecl", "TypeParameters", "Type", "Identifier", "InterfaceMethodDeclaratorRest"),
+				// InterfaceGenericMethodDecl -> TypeParameters Type Identifier InterfaceMethodDeclaratorRest
+				// InterfaceGenericMethodDecl -> TypeParameters void Identifier InterfaceMethodDeclaratorRest
+				
+				new Rule("FormalParameters", "(", ")"),
+				new Rule("FormalParameters", "(", "FormalParameterDecls", ")"),
+				// FormalParameters -> ( )
+				// FormalParameters -> ( FormalParameterDecls )
+				
+				new Rule("FormalParameterDecls", "Type", "FormalParameterDeclsRest"),
+				new Rule("FormalParameterDecls", "_VariableModifier_Repeat", "Type", "FormalParameterDeclsRest"),
+				// FormalParameterDecls -> Type FormalParameterDeclsRest
+				// FormalParameterDecls -> _VariableModifier_Repeat Type FormalParameterDeclsRest
+				
+				new Rule("VariableModifier", "final"),
+				new Rule("VariableModifier", "Annotation"),
+				// VariableModifier -> final
+				// VariableModifier -> Annotation
+				
+				new Rule("FormalParameterDeclsRest", "VariableDeclaratorId"),
+				new Rule("FormalParameterDeclsRest", "VariableDeclaratorId", ",", "FormalParameterDecls"),
+				new Rule("FormalParameterDeclsRest", "...", "VariableDeclaratorId"),
+				// FormalParameterDeclsRest -> VariableDeclaratorId
+				// FormalParameterDeclsRest -> VariableDeclaratorId , FormalParameterDecls
+				// FormalParameterDeclsRest -> ... VariableDeclaratorId
+				
+				new Rule("VariableDeclaratorId", "Identifier"),
+				new Rule("VariableDeclaratorId", "_EmptySquareBrackets_Repeat", "Identifier"),
+				// VariableDeclaratorId -> Identifier
+				// VariableDeclaratorId -> _EmptySquareBrackets_Repeat Identifier
+				
+				new Rule("VariableDeclarators", "VariableDeclarator"),
+				new Rule("VariableDeclarators", "VariableDeclarator", "_CommaVariableDeclarator_Repeat"),
+				// VariableDeclarators -> VariableDeclarator
+				// VariableDeclarators -> VariableDeclarator _CommaVariableDeclarator_Repeat
+				
+				new Rule("VariableDeclarator", "Identifier", "VariableDeclaratorRest"),
+				// VariableDeclarator -> Identifier VariableDeclaratorRest
+				
+				new Rule("VariableDeclaratorRest"),
+				new Rule("VariableDeclaratorRest", "_EmptySquareBrackets_Repeat"),
+				new Rule("VariableDeclaratorRest", "=", "VariableInitializer"),
+				new Rule("VariableDeclaratorRest", "_EmptySquareBrackets_Repeat", "=", "VariableInitializer"),
+				// VariableDeclaratorRest -> 
+				// VariableDeclaratorRest -> _EmptySquareBrackets_Repeat
+				// VariableDeclaratorRest -> = VariableInitializer
+				// VariableDeclaratorRest -> _EmptySquareBrackets_Repeat = VariableInitializer
+				
+				new Rule("VariableInitializer", "ArrayInitializer"),
+				new Rule("VariableInitializer", "Expression"),
+				// VariableInitializer -> ArrayInitializer
+				// VariableInitializer -> Expression
+				
+				new Rule("ArrayInitializer"),
+				new Rule("ArrayInitializer", "_VariableInitializer_CommaVariableInitializer_Repeat_Comma_Repeat"),
+				// ArrayInitializer -> 
+				// ArrayInitializer -> _VariableInitializer_CommaVariableInitializer_Repeat_Comma_Repeat
+				
+				new Rule("Block", "{", "BlockStatements", "}"),
+				// Block -> { BlockStatements }
+				
+				new Rule("BlockStatements"),
+				new Rule("BlockStatements", "_BlockStatement_Repeat"),
+				// BlockStatements ->
+				// BlockStatements -> _BlockStatement_Repeat
+				
+				new Rule("BlockStatement", "LocalVariableDeclarationStatement"),
+				new Rule("BlockStatement", "ClassOrInterfaceDeclaration"),
+				new Rule("BlockStatement", "Statement"),
+				new Rule("BlockStatement", "Identifier", ":", "Statement"),
+				// BlockStatement -> LocalVariableDeclarationStatement
+				// BlockStatement -> ClassOrInterfaceDeclaration
+				// BlockStatement -> Statement
+				// BlockStatement -> Identifier : Statement
+				
+				new Rule("LocalVariableDeclarationStatement", "Type", "VariableDeclarators", ";"),
+				new Rule("LocalVariableDeclarationStatement", "_VariableModifier_Repeat", "Type", "VariableDeclarators", ";"),
+				// LocalVariableDeclarationStatement -> Type VariableDeclarators ;
+				// LocalVariableDeclarationStatement -> _VariableModifier_Repeat Type VariableDeclarators ;
+				
+				new Rule("Statement", "Block"),
+				new Rule("Statement", "Identifier", ":", "Statement"),
+				new Rule("Statement", "StatementExpression", ";"),
+				new Rule("Statement", "if", "ParExpression", "Statement"),
+				new Rule("Statement", "if", "ParExpression", "Statement", "else", "Statement"),
+				new Rule("Statement", "assert", "Expression", ";"),
+				new Rule("Statement", "assert", "Expression", ":", "Expression", ";"),
+				new Rule("Statement", "switch", "ParExpression", "{", "SwitchBlockStatementGroups", "}"),
+				new Rule("Statement", "while", "ParExpression", "Statement"),
+				new Rule("Statement", "do", "Statement", "while", "ParExpression", ";"),
+				new Rule("Statement", "for", "(", "ForControl", ")", "Statement"),
+				new Rule("Statement", "break", ";"),
+				new Rule("Statement", "break", "Identifier", ";"),
+				new Rule("Statement", "continue", ";"),
+				new Rule("Statement", "continue", "Identifier", ";"),
+				new Rule("Statement", "return", ";"),
+				new Rule("Statement", "return", "Expression", ";"),
+				new Rule("Statement", "throw", "Expression", ";"),
+				new Rule("Statement", "synchronized", "ParExpression", "Block"),
+				new Rule("Statement", "try", "Block", "Catches"),
+				new Rule("Statement", "try", "Block", "Finally"),
+				new Rule("Statement", "try", "Block", "Catches", "Finally"),
+				new Rule("Statement", "try", "ResourceSpecification", "Block"),
+				new Rule("Statement", "try", "ResourceSpecification", "Block", "Catches"),
+				new Rule("Statement", "try", "ResourceSpecification", "Block", "Finally"),
+				new Rule("Statement", "try", "ResourceSpecification", "Block", "Catches", "Finally"),
+				// Statement -> Block
+				// Statement -> Identifier : Statement
+				// Statement -> StatementExpression ;
+				// Statement -> if ParExpression Statement
+				// Statement -> if ParExpression Statement else Statement
+				// Statement -> assert Expression ;
+				// Statement -> assert Expression : Expression ;
+				// Statement -> switch ParExpression { SwitchBlockStatementGroups } 
+				// Statement -> while ParExpression Statement
+				// Statement -> do Statement while ParExpression ;
+				// Statement -> for ( ForControl ) Statement
+				// Statement -> break ;
+				// Statement -> break Identifier ;
+				// Statement -> continue ;
+				// Statement -> continue Identifier ;
+				// Statement -> return ;
+				// Statement -> return Expression ;
+				// Statement -> throw Expression ;
+				// Statement -> synchronized ParExpression Block
+				// Statement -> try Block Catches
+				// Statement -> try Block Finally
+				// Statement -> try Block Catches Finally
+				// Statement -> try ResourceSpecification Block
+				// Statement -> try ResourceSpecification Block Catches
+				// Statement -> try ResourceSpecification Block Finally
+				// Statement -> try ResourceSpecification Block Catches Finally
+				
+				new Rule("StatementExpression", "Expression"),
+				// StatementExpression -> Expression
 				
 				// Original Rule
 				
@@ -330,40 +633,40 @@ public class App {
 				// _CommaTypeParameter_Repeat -> , TypeParameter
 				// _CommaTypeParameter_Repeat -> _CommaTypeParameter_Repeat , TypeParameter
 
-				new Rule("AndReferenceType_Repeat", "ReferenceType"),
-				new Rule("AndReferenceType_Repeat", "AndReferenceType_Repeat", "&", "ReferenceType"),
-				// AndReferenceType_Repeat -> ReferenceType
-				// AndReferenceType_Repeat -> AndReferenceType_Repeat & ReferenceType
+				new Rule("_AndReferenceType_Repeat", "&", "ReferenceType"),
+				new Rule("_AndReferenceType_Repeat", "_AndReferenceType_Repeat", "&", "ReferenceType"),
+				// _AndReferenceType_Repeat -> & ReferenceType
+				// _AndReferenceType_Repeat -> _AndReferenceType_Repeat & ReferenceType
 				
-				new Rule("Annotation_Repeat", "Annotation"),
-				new Rule("Annotation_Repeat", "Annotation_Repeat", "Annotation"),
-				// Annotation_Repeat -> Annotation
-				// Annotation_Repeat -> Annotation_Repeat Annotation
+				new Rule("_Annotation_Repeat", "Annotation"),
+				new Rule("_Annotation_Repeat", "_Annotation_Repeat", "Annotation"),
+				// _Annotation_Repeat -> Annotation
+				// _Annotation_Repeat -> _Annotation_Repeat Annotation
 
-				new Rule("ElementValuePair_CommaRepeat", "ElementValuePair"),
-				new Rule("ElementValuePair_CommaRepeat", "ElementValuePair_CommaRepeat", ",", "ElementValuePair"),
-				// ElementValuePair_CommaRepeat -> ElementValuePair
-				// ElementValuePair_CommaRepeat -> ElementValuePair_CommaRepeat , ElementValuePair
+				new Rule("_CommaElementValuePair_Repeat", ",", "ElementValuePair"),
+				new Rule("_CommaElementValuePair_Repeat", "_CommaElementValuePair_Repeat", ",", "ElementValuePair"),
+				// _CommaElementValuePair_Repeat -> , ElementValuePair
+				// _CommaElementValuePair_Repeat -> _CommaElementValuePair_Repeat , ElementValuePair
 				
-				new Rule("ElementValuesComma_Repeat"),
-				new Rule("ElementValuesComma_Repeat", "ElementValues"),
-				new Rule("ElementValuesComma_Repeat", ","),
-				new Rule("ElementValuesComma_Repeat", "ElementValues", ","),
-				new Rule("ElementValuesComma_Repeat", "ElementValuesComma_Repeat", "ElementValues"),
-				new Rule("ElementValuesComma_Repeat", "ElementValuesComma_Repeat", ","),
-				new Rule("ElementValuesComma_Repeat", "ElementValuesComma_Repeat", "ElementValues", ","),
-				// ElementValuesComma_Repeat -> 
-				// ElementValuesComma_Repeat -> ElementValues
-				// ElementValuesComma_Repeat -> ,
-				// ElementValuesComma_Repeat -> ElementValues ,
-				// ElementValuesComma_Repeat -> ElementValuesComma_Repeat ElementValues
-				// ElementValuesComma_Repeat -> ElementValuesComma_Repeat ,
-				// ElementValuesComma_Repeat -> ElementValuesComma_Repeat ElementValues ,
+				new Rule("_ElementValuesComma_Repeat"),
+				new Rule("_ElementValuesComma_Repeat", "ElementValues"),
+				new Rule("_ElementValuesComma_Repeat", ","),
+				new Rule("_ElementValuesComma_Repeat", "ElementValues", ","),
+				new Rule("_ElementValuesComma_Repeat", "_ElementValuesComma_Repeat", "ElementValues"),
+				new Rule("_ElementValuesComma_Repeat", "_ElementValuesComma_Repeat", ","),
+				new Rule("_ElementValuesComma_Repeat", "_ElementValuesComma_Repeat", "ElementValues", ","),
+				// _ElementValuesComma_Repeat -> 
+				// _ElementValuesComma_Repeat -> ElementValues
+				// _ElementValuesComma_Repeat -> ,
+				// _ElementValuesComma_Repeat -> ElementValues ,
+				// _ElementValuesComma_Repeat -> _ElementValuesComma_Repeat ElementValues
+				// _ElementValuesComma_Repeat -> _ElementValuesComma_Repeat ,
+				// _ElementValuesComma_Repeat -> _ElementValuesComma_Repeat ElementValues ,
 
-				new Rule("ElementValue_CommaRepeat", "ElementValue"),
-				new Rule("ElementValue_CommaRepeat", "ElementValue_CommaRepeat", ",", "ElementValue"),
-				// ElementValue_CommaRepeat -> ElementValue
-				// ElementValue_CommaRepeat -> ElementValue_CommaRepeat , ElementValue
+				new Rule("_CommaElementValue_Repeat", "ElementValue"),
+				new Rule("_CommaElementValue_Repeat", "_CommaElementValue_Repeat", ",", "ElementValue"),
+				// _CommaElementValue_Repeat -> , ElementValue
+				// _CommaElementValue_Repeat -> _CommaElementValue_Repeat , ElementValue
 
 				
 				new Rule("ClassBodyDeclaration_Repeat", "ClassBodyDeclaration"),
@@ -373,11 +676,62 @@ public class App {
 				
 				
 				new Rule("CommaVariableDeclarator_Repeat", ",", "VariableDeclarator"),
-				new Rule("CommaVariableDeclarator_Repeat", "CommaVariableDeclarator_Repeat", ",", "VariableDeclarator")
+				new Rule("CommaVariableDeclarator_Repeat", "CommaVariableDeclarator_Repeat", ",", "VariableDeclarator"),
 				// CommaVariableDeclarator_Repeat -> , VariableDeclarator
 				// CommaVariableDeclarator_Repeat -> CommaVariableDeclarator_Repeat , VariableDeclarator
-		);
+				
+				
+				new Rule("_InterfaceBodyDeclaration_Repeat", "InterfaceBodyDeclaration"),
+				new Rule("_InterfaceBodyDeclaration_Repeat", "_InterfaceBodyDeclaration_Repeat", "InterfaceBodyDeclaration"),
+				// _InterfaceBodyDeclaration_Repeat -> InterfaceBodyDeclaration
+				// _InterfaceBodyDeclaration_Repeat -> _InterfaceBodyDeclaration_Repeat InterfaceBodyDeclaration
+				
+				
+				new Rule("_CommaConstantDeclarator_Repeat", ",", "ConstantDeclarator"),
+				new Rule("_CommaConstantDeclarator_Repeat", "_CommaConstantDeclarator_Repeat", ",", "ConstantDeclarator"),
+				// _CommaConstantDeclarator_Repeat -> , ConstantDeclarator
+				// _CommaConstantDeclarator_Repeat -> _CommaConstantDeclarator_Repeat , ConstantDeclarator
+				
+				new Rule("_VariableModifier_Repeat", "VariableModifier"),
+				new Rule("_VariableModifier_Repeat", "_VariableModifier_Repeat", "VariableModifier"),
+				// _VariableModifier_Repeat -> VariableModifier
+                // _VariableModifier_Repeat -> _VariableModifier_Repeat VariableModifier
+				
+				new Rule("_CommaVariableDeclarator_Repeat", ",", "VariableDeclarator"),
+				new Rule("_CommaVariableDeclarator_Repeat", "_CommaVariableDeclarator_Repeat", ",", "VariableDeclarator"),
+				// _CommaVariableDeclarator_Repeat -> , VariableDeclarator
+				// _CommaVariableDeclarator_Repeat -> _CommaVariableDeclarator_Repeat VariableDeclarator
+				
+				new Rule("_CommaVariableInitializer_Repeat", ",", "VariableInitializer"),
+				new Rule("_CommaVariableInitializer_Repeat", "_CommaVariableInitializer_Repeat", ",", "VariableInitializer"),
+				// _CommaVariableInitializer_Repeat -> , VariableInitializer
+				// _CommaVariableInitializer_Repeat -> _CommaVariableInitializer_Repeat , VariableInitializer
+				
+				new Rule("_VariableInitializer_CommaVariableInitializer_Repeat_Comma_Repeat"),
+				new Rule("_VariableInitializer_CommaVariableInitializer_Repeat_Comma_Repeat", "VariableInitializer _CommaVariableInitializer_Repeat"),
+				new Rule("_VariableInitializer_CommaVariableInitializer_Repeat_Comma_Repeat", ","),
+				new Rule("_VariableInitializer_CommaVariableInitializer_Repeat_Comma_Repeat", "VariableInitializer _CommaVariableInitializer_Repeat", ","),
+				new Rule("_VariableInitializer_CommaVariableInitializer_Repeat_Comma_Repeat", "_VariableInitializer_CommaVariableInitializer_Repeat_Comma_Repeat", "VariableInitializer _CommaVariableInitializer_Repeat"),
+				new Rule("_VariableInitializer_CommaVariableInitializer_Repeat_Comma_Repeat", "_VariableInitializer_CommaVariableInitializer_Repeat_Comma_Repeat", ","),
+				new Rule("_VariableInitializer_CommaVariableInitializer_Repeat_Comma_Repeat", "_VariableInitializer_CommaVariableInitializer_Repeat_Comma_Repeat", "VariableInitializer _CommaVariableInitializer_Repeat", ","),
+				// _VariableInitializer_CommaVariableInitializer_Repeat_Comma_Repeat -> 
+				// _VariableInitializer_CommaVariableInitializer_Repeat_Comma_Repeat -> VariableInitializer _CommaVariableInitializer_Repeat
+				// _VariableInitializer_CommaVariableInitializer_Repeat_Comma_Repeat -> ,
+				// _VariableInitializer_CommaVariableInitializer_Repeat_Comma_Repeat -> VariableInitializer _CommaVariableInitializer_Repeat ,
+				// _VariableInitializer_CommaVariableInitializer_Repeat_Comma_Repeat -> _VariableInitializer_CommaVariableInitializer_Repeat_Comma_Repeat
+				// _VariableInitializer_CommaVariableInitializer_Repeat_Comma_Repeat -> _VariableInitializer_CommaVariableInitializer_Repeat_Comma_Repeat VariableInitializer _CommaVariableInitializer_Repeat
+				// _VariableInitializer_CommaVariableInitializer_Repeat_Comma_Repeat -> _VariableInitializer_CommaVariableInitializer_Repeat_Comma_Repeat ,
+				// _VariableInitializer_CommaVariableInitializer_Repeat_Comma_Repeat -> _VariableInitializer_CommaVariableInitializer_Repeat_Comma_Repeat VariableInitializer _CommaVariableInitializer_Repeat ,
+				
+				
 
+                new Rule("_BlockStatement_Repeat", "BlockStatement"),
+                new Rule("_BlockStatement_Repeat", "_BlockStatement_Repeat", "BlockStatement")
+                // _BlockStatement_Repeat -> BlockStatement
+                // _BlockStatement_Repeat -> _BlockStatement_Repeat BlockStatement
+				
+		);
+		
 		System.out.println("*** Grammar ***");
 		System.out.println(grammar);
 		
@@ -412,10 +766,16 @@ public class App {
 				Annotations package Identifier . Identifier ;
 
 				import Identifier . Identifier . * ;
-						
-				class Identifier ClassBody
+			   
+				class Identifier { 
+				   public static void Identifier ( Identifier [ ] Identifier ) {
+				       Identifier . Identifier . Identifier ( ) ;
+				   }
+				}
+				 
+			    enum Identifier EnumBody
+			    
 				
-				enum Identifier EnumBody
 				""" + "$" + System.lineSeparator();
 		System.out.println();
 		System.out.println("*** Source ***");
