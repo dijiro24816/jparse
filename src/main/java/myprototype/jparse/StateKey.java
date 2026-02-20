@@ -3,7 +3,6 @@ package myprototype.jparse;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
-import java.util.HashSet;
 import java.util.List;
 
 public class StateKey {
@@ -37,9 +36,10 @@ public class StateKey {
 	public static StateKey create(String rootSymbol, Collection<Item> orgItems) {
 		ArrayList<Item> items = new ArrayList<>(orgItems.stream().filter(e -> !e.isTakingTheClosure()).toList());
 		ArrayList<Item> closures = new ArrayList<>(orgItems.stream().filter(e -> e.isTakingTheClosure()).toList());
-		Comparator<Item> comparator = Comparator.<Item, String>comparing(Item::getRightSymbolsString).thenComparing(
-				e -> e.getLookaheadSet().stream().sorted(String.CASE_INSENSITIVE_ORDER).toList().toString(),
-				String.CASE_INSENSITIVE_ORDER);
+		Comparator<Item> comparator = Comparator.<Item, String>comparing(Item::getRightSymbolsString)
+				.thenComparing(e -> e.getLookaheadSet().stream().sorted(String.CASE_INSENSITIVE_ORDER).toList().toString(), String.CASE_INSENSITIVE_ORDER)
+				.thenComparing(Item::beforeSymbolsString)
+				.thenComparing(Item::getProductSymbol);
 
 		items.sort(comparator);
 		closures.sort(comparator);

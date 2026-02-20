@@ -3,7 +3,6 @@ package myprototype.jparse;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.List;
 
 public class SyntaticsTable {
@@ -103,7 +102,7 @@ public class SyntaticsTable {
 
 
 		keyStates.put(key, currentState);
-//		System.out.println("" + currentState + " -" + key);
+		System.out.println("" + currentState + " -" + key);
 		List<Item> closures = key.getClosures();
 		if (closures.size() > 0) {
 			// Check reduce-reduce problem

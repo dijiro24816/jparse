@@ -15,7 +15,7 @@ import myprototype.jparse.symbol.terminal.JavaLexer;
  */
 
 public class App {
-	public static void main(String[] args) throws IOException, InvalidTokenException {
+	public static void maina(String[] args) throws IOException, InvalidTokenException {
 		String grammarSource = """
 				S -> Statement
 				Statement -> Expression
@@ -71,7 +71,7 @@ public class App {
 		System.out.println(symbol);
 	}
 
-	public static void maina(String[] args) throws FileNotFoundException {
+	public static void main(String[] args) throws FileNotFoundException {
 		Grammar grammar = new Grammar("S", "$", new FileInputStream("JavaSyntax21.txt"));
 //		Grammar grammar = new Grammar("S", "$", new Rule("S", "CompilationUnit"),
 //				new Rule("QualifiedIdentifier", "Identifier", "PeriodIdentifier_Repeat"),

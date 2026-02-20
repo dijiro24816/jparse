@@ -71,6 +71,10 @@ public class Item {
 		return String.join(" ", this.rule.getSymbols().subList(this.dot, this.rule.getSymbols().size()));
 	}
 	
+	public String beforeSymbolsString() {
+		return String.join(" ", this.rule.getSymbols().subList(0, this.dot));
+	}
+	
 	public boolean isDotNonterminal(Grammar grammar) {
 		return grammar.isNonterminalSymbol(getDotSymbol());
 	}
