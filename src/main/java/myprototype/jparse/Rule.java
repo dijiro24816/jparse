@@ -15,10 +15,13 @@ private PrecedenceRuleInfo precedenceInfo;
 	//	private Function<StateSymbolStack, Object> compounder;
 	private List<String> symbols; // symbols.size() > 0
 
-	public Rule(PrecedenceRuleInfo precedenceInfo, String productSymbol, String...symbols) {
+	public Rule(PrecedenceRuleInfo precedenceInfo, String productSymbol, List<String> symbols) {
 		this.precedenceInfo = precedenceInfo;
 		this.productSymbol = productSymbol;
-		this.symbols = Arrays.asList(symbols);
+		this.symbols = symbols;
+	}
+	public Rule(String productSymbol, List<String> symbols) {
+		this(new PrecedenceRuleInfo(), productSymbol, symbols);
 	}
 
 //	public Function<StateSymbolStack, Object> getCompounder() {
@@ -26,8 +29,14 @@ private PrecedenceRuleInfo precedenceInfo;
 //	}
 
 	public Rule(String productSymbol, String...symbols) {
-		this(new PrecedenceRuleInfo(), productSymbol, symbols);
+		this(productSymbol, Arrays.asList(symbols));
 	}
+	
+	public Rule(PrecedenceRuleInfo precedenceInfo, String productSymbol, String...symbols) {
+		this(new PrecedenceRuleInfo(), productSymbol, Arrays.asList(symbols));
+	}
+	
+	
 	
 	@Override
 	public boolean equals(Object obj) {

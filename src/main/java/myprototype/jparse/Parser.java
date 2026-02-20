@@ -27,7 +27,6 @@ public class Parser {
 	public Symbol parse(InputStream inStrm, BiFunction<Rule, List<Symbol>, Object> compounder) throws IOException, InvalidTokenException {
 		StateSymbolStack stack = null;
 		Action action = new Action(ActionKind.Start, 0);
-		
 		for (;;) {
 			switch (action.getKind()) {
 			case Start:

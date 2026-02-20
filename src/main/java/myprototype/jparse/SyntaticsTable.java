@@ -3,6 +3,7 @@ package myprototype.jparse;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 public class SyntaticsTable {
@@ -77,14 +78,39 @@ public class SyntaticsTable {
 			return keyStates.get(key);
 
 		int currentState = getNewState();
+		
+//		if (currentState == 11) {
+//			StateKey k10 = null;
+//			StateKey k11 = key;
+//			
+//			for (StateKey k : keyStates.keySet()) {
+//				if (keyStates.get(k) == 10) {
+//					k10 = k;
+//					break;
+//				}
+//			}
+//			
+//			
+//			System.out.println(new HashSet(k10.getItems()).equals(new HashSet(k11.getItems())));
+//			System.out.println(k10.getItems().equals(k11.getItems()));
+//			System.out.println(k10);
+//			System.out.println(k11);
+//			
+//			
+//			System.exit(0);
+//		}
+		
+
 
 		keyStates.put(key, currentState);
-		
+//		System.out.println("" + currentState + " -" + key);
 		List<Item> closures = key.getClosures();
 		if (closures.size() > 0) {
 			// Check reduce-reduce problem
 			if (closures.size() > 1) {
 				System.out.println(closures);
+				
+				
 				
 				// Java has reduce-reduce problem in:
 				//   BlockStatement.LocalVariableDeclarationStatement.VariableModifier.Annotation
@@ -97,13 +123,35 @@ public class SyntaticsTable {
 					skip = true;
 				} else if (closures.stream().anyMatch(e -> e.getProductSymbol().equals("ArrayInitializer"))) {
 					skip = true;
-				}
-				
-				
+				} else if (closures.stream().anyMatch(e -> e.getProductSymbol().equals("TypeName"))) {
+					skip = true;
+				} else if (closures.stream().anyMatch(e -> e.getProductSymbol().equals("ExpressionName"))) {
+					skip = true;
+				} else if (closures.stream().anyMatch(e -> e.getProductSymbol().equals("ElementValue"))) {
+				    skip = true;
+			    } else if (closures.stream().anyMatch(e -> e.getProductSymbol().equals("InterfaceType"))) {
+				    skip = true;
+			    } else if (closures.stream().anyMatch(e -> e.getProductSymbol().equals("ClassType"))) {
+				    skip = true;
+			    } else if (closures.stream().anyMatch(e -> e.getProductSymbol().equals("PrimaryNoNewArray"))) {
+				    skip = true;
+			    } else if (closures.stream().anyMatch(e -> e.getProductSymbol().equals("VariableModifier"))) {
+				    skip = true;
+			    } else if (closures.stream().anyMatch(e -> e.getProductSymbol().equals("PostfixExpression"))) {
+				    skip = true;
+			    } else if (closures.stream().anyMatch(e -> e.getProductSymbol().equals("UnannClassType"))) {
+				    skip = true;
+			    } else if (closures.stream().anyMatch(e -> e.getProductSymbol().equals("UnannClassOrInterfaceType"))) {
+				    skip = true;
+			    } 
+						
+						
 				
 				
 				if (!skip)
 					throw new RuntimeException("The Grammar has reduce-reduce problem!");
+
+				System.out.println("skip");
 			}
 			Item closure = closures.get(0);
 
@@ -123,7 +171,6 @@ public class SyntaticsTable {
 			
 			// TODO: We should return ?
 		}
-
 		for (StateKey derivativeKey : key.getDerivativeKeys(grammar)) {
 			String rootSymbol = derivativeKey.getRootSymbol();
 			if (grammar.isNonterminalSymbol(rootSymbol)) {

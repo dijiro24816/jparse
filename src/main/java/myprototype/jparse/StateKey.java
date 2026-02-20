@@ -38,7 +38,7 @@ public class StateKey {
 		ArrayList<Item> items = new ArrayList<>(orgItems.stream().filter(e -> !e.isTakingTheClosure()).toList());
 		ArrayList<Item> closures = new ArrayList<>(orgItems.stream().filter(e -> e.isTakingTheClosure()).toList());
 		Comparator<Item> comparator = Comparator.<Item, String>comparing(Item::getRightSymbolsString).thenComparing(
-				e -> e.getLookaheadSet().stream().sorted(String.CASE_INSENSITIVE_ORDER).toString(),
+				e -> e.getLookaheadSet().stream().sorted(String.CASE_INSENSITIVE_ORDER).toList().toString(),
 				String.CASE_INSENSITIVE_ORDER);
 
 		items.sort(comparator);

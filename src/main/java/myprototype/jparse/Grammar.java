@@ -1,7 +1,10 @@
 package myprototype.jparse;
 
+import java.io.BufferedReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -18,19 +21,13 @@ public class Grammar {
 		operatorPrecedenceRule.add(PrecedenceDirection.Left, "+", "-");
 		operatorPrecedenceRule.add(PrecedenceDirection.Left, "*", "/");
 
-		Grammar grammar = new Grammar("S", "$", 
-				new Rule("S", "Stmt"),
-				new Rule("Stmt"),
-				new Rule("Stmt", "Expr"),
-				new Rule("Stmt", "Assg"),
-				new Rule("Expr", "Identifier"),
-				new Rule("Expr", "NUM"),
+		Grammar grammar = new Grammar("S", "$", new Rule("S", "Stmt"), new Rule("Stmt"), new Rule("Stmt", "Expr"),
+				new Rule("Stmt", "Assg"), new Rule("Expr", "Identifier"), new Rule("Expr", "NUM"),
 				new Rule(operatorPrecedenceRule.getInfo("+"), "Expr", "Expr", "+", "Expr"),
 				new Rule(operatorPrecedenceRule.getInfo("-"), "Expr", "Expr", "-", "Expr"),
 				new Rule(operatorPrecedenceRule.getInfo("*"), "Expr", "Expr", "*", "Expr"),
 				new Rule(operatorPrecedenceRule.getInfo("/"), "Expr", "Expr", "/", "Expr"),
-				new Rule(operatorPrecedenceRule.getInfo("="), "Assg", "Identifier", "=", "Expr")
-				);
+				new Rule(operatorPrecedenceRule.getInfo("="), "Assg", "Identifier", "=", "Expr"));
 
 		System.out.println("*** Grammar ***");
 		System.out.println(grammar);
@@ -57,6 +54,7 @@ public class Grammar {
 			e.printStackTrace();
 		}
 	}
+
 	public static void mainb(String[] args) {
 		// HashSet<String> h1 = new HashSet();
 		// HashSet<String> h2 = new HashSet();
@@ -118,19 +116,37 @@ public class Grammar {
 		System.out.println("FINISHED!");
 	}
 
-	private String begSymbol;
-	private String endSymbol;
+	public static List<Rule> parse(InputStream inStrm) {
+		BufferedReader reader = new BufferedReader(new InputStreamReader(inStrm));
 
+		return reader.lines().filter(e -> !e.isBlank()).map(e -> {
+			List<String> srcs = Arrays.asList(e.split("->", 2));
+			String productSymbol = srcs.get(0).trim();
+			ArrayList<String> symbols = new ArrayList<>();
+			if (srcs.size() > 1)
+				symbols.addAll(Arrays.asList(srcs.get(1).trim().split("\s+")));
+				
+			return new Rule(productSymbol, symbols);
+		}).toList();
+	}
+	private String begSymbol;
+
+	private String endSymbol;
 	private HashMap<String, Integer> nonterminalSymbolIndices;
 	private List<String> nonterminalSymbols;
 	private HashMap<Rule, Integer> ruleIndices;
+
 	private List<Rule> rules;
 
 	private HashMap<String, Integer> terminalSymbolIndices;
 
 	private List<String> terminalSymbols;
 
-	public Grammar(String startSymbol, String endSymbol, Rule... rules) {
+	public Grammar(String startSymbol, String endSymbol, InputStream inStrm) {
+		this(startSymbol, endSymbol, parse(inStrm));
+	}
+
+	public Grammar(String startSymbol, String endSymbol, List<Rule> rules) {
 		this.begSymbol = startSymbol;
 		this.endSymbol = endSymbol;
 
@@ -158,6 +174,10 @@ public class Grammar {
 				if (!isNonterminalSymbol(symbol))
 					// We should call this method after saving all of nonterminal symbol has done
 					cacheTerminalSymbolWithIndex(symbol);
+	}
+
+	public Grammar(String startSymbol, String endSymbol, Rule... rules) {
+		this(startSymbol, endSymbol, Arrays.asList(rules));
 	}
 
 	private boolean cacheNonterminalSymbolWithIndex(String symbol) {
@@ -197,7 +217,7 @@ public class Grammar {
 //		HashSet<String> lookaheadSet = new HashSet<>();
 //		lookaheadSet.add(getEndSymbol());
 //		HashSet<Item> items = expandItems(expandSymbolsRules(getStartSymbol()).stream().map(e -> new Item(e, lookaheadSet)).toList());
-		
+
 		return dstItems;
 
 //		HashSet<String> lookaheadSet = new HashSet<>();
@@ -234,12 +254,12 @@ public class Grammar {
 
 //		System.out.println("-----------------------------");
 //		System.out.println(dstItems);
-		
+
 		for (Item item : dstItems) {
 			if (item.getLookaheadSet().isEmpty())
 				System.out.println(item);
 		}
-		
+
 		return dstItems;
 	}
 
@@ -256,13 +276,13 @@ public class Grammar {
 		while ((nonterminalSymbol = nonterminalSymbols.poll()) != null) {
 			Set<Rule> symbolRules = getRulesOf(nonterminalSymbol);
 			symbolsRules.addAll(symbolRules);
-			
+
 //			System.out.println(symbolRules);
 
 			for (Rule rule : symbolRules) {
 				if (rule.isEmpty())
 					continue;
-				
+
 				String symbol = rule.getFirstSymbol();
 				if (isNonterminalSymbol(symbol) && foundNonterminals.add(symbol))
 					nonterminalSymbols.add(symbol);
@@ -404,7 +424,7 @@ public class Grammar {
 			stringBuilder.append(i);
 			stringBuilder.append(": ");
 			stringBuilder.append(this.rules.get(i));
-			
+
 			if (i + 1 < this.rules.size())
 				stringBuilder.append(System.lineSeparator());
 		}

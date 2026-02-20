@@ -181,7 +181,8 @@ public class Item {
 		}
 
 		stringBuilder.append("] & ");
-		stringBuilder.append(this.lookaheadSet);
+		stringBuilder.append(this.lookaheadSet.stream().sorted(String.CASE_INSENSITIVE_ORDER).toList().toString());
+		
 		return stringBuilder.toString();
 	}
 }

@@ -1,0 +1,1326 @@
+S -> CompilationUnit
+
+
+
+_PeriodIdentifier_Repeat -> . Identifier
+_PeriodIdentifier_Repeat -> _PeriodIdentifier_Repeat . Identifier
+
+
+_Annotation_Repeat -> Annotation
+_Annotation_Repeat -> _Annotation_Repeat Annotation
+
+__Annotation_RepeatEmptySquareBrackets_Repeat -> [ ]
+__Annotation_RepeatEmptySquareBrackets_Repeat -> _Annotation_Repeat [ ]
+__Annotation_RepeatEmptySquareBrackets_Repeat -> __Annotation_RepeatEmptySquareBrackets_Repeat [ ]
+__Annotation_RepeatEmptySquareBrackets_Repeat -> __Annotation_RepeatEmptySquareBrackets_Repeat _Annotation_Repeat [ ]
+
+_AdditionalBound_Repeat -> AdditionalBound
+_AdditionalBound_Repeat -> _AdditionalBound_Repeat AdditionalBound
+
+_ImportDeclaration_Repeat -> ImportDeclaration
+_ImportDeclaration_Repeat -> _ImportDeclaration_Repeat ImportDeclaration
+
+_PackageModifier_Repeat -> PackageModifier
+_PackageModifier_Repeat -> _PackageModifier_Repeat PackageModifier
+
+Type -> PrimitiveType
+Type -> ReferenceType
+
+PrimitiveType -> NumericType
+PrimitiveType -> boolean
+PrimitiveType -> _Annotation_Repeat NumericType
+PrimitiveType -> _Annotation_Repeat boolean
+
+NumericType -> IntegralType
+NumericType -> FloatingPointType
+
+IntegralType -> byte
+IntegralType -> short
+IntegralType -> int
+IntegralType -> long
+IntegralType -> char
+
+FloatingPointType -> float
+FloatingPointType -> double
+
+ReferenceType -> ClassOrInterfaceType
+ReferenceType -> TypeVariable
+ReferenceType -> ArrayType
+
+ClassOrInterfaceType -> ClassType
+ClassOrInterfaceType -> InterfaceType
+
+ClassType -> Identifier
+ClassType -> _Annotation_Repeat Identifier
+ClassType -> Identifier TypeArguments
+ClassType -> _Annotation_Repeat Identifier TypeArguments
+ClassType -> ClassOrInterfaceType . Identifier
+ClassType -> ClassOrInterfaceType . _Annotation_Repeat Identifier 
+ClassType -> ClassOrInterfaceType . Identifier TypeArguments
+ClassType -> ClassOrInterfaceType . _Annotation_Repeat Identifier TypeArguments
+
+ClassType -> TypeIdentifier
+ClassType -> _Annotation_Repeat TypeIdentifier
+ClassType -> TypeIdentifier TypeArguments
+ClassType -> _Annotation_Repeat TypeIdentifier TypeArguments
+
+ClassType -> PackageName . TypeIdentifier
+ClassType -> PackageName . _Annotation_Repeat TypeIdentifier
+ClassType -> PackageName . TypeIdentifier TypeArguments
+ClassType -> PackageName . _Annotation_Repeat TypeIdentifier TypeArguments
+
+ClassType -> ClassOrInterfaceType . TypeIdentifier
+ClassType -> ClassOrInterfaceType . _Annotation_Repeat TypeIdentifier 
+ClassType -> ClassOrInterfaceType . TypeIdentifier TypeArguments
+ClassType -> ClassOrInterfaceType . _Annotation_Repeat TypeIdentifier TypeArguments
+
+
+
+
+InterfaceType -> ClassType
+
+TypeVariable -> TypeIdentifier
+TypeVariable -> _Annotation_Repeat TypeIdentifier
+
+ArrayType -> PrimitiveType Dims
+ArrayType -> ClassOrInterfaceType Dims
+ArrayType -> TypeVariable Dims
+
+
+Dims -> [ ]
+Dims -> _Annotation_Repeat [ ]
+Dims -> _Annotation_Repeat [ ] __Annotation_RepeatEmptySquareBrackets_Repeat
+
+
+
+TypeParameter -> TypeIdentifier
+TypeParameter -> _TypeParameterModifier_Repeat TypeIdentifier
+TypeParameter -> Identifier TypeBound
+TypeParameter -> _TypeParameterModifier_Repeat TypeIdentifier ypeBound
+
+TypeParameterModifier -> Annotation
+
+TypeBound -> extends TypeVariable
+TypeBound -> extends ClassOrInterfaceType
+TypeBound -> extends ClassOrInterfaceType _AdditionalBound_Repeat
+
+
+AdditionalBound -> & InterfaceType
+
+TypeArguments -> < TypeArgumentList >
+
+
+TypeArgumentList -> TypeArgument
+TypeArgumentList -> TypeArgument _CommaTypeArgument_Repeat
+
+TypeArgument -> ReferenceType
+TypeArgument -> Wildcard
+
+Wildcard -> ?
+Wildcard -> _Annotation_Repeat ?
+Wildcard -> ? WildcardBounds
+Wildcard -> _Annotation_Repeat ? WildcardBounds
+
+WildcardBounds -> extends ReferenceType
+WildcardBounds -> super ReferenceType
+
+WildcardBounds:
+extends ReferenceType
+super ReferenceType
+
+
+
+ModuleName -> Identifier
+ModuleName -> ModuleName . Identifier
+
+PackageName -> Identifier
+PackageName -> PackageName . Identifier
+
+TypeName -> Identifier
+TypeName -> PackageOrTypeName . Identifier
+
+ExpressionName -> Identifier
+ExpressionName -> AmbiguousName . Identifier
+
+MethodName -> UnqualifiedMethodIdentifier
+
+PackageOrTypeName -> Identifier
+PackageOrTypeName -> PackageOrTypeName . Identifier
+
+AmbiguousName -> Identifier
+AmbiguousName -> AmbiguousName . Identifier
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+CompilationUnit -> OrdinaryCompilationUnit
+CompilationUnit -> ModularCompilationUnit
+
+OrdinaryCompilationUnit -> 
+OrdinaryCompilationUnit -> PackageDeclaration
+OrdinaryCompilationUnit -> _ImportDeclaration_Repeat
+OrdinaryCompilationUnit -> PackageDeclaration _ImportDeclaration_Repeat
+OrdinaryCompilationUnit -> TopLevelClassOrInterfaceDeclaration
+OrdinaryCompilationUnit -> PackageDeclaration TopLevelClassOrInterfaceDeclaration
+OrdinaryCompilationUnit -> _ImportDeclaration_Repeat TopLevelClassOrInterfaceDeclaration
+OrdinaryCompilationUnit -> PackageDeclaration _ImportDeclaration_Repeat TopLevelClassOrInterfaceDeclaration
+
+_TopLevelClassOrInterfaceDeclaration_Repeat -> TopLevelClassOrInterfaceDeclaration
+_TopLevelClassOrInterfaceDeclaration_Repeat -> _TopLevelClassOrInterfaceDeclaration_Repeat TopLevelClassOrInterfaceDeclaration
+
+ModularCompilationUnit -> ModuleDeclaration
+ModularCompilationUnit -> _ImportDeclaration_Repeat ModuleDeclaration
+
+PackageDeclaration -> package Identifier ;
+PackageDeclaration -> _PackageModifier_Repeat package Identifier ;
+PackageDeclaration -> package Identifier _PeriodIdentifier_Repeat ;
+PackageDeclaration -> _PackageModifier_Repeat package Identifier _PeriodIdentifier_Repeat ;
+
+PackageModifier -> Annotation
+
+ImportDeclaration -> SingleTypeImportDeclaration
+ImportDeclaration -> TypeImportOnDemandDeclaration
+ImportDeclaration -> SingleStaticImportDeclaration
+ImportDeclaration -> StaticImportOnDemandDeclaration
+
+SingleTypeImportDeclaration -> import TypeName ;
+
+TypeImportOnDemandDeclaration -> import PackageOrTypeName . * ;
+
+SingleStaticImportDeclaration -> import static TypeName . Identifier ;
+
+StaticImportOnDemandDeclaration -> import static TypeName . * ;
+
+TopLevelClassOrInterfaceDeclaration -> ClassDeclaration
+TopLevelClassOrInterfaceDeclaration -> InterfaceDeclaration
+TopLevelClassOrInterfaceDeclaration -> ;
+
+
+ModuleDeclaration -> module Identifier { }
+ModuleDeclaration -> _Annotation_Repeat module Identifier { }
+ModuleDeclaration -> open module Identifier { }
+ModuleDeclaration -> _Annotation_Repeat open module Identifier { }
+ModuleDeclaration -> module Identifier _PeriodIdentifier_Repeat { }
+ModuleDeclaration -> _Annotation_Repeat module Identifier _PeriodIdentifier_Repeat { }
+ModuleDeclaration -> open module Identifier _PeriodIdentifier_Repeat { }
+ModuleDeclaration -> _Annotation_Repeat open module Identifier _PeriodIdentifier_Repeat { }
+ModuleDeclaration -> module Identifier { _ModuleDirective_Repeat }
+ModuleDeclaration -> _Annotation_Repeat module Identifier { _ModuleDirective_Repeat }
+ModuleDeclaration -> open module Identifier { _ModuleDirective_Repeat }
+ModuleDeclaration -> _Annotation_Repeat open module Identifier { _ModuleDirective_Repeat }
+ModuleDeclaration -> module Identifier _PeriodIdentifier_Repeat { _ModuleDirective_Repeat }
+ModuleDeclaration -> _Annotation_Repeat module Identifier _PeriodIdentifier_Repeat { _ModuleDirective_Repeat }
+ModuleDeclaration -> open module Identifier _PeriodIdentifier_Repeat { _ModuleDirective_Repeat }
+ModuleDeclaration -> _Annotation_Repeat open module Identifier _PeriodIdentifier_Repeat { _ModuleDirective_Repeat }
+
+_ModuleDirective_Repeat -> ModuleDirective
+_ModuleDirective_Repeat -> _ModuleDirective_Repeat ModuleDirective
+
+
+ModuleDirective -> requires ModuleName ;
+ModuleDirective -> requires {RequiresModifier} ModuleName ;
+ModuleDirective -> exports PackageName ;
+ModuleDirective -> exports PackageName to ModuleName ;
+ModuleDirective -> exports PackageName to ModuleName _CommaModuleName_Repeat ;
+ModuleDirective -> opens PackageName ;
+ModuleDirective -> opens PackageName to ModuleName ;
+ModuleDirective -> opens PackageName to ModuleName _CommaModuleName_Repeat ;
+ModuleDirective -> provides TypeName with TypeName ;
+ModuleDirective -> provides TypeName with TypeName _CommaTypeName_Repeat ;
+
+_RequiresModifier_Repeat -> RequiresModifier
+_RequiresModifier_Repeat -> _RequiresModifier_Repeat RequiresModifier
+
+_CommaModuleName_Repeat -> , ModuleName
+_CommaModuleName_Repeat -> _CommaModuleName_Repeat , ModuleName
+
+_CommaTypeName_Repeat -> , TypeName
+_CommaTypeName_Repeat -> _CommaTypeName_Repeat , TypeName
+
+RequiresModifier -> transitive
+RequiresModifier -> static
+
+
+
+
+ClassDeclaration -> NormalClassDeclaration
+ClassDeclaration -> EnumDeclaration
+ClassDeclaration -> RecordDeclaration
+
+NormalClassDeclaration -> class TypeIdentifier ClassBody
+NormalClassDeclaration -> _ClassModifier_Repeat class TypeIdentifier ClassBody
+
+NormalClassDeclaration -> class TypeIdentifier TypeParameters ClassBody
+NormalClassDeclaration -> _ClassModifier_Repeat class TypeIdentifier TypeParameters ClassBody
+
+NormalClassDeclaration -> class TypeIdentifier ClassExtends ClassBody
+NormalClassDeclaration -> _ClassModifier_Repeat class TypeIdentifier ClassExtends ClassBody
+NormalClassDeclaration -> class TypeIdentifier TypeParameters ClassExtends ClassBody
+NormalClassDeclaration -> _ClassModifier_Repeat class TypeIdentifier TypeParameters ClassExtends ClassBody
+
+NormalClassDeclaration -> class TypeIdentifier ClassImplements ClassBody
+NormalClassDeclaration -> _ClassModifier_Repeat class TypeIdentifier ClassImplements ClassBody
+NormalClassDeclaration -> class TypeIdentifier TypeParameters ClassImplements ClassBody
+NormalClassDeclaration -> _ClassModifier_Repeat class TypeIdentifier TypeParameters ClassImplements ClassBody
+NormalClassDeclaration -> class TypeIdentifier ClassExtends ClassImplements ClassBody
+NormalClassDeclaration -> _ClassModifier_Repeat class TypeIdentifier ClassExtends ClassImplements ClassBody
+NormalClassDeclaration -> class TypeIdentifier TypeParameters ClassExtends ClassImplements ClassBody
+NormalClassDeclaration -> _ClassModifier_Repeat class TypeIdentifier TypeParameters ClassExtends ClassImplements ClassBody
+
+NormalClassDeclaration -> class TypeIdentifier ClassPermits ClassBody
+NormalClassDeclaration -> _ClassModifier_Repeat class TypeIdentifier ClassPermits ClassBody
+NormalClassDeclaration -> class TypeIdentifier TypeParameters ClassPermits ClassBody
+NormalClassDeclaration -> _ClassModifier_Repeat class TypeIdentifier TypeParameters ClassPermits ClassBody
+NormalClassDeclaration -> class TypeIdentifier ClassExtends ClassPermits ClassBody
+NormalClassDeclaration -> _ClassModifier_Repeat class TypeIdentifier ClassExtends ClassPermits ClassBody
+NormalClassDeclaration -> class TypeIdentifier TypeParameters ClassExtends ClassPermits ClassBody
+NormalClassDeclaration -> _ClassModifier_Repeat class TypeIdentifier TypeParameters ClassExtends ClassPermits ClassBody
+NormalClassDeclaration -> class TypeIdentifier ClassImplements ClassPermits ClassBody
+NormalClassDeclaration -> _ClassModifier_Repeat class TypeIdentifier ClassImplements ClassPermits ClassBody
+NormalClassDeclaration -> class TypeIdentifier TypeParameters ClassImplements ClassPermits ClassBody
+NormalClassDeclaration -> _ClassModifier_Repeat class TypeIdentifier TypeParameters ClassImplements ClassPermits ClassBody
+NormalClassDeclaration -> class TypeIdentifier ClassExtends ClassImplements ClassPermits ClassBody
+NormalClassDeclaration -> _ClassModifier_Repeat class TypeIdentifier ClassExtends ClassImplements ClassPermits ClassBody
+NormalClassDeclaration -> class TypeIdentifier TypeParameters ClassExtends ClassImplements ClassPermits ClassBody
+NormalClassDeclaration -> _ClassModifier_Repeat class TypeIdentifier TypeParameters ClassExtends ClassImplements ClassPermits ClassBody
+
+_ClassModifier_Repeat -> ClassModifier
+_ClassModifier_Repeat -> _ClassModifier_Repeat ClassModifier
+
+ClassModifier -> Annotation
+ClassModifier -> public
+ClassModifier -> protected
+ClassModifier -> private
+ClassModifier -> abstract
+ClassModifier -> static
+ClassModifier -> final
+ClassModifier -> sealed
+ClassModifier -> non-sealed
+ClassModifier -> strictfp
+
+
+TypeParameters -> < TypeParameterList >
+
+TypeParameterList -> TypeParameter
+TypeParameterList -> TypeParameter _CommaTypeParameter_Repeat
+
+_CommaTypeParameter_Repeat -> , TypeParameter
+_CommaTypeParameter_Repeat -> _CommaTypeParameter_Repeat , TypeParameter
+
+ClassExtends -> extends ClassType
+
+ClassImplements -> implements InterfaceTypeList
+
+
+InterfaceTypeList -> InterfaceType
+InterfaceTypeList -> InterfaceType _CommaInterfaceType_Repeat
+
+ClassPermits -> permits TypeName
+ClassPermits -> permits TypeName _CommaTypeName_Repeat
+
+ClassBody -> { }
+ClassBody -> { _ClassBodyDeclaration_Repeat }
+
+_ClassBodyDeclaration_Repeat -> ClassBodyDeclaration
+_ClassBodyDeclaration_Repeat -> _ClassBodyDeclaration_Repeat ClassBodyDeclaration
+
+ClassBodyDeclaration -> ClassMemberDeclaration
+ClassBodyDeclaration -> InstanceInitializer
+ClassBodyDeclaration -> StaticInitializer
+ClassBodyDeclaration -> ConstructorDeclaration
+
+ClassMemberDeclaration -> FieldDeclaration
+ClassMemberDeclaration -> MethodDeclaration
+ClassMemberDeclaration -> ClassDeclaration
+ClassMemberDeclaration -> InterfaceDeclaration
+ClassMemberDeclaration -> ;
+
+FieldDeclaration -> UnannType VariableDeclaratorList ;
+FieldDeclaration -> _FieldModifier_Repeat UnannType VariableDeclaratorList ;
+
+_FieldModifier_Repeat -> FieldModifier
+_FieldModifier_Repeat -> _FieldModifier_Repeat FieldModifier
+
+
+FieldModifier -> Annotation
+FieldModifier -> public
+FieldModifier -> protected
+FieldModifier -> private
+FieldModifier -> static
+FieldModifier -> final
+FieldModifier -> transient
+FieldModifier -> volatile
+
+VariableDeclaratorList -> VariableDeclarator
+VariableDeclaratorList -> VariableDeclarator _CommaVariableDeclarator_Repeat
+
+_CommaVariableDeclarator_Repeat -> , VariableDeclarator
+_CommaVariableDeclarator_Repeat -> _CommaVariableDeclarator_Repeat VariableDeclarator
+
+VariableDeclarator -> VariableDeclaratorId
+VariableDeclarator -> VariableDeclaratorId = VariableInitializer
+
+
+
+
+VariableDeclaratorId -> Identifier
+VariableDeclaratorId -> Identifier Dims
+
+
+VariableInitializer -> Expression
+VariableInitializer -> ArrayInitializer
+
+
+UnannType -> UnannPrimitiveType
+UnannType -> UnannReferenceType
+
+
+
+UnannPrimitiveType -> NumericType
+UnannPrimitiveType -> boolean
+
+
+
+UnannReferenceType -> UnannClassOrInterfaceType
+UnannReferenceType -> UnannTypeVariable
+UnannReferenceType -> UnannArrayType
+
+
+UnannClassOrInterfaceType -> UnannClassType
+UnannClassOrInterfaceType -> UnannInterfaceType
+
+
+
+UnannClassType -> TypeIdentifier
+UnannClassType -> TypeIdentifier TypeArguments
+UnannClassType -> PackageName . TypeIdentifier
+UnannClassType -> PackageName . _Annotation_Repeat TypeIdentifier
+UnannClassType -> PackageName . TypeIdentifier TypeArguments
+UnannClassType -> PackageName . _Annotation_Repeat TypeIdentifier TypeArguments
+UnannClassType -> UnannClassOrInterfaceType . TypeIdentifier
+UnannClassType -> UnannClassOrInterfaceType . _Annotation_Repeat TypeIdentifier
+UnannClassType -> UnannClassOrInterfaceType . TypeIdentifier TypeArguments
+UnannClassType -> UnannClassOrInterfaceType . _Annotation_Repeat TypeIdentifier TypeArguments
+UnannInterfaceType -> UnannClassType
+UnannTypeVariable -> TypeIdentifier
+
+UnannArrayType -> UnannPrimitiveType Dims
+UnannArrayType -> UnannClassOrInterfaceType Dims
+UnannArrayType -> UnannTypeVariable Dims
+
+MethodDeclaration -> MethodHeader MethodBody
+MethodDeclaration -> _MethodModifier_Repeat MethodHeader MethodBody
+
+_MethodModifier_Repeat -> MethodModifier
+_MethodModifier_Repeat -> _MethodModifier_Repeat MethodModifier
+
+
+MethodModifier -> Annotation
+MethodModifier -> public
+MethodModifier -> protected
+MethodModifier -> private
+MethodModifier -> abstract
+MethodModifier -> static
+MethodModifier -> final
+MethodModifier -> synchronized
+MethodModifier -> native
+MethodModifier -> strictfp
+
+
+MethodHeader -> Result MethodDeclarator
+MethodHeader -> Result MethodDeclarator Throws
+MethodHeader -> TypeParameters Result MethodDeclarator
+MethodHeader -> TypeParameters _Annotation_Repeat Result MethodDeclarator
+MethodHeader -> TypeParameters Result MethodDeclarator Throws
+MethodHeader -> TypeParameters _Annotation_Repeat Result MethodDeclarator Throws
+
+
+Result -> UnannType
+Result -> void
+
+
+MethodDeclarator -> Identifier ( )
+MethodDeclarator -> Identifier ( ReceiverParameter , )
+MethodDeclarator -> Identifier ( FormalParameterList )
+MethodDeclarator -> Identifier ( ReceiverParameter , FormalParameterList )
+MethodDeclarator -> Identifier ( ) Dims
+MethodDeclarator -> Identifier ( ReceiverParameter , ) Dims
+MethodDeclarator -> Identifier ( FormalParameterList ) Dims
+MethodDeclarator -> Identifier ( ReceiverParameter , FormalParameterList ) Dims
+
+
+ReceiverParameter -> UnannType this
+ReceiverParameter -> _Annotation_Repeat UnannType this
+ReceiverParameter -> UnannType Identifier . this
+ReceiverParameter -> _Annotation_Repeat UnannType Identifier . this
+
+
+FormalParameterList -> FormalParameter
+FormalParameterList -> FormalParameter _CommaFormalParameter_Repeat
+
+_CommaFormalParameter_Repeat -> , FormalParameter
+_CommaFormalParameter_Repeat -> _CommaFormalParameter_Repeat , FormalParameter
+
+
+FormalParameter -> UnannType VariableDeclaratorId
+FormalParameter -> _VariableModifier_Repeat UnannType VariableDeclaratorId
+FormalParameter -> VariableArityParameter
+
+_VariableModifier_Repeat -> VariableModifier
+_VariableModifier_Repeat -> _VariableModifier_Repeat VariableModifier
+
+VariableArityParameter -> UnannType ... Identifier
+VariableArityParameter -> _VariableModifier_Repeat UnannType ... Identifier
+VariableArityParameter -> UnannType _Annotation_Repeat ... Identifier
+VariableArityParameter -> _VariableModifier_Repeat UnannType _Annotation_Repeat ... Identifier
+
+
+VariableModifier -> Annotation
+VariableModifier -> final
+
+
+Throws -> throws ExceptionTypeList
+
+
+ExceptionTypeList -> ExceptionType
+ExceptionTypeList -> ExceptionType _CommaExceptionType_Repeat
+
+_CommaExceptionType_Repeat -> ExceptionType
+_CommaExceptionType_Repeat -> _CommaExceptionType_Repeat ExceptionType
+
+
+ExceptionType -> ClassType
+ExceptionType -> TypeVariable
+
+MethodBody -> Block
+MethodBody -> ;
+
+InstanceInitializer -> Block
+
+StaticInitializer -> static Block
+
+ConstructorDeclaration -> ConstructorDeclarator ConstructorBody
+ConstructorDeclaration -> _ConstructorModifier_Repeat ConstructorDeclarator ConstructorBody
+ConstructorDeclaration -> ConstructorDeclarator Throws ConstructorBody
+ConstructorDeclaration -> _ConstructorModifier_Repeat ConstructorDeclarator Throws ConstructorBody
+
+_ConstructorModifier_Repeat -> ConstructorModifier
+_ConstructorModifier_Repeat -> _ConstructorModifier_Repeat ConstructorModifier
+
+ConstructorModifier -> Annotation
+ConstructorModifier -> public
+ConstructorModifier -> protected
+ConstructorModifier -> private
+
+ConstructorDeclarator -> SimpleTypeName ( )
+ConstructorDeclarator -> TypeParameters SimpleTypeName ( )
+ConstructorDeclarator -> SimpleTypeName ( ReceiverParameter , )
+ConstructorDeclarator -> TypeParameters SimpleTypeName ( ReceiverParameter , )
+ConstructorDeclarator -> SimpleTypeName ( FormalParameterList )
+ConstructorDeclarator -> TypeParameters SimpleTypeName ( FormalParameterList )
+ConstructorDeclarator -> SimpleTypeName ( ReceiverParameter , FormalParameterList )
+ConstructorDeclarator -> TypeParameters SimpleTypeName ( ReceiverParameter , FormalParameterList )
+
+
+SimpleTypeName -> TypeIdentifier
+
+ConstructorBody -> { }
+ConstructorBody -> { ExplicitConstructorInvocation }
+ConstructorBody -> { BlockStatements }
+ConstructorBody -> { ExplicitConstructorInvocation BlockStatements }
+
+ExplicitConstructorInvocation -> this ( ) ;
+ExplicitConstructorInvocation -> TypeArguments this ( ) ;
+ExplicitConstructorInvocation -> this ( ArgumentList ) ;
+ExplicitConstructorInvocation -> TypeArguments this ( ArgumentList ) ;
+
+
+ExplicitConstructorInvocation -> super ( ) ;
+ExplicitConstructorInvocation -> TypeArguments super ( ) ;
+ExplicitConstructorInvocation -> super ( ArgumentList ) ;
+ExplicitConstructorInvocation -> TypeArguments super ( ArgumentList ) ;
+
+ExplicitConstructorInvocation -> ExpressionName . super ( ) ;
+ExplicitConstructorInvocation -> ExpressionName . TypeArguments super ( ) ;
+ExplicitConstructorInvocation -> ExpressionName . super ( ArgumentList ) ;
+ExplicitConstructorInvocation -> ExpressionName . TypeArguments super ( ArgumentList ) ;
+
+ExplicitConstructorInvocation -> Primary . super ( ) ;
+ExplicitConstructorInvocation -> Primary . TypeArguments super ( ) ;
+ExplicitConstructorInvocation -> Primary . super ( ArgumentList ) ;
+ExplicitConstructorInvocation -> Primary . TypeArguments super ( ArgumentList ) ;
+
+EnumDeclaration -> enum TypeIdentifier EnumBody
+EnumDeclaration -> _ClassModifier_Repeat enum TypeIdentifier EnumBody
+EnumDeclaration -> enum TypeIdentifier ClassImplements EnumBody
+EnumDeclaration -> _ClassModifier_Repeat enum TypeIdentifier ClassImplements EnumBody
+
+EnumBody -> _EnumConstantListCommaEnumBodyDeclarations_Repeat
+
+_EnumConstantListCommaEnumBodyDeclarations_Repeat -> 
+_EnumConstantListCommaEnumBodyDeclarations_Repeat -> EnumConstantList
+_EnumConstantListCommaEnumBodyDeclarations_Repeat -> ,
+_EnumConstantListCommaEnumBodyDeclarations_Repeat -> EnumConstantList ,
+_EnumConstantListCommaEnumBodyDeclarations_Repeat -> EnumBodyDeclarations
+_EnumConstantListCommaEnumBodyDeclarations_Repeat -> EnumConstantList EnumBodyDeclarations
+_EnumConstantListCommaEnumBodyDeclarations_Repeat -> , EnumBodyDeclarations
+_EnumConstantListCommaEnumBodyDeclarations_Repeat -> EnumConstantList , EnumBodyDeclarations
+
+
+EnumConstantList -> EnumConstant
+EnumConstantList -> EnumConstant _CommaEnumConstant_Repeat
+
+_CommaEnumConstant_Repeat -> , EnumConstant
+_CommaEnumConstant_Repeat -> _CommaEnumConstant_Repeat , EnumConstant
+
+
+EnumConstant -> Identifier
+EnumConstant -> _EnumConstantModifier_Repeat Identifier
+EnumConstant -> Identifier ( )
+EnumConstant -> _EnumConstantModifier_Repeat Identifier ( )
+EnumConstant -> Identifier ClassBody
+EnumConstant -> _EnumConstantModifier_Repeat Identifier ClassBody
+EnumConstant -> Identifier ( ) ClassBody
+EnumConstant -> _EnumConstantModifier_Repeat Identifier ( ) ClassBody
+
+EnumConstant -> Identifier ( ArgumentList )
+EnumConstant -> _EnumConstantModifier_Repeat Identifier ( ArgumentList )
+EnumConstant -> Identifier ( ArgumentList ) ClassBody
+EnumConstant -> _EnumConstantModifier_Repeat Identifier ( ArgumentList ) ClassBody
+
+_EnumConstantModifier_Repeat -> EnumConstantModifier
+_EnumConstantModifier_Repeat -> _EnumConstantModifier_Repeat EnumConstantModifier
+
+EnumConstantModifier -> Annotation
+
+EnumBodyDeclarations -> ;
+EnumBodyDeclarations -> ; _ClassBodyDeclaration_Repeat
+
+RecordDeclaration -> record TypeIdentifier RecordHeader RecordBody
+RecordDeclaration -> _ClassModifier_Repeat record TypeIdentifier RecordHeader RecordBody
+RecordDeclaration -> record TypeIdentifier TypeParameters RecordHeader RecordBody
+RecordDeclaration -> _ClassModifier_Repeat record TypeIdentifier TypeParameters RecordHeader RecordBody
+RecordDeclaration -> record TypeIdentifier RecordHeader ClassImplements RecordBody
+RecordDeclaration -> _ClassModifier_Repeat record TypeIdentifier RecordHeader ClassImplements RecordBody
+RecordDeclaration -> record TypeIdentifier TypeParameters RecordHeader ClassImplements RecordBody
+RecordDeclaration -> _ClassModifier_Repeat record TypeIdentifier TypeParameters RecordHeader ClassImplements RecordBody
+
+RecordHeader -> ( )
+RecordHeader -> ( RecordComponentList )
+
+RecordComponentList -> RecordComponent
+RecordComponentList -> RecordComponent _CommaRecordComponent_Repeat
+
+_CommaRecordComponent_Repeat -> RecordComponent
+_CommaRecordComponent_Repeat -> _CommaRecordComponent_Repeat RecordComponent
+
+
+RecordComponent -> UnannType Identifier
+RecordComponent -> _RecordComponentModifier_Repeat UnannType Identifier
+RecordComponent -> VariableArityRecordComponent
+
+_RecordComponentModifier_Repeat -> RecordComponentModifier
+_RecordComponentModifier_Repeat -> _RecordComponentModifier_Repeat RecordComponentModifier
+
+
+
+
+VariableArityRecordComponent -> UnannType ... Identifier
+VariableArityRecordComponent -> _RecordComponentModifier_Repeat UnannType ... Identifier
+VariableArityRecordComponent -> UnannType _Annotation_Repeat ... Identifier
+VariableArityRecordComponent -> _RecordComponentModifier_Repeat UnannType _Annotation_Repeat ... Identifier
+
+
+RecordComponentModifier -> Annotation
+
+RecordBody -> { }
+RecordBody -> { _RecordBodyDeclaration_Repeat }
+
+_RecordBodyDeclaration_Repeat -> RecordBodyDeclaration
+_RecordBodyDeclaration_Repeat -> _RecordBodyDeclaration_Repeat RecordBodyDeclaration
+
+RecordBodyDeclaration -> ClassBodyDeclaration
+RecordBodyDeclaration -> CompactConstructorDeclaration
+
+CompactConstructorDeclaration -> SimpleTypeName ConstructorBody
+CompactConstructorDeclaration -> ConstructorModifier_Repeat SimpleTypeName ConstructorBody
+
+InterfaceDeclaration -> NormalInterfaceDeclaration
+InterfaceDeclaration -> AnnotationInterfaceDeclaration
+
+NormalInterfaceDeclaration -> interface TypeIdentifier InterfaceBody
+NormalInterfaceDeclaration -> _InterfaceModifier_Repeat interface TypeIdentifier InterfaceBody
+NormalInterfaceDeclaration -> interface TypeIdentifier TypeParameters InterfaceBody
+NormalInterfaceDeclaration -> _InterfaceModifier_Repeat interface TypeIdentifier TypeParameters InterfaceBody
+
+NormalInterfaceDeclaration -> interface TypeIdentifier InterfaceExtends InterfaceBody
+NormalInterfaceDeclaration -> _InterfaceModifier_Repeat interface TypeIdentifier InterfaceExtends InterfaceExtends InterfaceBody
+NormalInterfaceDeclaration -> interface TypeIdentifier TypeParameters InterfaceExtends InterfaceBody
+NormalInterfaceDeclaration -> _InterfaceModifier_Repeat interface TypeIdentifier TypeParameters InterfaceExtends InterfaceBody
+
+NormalInterfaceDeclaration -> interface TypeIdentifier InterfacePermits InterfaceBody
+NormalInterfaceDeclaration -> _InterfaceModifier_Repeat interface TypeIdentifier InterfacePermits InterfaceBody
+NormalInterfaceDeclaration -> interface TypeIdentifier TypeParameters InterfacePermits InterfaceBody
+NormalInterfaceDeclaration -> _InterfaceModifier_Repeat interface TypeIdentifier TypeParameters InterfacePermits InterfaceBody
+NormalInterfaceDeclaration -> interface TypeIdentifier InterfaceExtends InterfacePermits InterfaceBody
+NormalInterfaceDeclaration -> _InterfaceModifier_Repeat interface TypeIdentifier InterfaceExtends InterfaceExtends InterfacePermits InterfaceBody
+NormalInterfaceDeclaration -> interface TypeIdentifier TypeParameters InterfaceExtends InterfacePermits InterfaceBody
+NormalInterfaceDeclaration -> _InterfaceModifier_Repeat interface TypeIdentifier TypeParameters InterfaceExtends InterfacePermits InterfaceBody
+
+_InterfaceModifier_Repeat -> InterfaceModifier
+_InterfaceModifier_Repeat -> _InterfaceModifier_Repeat InterfaceModifier
+
+InterfaceModifier -> Annotation
+InterfaceModifier -> public
+InterfaceModifier -> protected
+InterfaceModifier -> private
+InterfaceModifier -> abstract
+InterfaceModifier -> static
+InterfaceModifier -> sealed
+InterfaceModifier -> non-sealed
+InterfaceModifier -> strictfp
+
+InterfaceExtends -> extends InterfaceTypeList
+
+InterfacePermits -> permits TypeName
+InterfacePermits -> permits TypeName _CommaTypeName_Repeat
+
+InterfaceBody -> { }
+InterfaceBody -> { _InterfaceMemberDeclaration_Repeat }
+
+_InterfaceMemberDeclaration_Repeat -> InterfaceMemberDeclaration
+_InterfaceMemberDeclaration_Repeat -> _InterfaceMemberDeclaration_Repeat InterfaceMemberDeclaration
+
+InterfaceMemberDeclaration -> ConstantDeclaration
+InterfaceMemberDeclaration -> InterfaceMethodDeclaration
+InterfaceMemberDeclaration -> ClassDeclaration
+InterfaceMemberDeclaration -> InterfaceDeclaration
+InterfaceMemberDeclaration -> ;
+
+ConstantDeclaration -> UnannType VariableDeclaratorList ;
+ConstantDeclaration -> _ConstantModifier_Repeat UnannType VariableDeclaratorList ;
+
+_ConstantModifier_Repeat -> ConstantModifier
+_ConstantModifier_Repeat -> _ConstantModifier_Repeat ConstantModifier
+
+ConstantModifier -> Annotation
+ConstantModifier -> public
+ConstantModifier -> static
+ConstantModifier -> final
+
+InterfaceMethodDeclaration -> MethodHeader MethodBody
+InterfaceMethodDeclaration -> _InterfaceMethodModifier_Repeat MethodHeader MethodBody
+
+_InterfaceMethodModifier_Repeat -> InterfaceMethodModifier
+_InterfaceMethodModifier_Repeat -> _InterfaceMethodModifier_Repeat InterfaceMethodModifier
+
+InterfaceMethodModifier -> Annotation
+InterfaceMethodModifier -> public
+InterfaceMethodModifier -> private
+InterfaceMethodModifier -> abstract
+InterfaceMethodModifier -> default
+InterfaceMethodModifier -> static
+InterfaceMethodModifier -> strictfp
+
+AnnotationInterfaceDeclaration -> @ interface TypeIdentifier AnnotationInterfaceBody
+AnnotationInterfaceDeclaration -> _InterfaceModifier_Repeat @ interface TypeIdentifier AnnotationInterfaceBody
+
+AnnotationInterfaceBody -> { }
+AnnotationInterfaceBody -> { _AnnotationInterfaceMemberDeclaration_Repeat }
+
+_AnnotationInterfaceMemberDeclaration_Repeat -> AnnotationInterfaceMemberDeclaration
+_AnnotationInterfaceMemberDeclaration_Repeat -> _AnnotationInterfaceMemberDeclaration_Repeat AnnotationInterfaceMemberDeclaration
+
+
+AnnotationInterfaceMemberDeclaration -> AnnotationInterfaceElementDeclaration
+AnnotationInterfaceMemberDeclaration -> ConstantDeclaration
+AnnotationInterfaceMemberDeclaration -> ClassDeclaration
+AnnotationInterfaceMemberDeclaration -> InterfaceDeclaration
+AnnotationInterfaceMemberDeclaration -> ;
+
+AnnotationInterfaceElementDeclaration -> UnannType Identifier ( ) ;
+AnnotationInterfaceElementDeclaration -> _AnnotationInterfaceElementModifier_Repeat UnannType Identifier ( ) ;
+
+AnnotationInterfaceElementDeclaration -> UnannType Identifier ( ) Dims ;
+AnnotationInterfaceElementDeclaration -> _AnnotationInterfaceElementModifier_Repeat UnannType Identifier ( ) Dims ;
+
+AnnotationInterfaceElementDeclaration -> UnannType Identifier ( ) DefaultValue ;
+AnnotationInterfaceElementDeclaration -> _AnnotationInterfaceElementModifier_Repeat UnannType Identifier ( ) DefaultValue ;
+AnnotationInterfaceElementDeclaration -> UnannType Identifier ( ) Dims DefaultValue ;
+AnnotationInterfaceElementDeclaration -> _AnnotationInterfaceElementModifier_Repeat UnannType Identifier ( ) Dims DefaultValue ;
+
+_AnnotationInterfaceElementModifier_Repeat -> AnnotationInterfaceElementModifier
+_AnnotationInterfaceElementModifier_Repeat -> _AnnotationInterfaceElementModifier_Repeat AnnotationInterfaceElementModifier
+
+AnnotationInterfaceElementModifier -> Annotation
+AnnotationInterfaceElementModifier -> public
+AnnotationInterfaceElementModifier -> abstract
+
+
+DefaultValue -> default ElementValue
+
+Annotation -> NormalAnnotation
+Annotation -> MarkerAnnotation
+Annotation -> SingleElementAnnotation
+
+NormalAnnotation -> @ TypeName ( )
+NormalAnnotation -> @ TypeName ( ElementValuePairList )
+
+ElementValuePairList -> ElementValuePair
+ElementValuePairList -> ElementValuePair _CommaElementValuePair_Repeat
+
+_CommaElementValuePair_Repeat -> , ElementValuePair
+_CommaElementValuePair_Repeat -> _CommaElementValuePair_Repeat , ElementValuePair
+
+ElementValuePair -> Identifier = ElementValue
+
+ElementValue -> ConditionalExpression
+ElementValue -> ElementValueArrayInitializer
+ElementValue -> Annotation
+
+ElementValueArrayInitializer -> { }
+ElementValueArrayInitializer -> { ElementValueList }
+ElementValueArrayInitializer -> { , }
+ElementValueArrayInitializer -> { ElementValueList , }
+
+ElementValueList -> ElementValue
+ElementValueList -> ElementValue _CommaElementValue_Repeat
+
+_CommaElementValue_Repeat -> ElementValue
+_CommaElementValue_Repeat -> _CommaElementValue_Repeat , ElementValue
+
+MarkerAnnotation -> @ TypeName
+
+SingleElementAnnotation -> @ TypeName ( ElementValue )
+
+ArrayInitializer -> { }
+ArrayInitializer -> { VariableInitializerList }
+ArrayInitializer -> { , }
+ArrayInitializer -> { VariableInitializerList , }
+
+VariableInitializerList -> VariableInitializer
+VariableInitializerList -> VariableInitializer _CommaVariableInitializer_Repeat
+
+_CommaVariableInitializer_Repeat -> , VariableInitializer
+_CommaVariableInitializer_Repeat -> _CommaVariableInitializer_Repeat , VariableInitializer
+
+Block -> { }
+Block -> { BlockStatements }
+
+BlockStatements -> BlockStatement _BlockStatement_Repeat
+
+_BlockStatement_Repeat -> BlockStatement
+_BlockStatement_Repeat -> _BlockStatement_Repeat BlockStatement
+
+BlockStatement -> LocalClassOrInterfaceDeclaration
+BlockStatement -> LocalVariableDeclarationStatement
+BlockStatement -> Statement
+
+LocalClassOrInterfaceDeclaration -> ClassDeclaration
+LocalClassOrInterfaceDeclaration -> NormalInterfaceDeclaration
+
+LocalVariableDeclarationStatement -> LocalVariableDeclaration ;
+
+LocalVariableDeclaration -> LocalVariableType VariableDeclaratorList
+LocalVariableDeclaration -> _VariableModifier_Repeat LocalVariableType VariableDeclaratorList
+
+LocalVariableType -> LocalVariableType
+LocalVariableType -> var
+
+Statement -> StatementWithoutTrailingSubstatement
+Statement -> LabeledStatement
+Statement -> IfThenStatement
+Statement -> IfThenElseStatement
+Statement -> WhileStatement
+Statement -> ForStatement
+
+StatementNoShortIf -> StatementWithoutTrailingSubstatement
+StatementNoShortIf -> LabeledStatementNoShortIf
+StatementNoShortIf -> IfThenElseStatementNoShortIf
+StatementNoShortIf -> WhileStatementNoShortIf
+StatementNoShortIf -> ForStatementNoShortIf
+
+StatementWithoutTrailingSubstatement -> Block
+StatementWithoutTrailingSubstatement -> EmptyStatement
+StatementWithoutTrailingSubstatement -> ExpressionStatement
+StatementWithoutTrailingSubstatement -> AssertStatement
+StatementWithoutTrailingSubstatement -> SwitchStatement
+StatementWithoutTrailingSubstatement -> DoStatement
+StatementWithoutTrailingSubstatement -> BreakStatement
+StatementWithoutTrailingSubstatement -> ContinueStatement
+StatementWithoutTrailingSubstatement -> ReturnStatement
+StatementWithoutTrailingSubstatement -> SynchronizedStatement
+StatementWithoutTrailingSubstatement -> ThrowStatement
+StatementWithoutTrailingSubstatement -> TryStatement
+StatementWithoutTrailingSubstatement -> YieldStatement
+
+EmptyStatement -> ;
+
+LabeledStatement -> Identifier : Statement
+
+LabeledStatementNoShortIf -> Identifier : StatementNoShortIf
+
+ExpressionStatement -> StatementExpression ;
+
+StatementExpression -> Assignment
+StatementExpression -> PreIncrementExpression
+StatementExpression -> PreDecrementExpression
+StatementExpression -> PostIncrementExpression
+StatementExpression -> PostDecrementExpression
+StatementExpression -> MethodInvocation
+StatementExpression -> ClassInstanceCreationExpression
+
+IfThenStatement -> if ( Expression ) Statement
+
+IfThenElseStatement -> if ( Expression ) StatementNoShortIf else Statement
+
+IfThenElseStatementNoShortIf -> if ( Expression ) StatementNoShortIf else StatementNoShortIf
+
+AssertStatement -> assert Expression ;
+AssertStatement -> assert Expression : Expression ;
+
+SwitchStatement -> switch ( Expression ) SwitchBlock
+
+SwitchBlock -> { SwitchRule }
+SwitchBlock -> { SwitchRule _SwitchRule_Repeat }
+SwitchBlock -> { }
+SwitchBlock -> { _SwitchBlockStatementGroup_Repeat }
+SwitchBlock -> { _SwitchLabelColon_Repeat }
+SwitchBlock -> { _SwitchBlockStatementGroup_Repeat _SwitchLabelColon_Repeat }
+
+_SwitchRule_Repeat -> SwitchRule
+_SwitchRule_Repeat -> _SwitchRule_Repeat SwitchRule
+
+_SwitchBlockStatementGroup_Repeat -> SwitchBlockStatementGroup
+_SwitchBlockStatementGroup_Repeat -> _SwitchBlockStatementGroup_Repeat SwitchBlockStatementGroup
+
+_SwitchLabelColon_Repeat -> SwitchLabel :
+_SwitchLabelColon_Repeat -> _SwitchLabelColon_Repeat SwitchLabel :
+
+SwitchRule -> SwitchLabel -> Expression ;
+SwitchRule -> SwitchLabel -> Block
+SwitchRule -> SwitchLabel -> ThrowStatement
+
+SwitchBlockStatementGroup -> SwitchLabel : BlockStatements
+SwitchBlockStatementGroup -> SwitchLabel : _SwitchLabelColon_Repeat BlockStatements
+
+SwitchLabel -> case CaseConstant
+SwitchLabel -> case CaseConstant _CommaCaseConstant_Repeat
+SwitchLabel -> case null
+SwitchLabel -> case null , default
+SwitchLabel -> case CasePattern
+SwitchLabel -> case CasePattern Guard
+SwitchLabel -> default
+
+_CommaCaseConstant_Repeat -> , CaseConstant
+_CommaCaseConstant_Repeat -> _CommaCaseConstant_Repeat CaseConstant
+
+
+CaseConstant -> ConditionalExpression
+
+CasePattern -> Pattern
+
+Guard -> when Expression
+
+WhileStatement -> while ( Expression ) Statement
+
+WhileStatementNoShortIf -> while ( Expression ) StatementNoShortIf
+
+DoStatement -> do Statement while ( Expression ) ;
+
+ForStatement -> EnhancedForStatement
+ForStatement -> BasicForStatement
+
+ForStatementNoShortIf -> BasicForStatementNoShortIf
+ForStatementNoShortIf -> EnhancedForStatementNoShortIf
+
+
+BasicForStatement -> for ( ; ; ) Statement
+BasicForStatement -> for ( ForInit ; ; ) Statement
+
+BasicForStatement -> for ( ; Expression ; ) Statement
+BasicForStatement -> for ( ForInit ; Expression ; ) Statement
+
+BasicForStatement -> for ( ; ; ForUpdate ) Statement
+BasicForStatement -> for ( ForInit ; ; ForUpdate ) Statement
+BasicForStatement -> for ( ; Expression ; ForUpdate ) Statement
+BasicForStatement -> for ( ForInit ; Expression ; ForUpdate ) Statement
+
+BasicForStatementNoShortIf -> for ( ; ; ) StatementNoShortIf
+BasicForStatementNoShortIf -> for ( ForInit ; ; ) StatementNoShortIf
+
+BasicForStatementNoShortIf -> for ( ; Expression ; ) StatementNoShortIf
+BasicForStatementNoShortIf -> for ( ForInit ; Expression ; ) StatementNoShortIf
+
+BasicForStatementNoShortIf -> for ( ; ; ForUpdate ) StatementNoShortIf
+BasicForStatementNoShortIf -> for ( ForInit ; ; ForUpdate ) StatementNoShortIf
+BasicForStatementNoShortIf -> for ( ; Expression ; ForUpdate ) StatementNoShortIf
+BasicForStatementNoShortIf -> for ( ForInit ; Expression ; ForUpdate ) StatementNoShortIf
+
+ForInit -> StatementExpressionList
+ForInit -> LocalVariableDeclaration
+
+ForUpdate -> StatementExpressionList
+
+StatementExpressionList -> StatementExpression
+StatementExpressionList -> StatementExpression _CommaStatementExpression_Repeat
+
+_CommaStatementExpression_Repeat -> , StatementExpression
+_CommaStatementExpression_Repeat -> _CommaStatementExpression_Repeat , StatementExpression
+
+EnhancedForStatement -> for ( LocalVariableDeclaration : Expression ) Statement
+
+EnhancedForStatementNoShortIf -> for ( LocalVariableDeclaration : Expression ) StatementNoShortIf
+
+BreakStatement -> break ;
+BreakStatement -> break Identifier ;
+
+YieldStatement -> yield Expression ;
+
+ContinueStatement -> continue ;
+ContinueStatement -> continue Identifier ;
+
+ReturnStatement -> return ;
+ReturnStatement -> return Expression ;
+
+ThrowStatement -> throw Expression ;
+
+SynchronizedStatement -> synchronized ( Expression ) Block
+
+TryStatement -> try Block Catches
+TryStatement -> try Block Finally
+TryStatement -> try Block Catches Finally
+TryStatement -> TryWithResourcesStatement
+
+Catches -> CatchClause
+Catches -> CatchClause _CatchClause_Repeat
+
+_CatchClause_Repeat -> CatchClause
+_CatchClause_Repeat -> _CatchClause_Repeat CatchClause
+
+CatchClause -> catch ( CatchFormalParameter ) Block
+
+CatchFormalParameter -> CatchType VariableDeclaratorId
+CatchFormalParameter -> _VariableModifier_Repeat CatchType VariableDeclaratorId
+
+CatchType -> UnannClassType
+CatchType -> UnannClassType _OrClassType_Repeat
+
+_OrClassType_Repeat -> | ClassType
+_OrClassType_Repeat -> _OrClassType_Repeat | ClassType
+
+Finally -> finally Block
+
+TryWithResourcesStatement -> try ResourceSpecification Block
+TryWithResourcesStatement -> try ResourceSpecification Block Catches
+TryWithResourcesStatement -> try ResourceSpecification Block Finally
+TryWithResourcesStatement -> try ResourceSpecification Block Catches Finally
+
+ResourceSpecification -> ( ResourceList )
+ResourceSpecification -> ( ResourceList ; )
+
+ResourceList -> Resource
+ResourceList -> Resource _SemicolonResource_Repeat
+
+_SemicolonResource_Repeat -> ; Resource
+_SemicolonResource_Repeat -> _SemicolonResource_Repeat ; Resource
+
+Resource -> LocalVariableDeclaration
+Resource -> VariableAccess
+
+Pattern -> TypePattern
+Pattern -> RecordPattern
+
+TypePattern -> LocalVariableDeclaration
+
+RecordPattern -> ReferenceType ( )
+RecordPattern -> ReferenceType ( PatternList )
+
+PatternList -> Pattern
+PatternList -> Pattern _CommaPattern_Repeat
+
+_CommaPattern_Repeat -> , Pattern
+_CommaPattern_Repeat -> _CommaPattern_Repeat , Pattern
+
+Primary -> PrimaryNoNewArray
+Primary -> ArrayCreationExpression
+
+PrimaryNoNewArray -> Literal
+PrimaryNoNewArray -> ClassLiteral
+PrimaryNoNewArray -> this
+PrimaryNoNewArray -> TypeName . this
+PrimaryNoNewArray -> ( Expression )
+PrimaryNoNewArray -> ClassInstanceCreationExpression
+PrimaryNoNewArray -> FieldAccess
+PrimaryNoNewArray -> ArrayAccess
+PrimaryNoNewArray -> MethodInvocation
+PrimaryNoNewArray -> MethodReference
+
+ClassLiteral -> TypeName . class
+ClassLiteral -> TypeName _EmptySquareBrackets_Repeat . class
+ClassLiteral -> NumericType . class
+ClassLiteral -> NumericType _EmptySquareBrackets_Repeat . class
+ClassLiteral -> boolean . class
+ClassLiteral -> boolean _EmptySquareBrackets_Repeat . class
+ClassLiteral -> void . class
+
+_EmptySquareBrackets_Repeat -> [ ]
+_EmptySquareBrackets_Repeat -> _EmptySquareBrackets_Repeat [ ]
+
+
+ClassInstanceCreationExpression -> UnqualifiedClassInstanceCreationExpression
+ClassInstanceCreationExpression -> ExpressionName . UnqualifiedClassInstanceCreationExpression
+ClassInstanceCreationExpression -> Primary . UnqualifiedClassInstanceCreationExpression
+
+UnqualifiedClassInstanceCreationExpression -> new ClassOrInterfaceTypeToInstantiate ( )
+UnqualifiedClassInstanceCreationExpression -> new TypeArguments ClassOrInterfaceTypeToInstantiate ( )
+
+UnqualifiedClassInstanceCreationExpression -> new ClassOrInterfaceTypeToInstantiate ( ArgumentList )
+UnqualifiedClassInstanceCreationExpression -> new TypeArguments ClassOrInterfaceTypeToInstantiate ( ArgumentList )
+
+UnqualifiedClassInstanceCreationExpression -> new ClassOrInterfaceTypeToInstantiate ( ) ClassBody
+UnqualifiedClassInstanceCreationExpression -> new TypeArguments ClassOrInterfaceTypeToInstantiate ( ) ClassBody
+UnqualifiedClassInstanceCreationExpression -> new ClassOrInterfaceTypeToInstantiate ( ArgumentList ) ClassBody
+UnqualifiedClassInstanceCreationExpression -> new TypeArguments ClassOrInterfaceTypeToInstantiate ( ArgumentList ) ClassBody
+
+ClassOrInterfaceTypeToInstantiate -> Identifier
+ClassOrInterfaceTypeToInstantiate -> _Annotation_Repeat Identifier
+
+ClassOrInterfaceTypeToInstantiate -> Identifier _Period_Annotation_RepeatIdentifier_Repeat
+ClassOrInterfaceTypeToInstantiate -> _Annotation_Repeat Identifier _Period_Annotation_RepeatIdentifier_Repeat
+
+ClassOrInterfaceTypeToInstantiate -> Identifier TypeArgumentsOrDiamond
+ClassOrInterfaceTypeToInstantiate -> _Annotation_Repeat Identifier TypeArgumentsOrDiamond
+ClassOrInterfaceTypeToInstantiate -> Identifier _Period_Annotation_RepeatIdentifier_Repeat TypeArgumentsOrDiamond
+ClassOrInterfaceTypeToInstantiate -> _Annotation_Repeat Identifier _Period_Annotation_RepeatIdentifier_Repeat TypeArgumentsOrDiamond
+
+_Period_Annotation_RepeatIdentifier_Repeat -> . Identifier
+_Period_Annotation_RepeatIdentifier_Repeat -> . _Annotation_Repeat Identifier
+_Period_Annotation_RepeatIdentifier_Repeat -> _Period_Annotation_RepeatIdentifier_Repeat . Identifier
+_Period_Annotation_RepeatIdentifier_Repeat -> _Period_Annotation_RepeatIdentifier_Repeat . _Annotation_Repeat Identifier
+
+TypeArgumentsOrDiamond -> TypeArguments
+TypeArgumentsOrDiamond -> <>
+
+ArrayCreationExpression -> ArrayCreationExpressionWithoutInitializer
+ArrayCreationExpression -> ArrayCreationExpressionWithInitializer
+
+
+ArrayCreationExpressionWithoutInitializer -> new PrimitiveType DimExprs
+ArrayCreationExpressionWithoutInitializer -> new PrimitiveType DimExprs Dims
+ArrayCreationExpressionWithoutInitializer -> new ClassOrInterfaceType DimExprs
+ArrayCreationExpressionWithoutInitializer -> new ClassOrInterfaceType DimExprs Dims
+
+ArrayCreationExpressionWithInitializer -> new PrimitiveType Dims ArrayInitializer
+ArrayCreationExpressionWithInitializer -> new ClassOrInterfaceType Dims ArrayInitializer
+
+DimExprs -> DimExpr
+DimExprs -> DimExpr _DimExpr_Repeat
+
+_DimExpr_Repeat -> DimExpr
+_DimExpr_Repeat -> _DimExpr_Repeat DimExpr
+
+DimExpr -> [ Expression ]
+DimExpr -> _Annotation_Repeat [ Expression ]
+
+ArrayAccess -> ExpressionName [ Expression ]
+ArrayAccess -> PrimaryNoNewArray [ Expression ]
+ArrayAccess -> ArrayCreationExpressionWithInitializer [ Expression ]
+
+FieldAccess -> Primary . Identifier
+FieldAccess -> super . Identifier
+FieldAccess -> TypeName . super . Identifier
+
+MethodInvocation -> MethodName ( )
+MethodInvocation -> MethodName ( ArgumentList )
+MethodInvocation -> TypeName . Identifier ( )
+MethodInvocation -> TypeName . TypeArguments Identifier ( )
+MethodInvocation -> TypeName . Identifier ( ArgumentList )
+MethodInvocation -> TypeName . TypeArguments Identifier ( ArgumentList )
+MethodInvocation -> ExpressionName . Identifier ( )
+MethodInvocation -> ExpressionName . TypeArguments Identifier ( )
+MethodInvocation -> ExpressionName . Identifier ( ArgumentList )
+MethodInvocation -> ExpressionName . TypeArguments Identifier ( ArgumentList )
+MethodInvocation -> Primary . Identifier ( )
+MethodInvocation -> Primary . TypeArguments Identifier ( )
+MethodInvocation -> Primary . Identifier ( ArgumentList )
+MethodInvocation -> Primary . TypeArguments Identifier ( ArgumentList )
+MethodInvocation -> super . Identifier ( )
+MethodInvocation -> super . TypeArguments Identifier ( )
+MethodInvocation -> super . Identifier ( ArgumentList )
+MethodInvocation -> super . TypeArguments Identifier ( ArgumentList )
+MethodInvocation -> TypeName . super . Identifier ( )
+MethodInvocation -> TypeName . super . TypeArguments Identifier ( )
+MethodInvocation -> TypeName . super . Identifier ( ArgumentList )
+MethodInvocation -> TypeName . super . TypeArguments Identifier ( ArgumentList )
+
+ArgumentList -> Expression
+ArgumentList -> Expression _CommaExpression_Repeat
+
+_CommaExpression_Repeat -> , Expression
+_CommaExpression_Repeat -> _CommaExpression_Repeat , Expression
+
+MethodReference -> ExpressionName :: Identifier
+MethodReference -> ExpressionName :: TypeArguments Identifier
+MethodReference -> Primary :: Identifier
+MethodReference -> Primary :: TypeArguments Identifier
+MethodReference -> ReferenceType :: Identifier
+MethodReference -> ReferenceType :: TypeArguments Identifier
+MethodReference -> super :: Identifier
+MethodReference -> super :: TypeArguments Identifier
+MethodReference -> TypeName . super :: Identifier
+MethodReference -> TypeName . super :: TypeArguments Identifier
+MethodReference -> ClassType :: new
+MethodReference -> ClassType :: TypeArguments new
+MethodReference -> ArrayType :: new
+
+Expression -> LambdaExpression
+Expression -> AssignmentExpression
+
+LambdaExpression -> LambdaParameters -> LambdaBody
+
+LambdaParameters -> ( )
+LambdaParameters -> ( LambdaParameterList )
+LambdaParameters -> Identifier
+
+
+LambdaParameterList -> LambdaParameter
+LambdaParameterList -> LambdaParameter _CommaLambdaParameter_Repeat
+LambdaParameterList -> Identifier
+LambdaParameterList -> Identifier _CommaIdentifier_Repeat
+
+_CommaLambdaParameter_Repeat -> , LambdaParameter
+_CommaLambdaParameter_Repeat -> _CommaLambdaParameter_Repeat , LambdaParameter
+
+_CommaIdentifier_Repeat -> , Identifier
+_CommaIdentifier_Repeat -> _CommaIdentifier_Repeat , Identifier
+
+LambdaParameter -> LambdaParameterType VariableDeclaratorId
+LambdaParameter -> _VariableModifier_Repeat LambdaParameterType VariableDeclaratorId
+LambdaParameter -> VariableArityParameter
+
+LambdaParameterType -> UnannType
+LambdaParameterType -> var
+
+LambdaBody -> Expression
+LambdaBody -> Block
+
+AssignmentExpression -> ConditionalExpression
+AssignmentExpression -> Assignment
+
+Assignment -> LeftHandSide AssignmentOperator Expression
+
+LeftHandSide -> ExpressionName
+LeftHandSide -> FieldAccess
+LeftHandSide -> ArrayAccess
+
+AssignmentOperator -> =
+AssignmentOperator -> *=
+AssignmentOperator -> /=
+AssignmentOperator -> %=
+AssignmentOperator -> +=
+AssignmentOperator -> -=
+AssignmentOperator -> <<=
+AssignmentOperator -> >>=
+AssignmentOperator -> >>>=
+AssignmentOperator -> &=
+AssignmentOperator -> ^=
+AssignmentOperator -> |=
+
+ConditionalExpression -> ConditionalOrExpression
+ConditionalExpression -> ConditionalOrExpression ? Expression : ConditionalExpression
+ConditionalExpression -> ConditionalOrExpression ? Expression : LambdaExpression
+
+ConditionalOrExpression -> ConditionalAndExpression
+ConditionalOrExpression -> ConditionalOrExpression || ConditionalAndExpression
+
+ConditionalAndExpression -> InclusiveOrExpression
+ConditionalAndExpression -> ConditionalAndExpression && InclusiveOrExpression
+
+InclusiveOrExpression -> ExclusiveOrExpression
+InclusiveOrExpression -> InclusiveOrExpression | ExclusiveOrExpression
+
+ExclusiveOrExpression -> AndExpression
+ExclusiveOrExpression -> ExclusiveOrExpression ^ AndExpression
+
+AndExpression -> EqualityExpression
+AndExpression -> AndExpression & EqualityExpression
+
+EqualityExpression -> RelationalExpression
+EqualityExpression -> EqualityExpression == RelationalExpression
+EqualityExpression -> EqualityExpression != RelationalExpression
+
+RelationalExpression -> ShiftExpression
+RelationalExpression -> RelationalExpression < ShiftExpression
+RelationalExpression -> RelationalExpression > ShiftExpression
+RelationalExpression -> RelationalExpression <= ShiftExpression
+RelationalExpression -> RelationalExpression >= ShiftExpression
+RelationalExpression -> InstanceofExpression
+
+InstanceofExpression -> RelationalExpression instanceof ReferenceType
+InstanceofExpression -> RelationalExpression instanceof Pattern
+
+ShiftExpression -> AdditiveExpression
+ShiftExpression -> ShiftExpression << AdditiveExpression
+ShiftExpression -> ShiftExpression >> AdditiveExpression
+ShiftExpression -> ShiftExpression >>> AdditiveExpression
+
+AdditiveExpression -> MultiplicativeExpression
+AdditiveExpression -> AdditiveExpression + MultiplicativeExpression
+AdditiveExpression -> AdditiveExpression - MultiplicativeExpression
+
+MultiplicativeExpression -> UnaryExpression
+MultiplicativeExpression -> MultiplicativeExpression * UnaryExpression
+MultiplicativeExpression -> MultiplicativeExpression / UnaryExpression
+MultiplicativeExpression -> MultiplicativeExpression % UnaryExpression
+
+UnaryExpression -> PreIncrementExpression
+UnaryExpression -> PreDecrementExpression
+UnaryExpression -> + UnaryExpression
+UnaryExpression -> - UnaryExpression
+UnaryExpression -> UnaryExpressionNotPlusMinus
+
+PreIncrementExpression -> ++ UnaryExpression
+PreDecrementExpression -> -- UnaryExpression
+
+UnaryExpressionNotPlusMinus -> PostfixExpression
+UnaryExpressionNotPlusMinus -> ~ UnaryExpression
+UnaryExpressionNotPlusMinus -> ! UnaryExpression
+UnaryExpressionNotPlusMinus -> CastExpression
+UnaryExpressionNotPlusMinus -> SwitchExpression
+
+PostfixExpression -> Primary
+PostfixExpression -> ExpressionName
+PostfixExpression -> PostIncrementExpression
+PostfixExpression -> PostDecrementExpression
+
+PostIncrementExpression -> PostfixExpression ++
+
+PostDecrementExpression -> PostfixExpression --
+
+
+CastExpression -> ( PrimitiveType ) UnaryExpression
+CastExpression -> ( ReferenceType ) UnaryExpressionNotPlusMinus
+CastExpression -> ( ReferenceType _AdditionalBound_Repeat ) UnaryExpressionNotPlusMinus
+CastExpression -> ( ReferenceType ) LambdaExpression
+CastExpression -> ( ReferenceType _AdditionalBound_Repeat ) LambdaExpression
+
+SwitchExpression -> switch ( Expression ) SwitchBlock
+
+ConstantExpression -> Expression
