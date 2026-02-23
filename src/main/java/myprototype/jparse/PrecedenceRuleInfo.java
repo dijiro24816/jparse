@@ -1,22 +1,25 @@
 package myprototype.jparse;
 
+import java.io.Serializable;
 import java.util.HashSet;
 
-public class PrecedenceRuleInfo {
+public class PrecedenceRuleInfo implements Serializable {
+	private static final long serialVersionUID = 1L;
+	
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
+
+	private PrecedenceDirection direction;
 	private HashSet<String> highPrioritySymbolsLeft;
 	private HashSet<String> highPrioritySymbolsRight;
-	private PrecedenceDirection direction;
 
-	public HashSet<String> getHighPrioritySymbolsLeft() {
-		return highPrioritySymbolsLeft;
+	public PrecedenceRuleInfo() {
+		this(PrecedenceDirection.Left);
 	}
 
-	public HashSet<String> getHighPrioritySymbolsRight() {
-		return highPrioritySymbolsRight;
-	}
-
-	public PrecedenceDirection getDirection() {
-		return direction;
+	public PrecedenceRuleInfo(PrecedenceDirection direction) {
+		this(direction, new HashSet<>(), new HashSet<>());
 	}
 
 	public PrecedenceRuleInfo(PrecedenceDirection direction, HashSet<String> highPrioritySymbolsLeft,
@@ -24,14 +27,6 @@ public class PrecedenceRuleInfo {
 		this.direction = direction;
 		this.highPrioritySymbolsLeft = highPrioritySymbolsLeft;
 		this.highPrioritySymbolsRight = highPrioritySymbolsRight;
-	}
-	
-	public PrecedenceRuleInfo(PrecedenceDirection direction) {
-		this(direction, new HashSet<>(), new HashSet<>());
-	}
-	
-	public PrecedenceRuleInfo() {
-		this(PrecedenceDirection.Left);
 	}
 
 	@Override
@@ -52,8 +47,32 @@ public class PrecedenceRuleInfo {
 				&& this.getDirection() == this.direction;
 	}
 
+	public PrecedenceDirection getDirection() {
+		return direction;
+	}
+
+	public HashSet<String> getHighPrioritySymbolsLeft() {
+		return highPrioritySymbolsLeft;
+	}
+
+	public HashSet<String> getHighPrioritySymbolsRight() {
+		return highPrioritySymbolsRight;
+	}
+	
 	@Override
 	public int hashCode() {
 		return this.highPrioritySymbolsLeft.hashCode() + this.highPrioritySymbolsRight.hashCode() + this.direction.hashCode();
+	}
+	
+	public void setDirection(PrecedenceDirection direction) {
+		this.direction = direction;
+	}
+
+	public void setHighPrioritySymbolsLeft(HashSet<String> highPrioritySymbolsLeft) {
+		this.highPrioritySymbolsLeft = highPrioritySymbolsLeft;
+	}
+
+	public void setHighPrioritySymbolsRight(HashSet<String> highPrioritySymbolsRight) {
+		this.highPrioritySymbolsRight = highPrioritySymbolsRight;
 	}
 }

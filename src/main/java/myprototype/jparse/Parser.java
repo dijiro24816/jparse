@@ -2,6 +2,7 @@ package myprototype.jparse;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Collections;
 import java.util.List;
 import java.util.function.BiFunction;
 
@@ -9,11 +10,9 @@ import myprototype.jparse.symbol.terminal.InvalidTokenException;
 
 public class Parser {
 	private BufferedLexer lexer;
-	private Grammar grammar;
 	private SyntaticsTable table;
 
-	public Parser(BufferedLexer lexer, Grammar grammar, SyntaticsTable table) {
-		this.grammar = grammar;
+	public Parser(BufferedLexer lexer, SyntaticsTable table) {
 		this.table = table;
 		this.lexer = lexer;
 	}
@@ -26,10 +25,11 @@ public class Parser {
 	
 	public Symbol parse(InputStream inStrm, BiFunction<Rule, List<Symbol>, Object> compounder) throws IOException, InvalidTokenException {
 		StateSymbolStack stack = null;
-		Action action = new Action(ActionKind.Start, 0);
+		this.table.createState();
+		Action action = new Action(ActionKind.Beginning, 0);
 		for (;;) {
 			switch (action.getKind()) {
-			case Start:
+			case Beginning:
 				stack = new StateSymbolStack();
 				stack.push(action.getArgumentValue());
 				break;
@@ -45,27 +45,36 @@ public class Parser {
 				
 			case Reduce:
 				System.out.print(stack);
-				System.out.println(" (" + this.lexer.peek(inStrm).getLabel() + ") Reduce Rule -- " + action.getArgumentValue() + ": " + this.grammar.getRules().get(action.getArgumentValue()));
+				System.out.println(" (" + this.lexer.peek(inStrm).getLabel() + ") Reduce Rule -- " + action.getArgumentValue() + ": " + table.getRuleOf(action.getArgumentValue()));
 				
-				Rule rule = this.grammar.getRules().get(action.getArgumentValue());
+				Rule rule = table.getRuleOf(action.getArgumentValue());
 				List<Symbol> fromSymbols = stack.pop(rule.getSymbols().size());
+				Collections.reverse(fromSymbols);
+				
 				int beg = -1, end = -1;
 				if (fromSymbols.size() > 0) { // Nonterm -> 
-					beg = fromSymbols.get(0).getBeg();
-					end = fromSymbols.get(fromSymbols.size() - 1).getEnd();
+					for (int i = 0; i < fromSymbols.size(); i++) {
+						beg = fromSymbols.get(i).getBeg();
+						if (beg >= 0) 
+							break;
+					}
+					for (int i = 0; i < fromSymbols.size(); i++) {
+						end = fromSymbols.get(fromSymbols.size() - i - 1).getEnd();
+						if (end >= 0)
+							break;
+					}
 				}
 				Symbol toSymbol = new Symbol(rule.getProductSymbol(), beg, end, compounder.apply(rule, fromSymbols));
+				stack.push(toSymbol);
 				System.out.print(stack);
 				
-				action = this.table.getNonterminalAction(stack.getCurrentState(), toSymbol.getLabel());
+				action = table.getNonterminalAction(stack.getCurrentState(), toSymbol.getLabel());
 				if (action.getKind() == ActionKind.Accept) {
-					System.out.println(" (" + toSymbol.getLabel() + ") Accept");
+					System.out.println(" Accept");
 					return toSymbol;
 				}
-				System.out.println(" (" + toSymbol.getLabel() + ") Goto State -- " + action.getArgumentValue());
+				System.out.println(" Goto State -- " + action.getArgumentValue());
 				
-				
-				stack.push(toSymbol);
 				stack.push(action.getArgumentValue());
 				
 //				action = this.table.getNonterminalAction(stack.getCurrentState(), toSymbol.getLabel());
@@ -73,18 +82,20 @@ public class Parser {
 				break;
 
 			case Goto:
-				System.out.print(stack);
-				System.out.println(" (" + this.lexer.peek(inStrm).getLabel() + ") Goto State -- " + action.getArgumentValue());
-				
 				stack.push(this.lexer.getSymbol(inStrm));
+				System.out.print(stack);
+				System.out.println("Goto State -- " + action.getArgumentValue());
+				
 				stack.push(action.getArgumentValue());
 				break;
 				
 			case Accept:
+				System.out.print(stack);
+				System.out.println(" (" + this.lexer.peek(inStrm).getLabel() + ") Accept");
 				return stack.pop();
 			}
 			
-			action = this.table.getAction(stack.getCurrentState(), this.lexer.peek(inStrm).getLabel());
+			action = table.getAction(stack.getCurrentState(), this.lexer.peek(inStrm).getLabel());
 			if (action == null) {
 				System.out.println("Unexpected token " + this.lexer.peek(inStrm).getLabel());
 				System.exit(0);

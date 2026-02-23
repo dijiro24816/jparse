@@ -1,6 +1,3 @@
-S -> CompilationUnit
-
-
 
 _PeriodIdentifier_Repeat -> . Identifier
 _PeriodIdentifier_Repeat -> _PeriodIdentifier_Repeat . Identifier
@@ -840,7 +837,7 @@ LocalVariableDeclarationStatement -> LocalVariableDeclaration ;
 LocalVariableDeclaration -> LocalVariableType VariableDeclaratorList
 LocalVariableDeclaration -> _VariableModifier_Repeat LocalVariableType VariableDeclaratorList
 
-LocalVariableType -> LocalVariableType
+LocalVariableType -> UnannType
 LocalVariableType -> var
 
 Statement -> StatementWithoutTrailingSubstatement

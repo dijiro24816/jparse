@@ -5,6 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.Serializable;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -14,16 +15,22 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-public class Grammar {
+public class Grammar implements Serializable {
+	private static final long serialVersionUID = 1L;
+
+	public static long getSerialversionuid() {
+		return serialVersionUID;
+	}
+
 	public static void maina(String[] args) {
 		OperatorPrecedenceRule operatorPrecedenceRule = new OperatorPrecedenceRule();
 		operatorPrecedenceRule.add(PrecedenceDirection.Right, "=");
 		operatorPrecedenceRule.add(PrecedenceDirection.Left, "+", "-");
 		operatorPrecedenceRule.add(PrecedenceDirection.Left, "*", "/");
 
-		Grammar grammar = new Grammar("S", "$", new Rule("S", "Stmt"), new Rule("Stmt"), new Rule("Stmt", "Expr"),
-				new Rule("Stmt", "Assg"), new Rule("Expr", "Identifier"), new Rule("Expr", "NUM"),
-				new Rule(operatorPrecedenceRule.getInfo("+"), "Expr", "Expr", "+", "Expr"),
+		Grammar grammar = new Grammar("Stmt", "$").resource(new Rule("Stmt"),
+				new Rule("Stmt", "Expr"), new Rule("Stmt", "Assg"), new Rule("Expr", "Identifier"),
+				new Rule("Expr", "NUM"), new Rule(operatorPrecedenceRule.getInfo("+"), "Expr", "Expr", "+", "Expr"),
 				new Rule(operatorPrecedenceRule.getInfo("-"), "Expr", "Expr", "-", "Expr"),
 				new Rule(operatorPrecedenceRule.getInfo("*"), "Expr", "Expr", "*", "Expr"),
 				new Rule(operatorPrecedenceRule.getInfo("/"), "Expr", "Expr", "/", "Expr"),
@@ -34,19 +41,19 @@ public class Grammar {
 
 		SyntaticsTable syntaticsTable = new SyntaticsTable(grammar);
 
-		System.out.println(syntaticsTable.getActionsCSV(grammar));
-		System.out.println(syntaticsTable.getGotosCSV(grammar));
+		System.out.println(syntaticsTable.getActionsCSV());
+		System.out.println(syntaticsTable.getGotosCSV());
 
 		try {
 			{
 				FileWriter writer = new FileWriter("actions.csv");
-				writer.write(syntaticsTable.getActionsCSV(grammar));
+				writer.write(syntaticsTable.getActionsCSV());
 				writer.flush();
 				writer.close();
 			}
 			{
 				FileWriter writer = new FileWriter("gotos.csv");
-				writer.write(syntaticsTable.getGotosCSV(grammar));
+				writer.write(syntaticsTable.getGotosCSV());
 				writer.flush();
 				writer.close();
 			}
@@ -79,7 +86,7 @@ public class Grammar {
 		PrecedenceRuleInfo info = operatorPrecedenceRule.getInfo("=");
 
 //		String[] terminals = { "Identifier", "NUM" };
-		Grammar grammar = new Grammar("S", "$", new Rule("S", "Stmt"), new Rule("Stmt", "Expr"),
+		Grammar grammar = new Grammar("Stmt", "$").resource(new Rule("Stmt", "Expr"),
 				new Rule("Stmt", "Assg"), new Rule("Expr", "Identifier"), new Rule("Expr", "NUM"),
 				new Rule(operatorPrecedenceRule.getInfo("+"), "Expr", "Expr", "+", "Expr"),
 				new Rule(operatorPrecedenceRule.getInfo("-"), "Expr", "Expr", "-", "Expr"),
@@ -96,44 +103,33 @@ public class Grammar {
 		try {
 			{
 				FileWriter writer = new FileWriter("actions.csv");
-				writer.write(table.getActionsCSV(grammar));
+				writer.write(table.getActionsCSV());
 				writer.flush();
 				writer.close();
 			}
 			{
 				FileWriter writer = new FileWriter("gotos.csv");
-				writer.write(table.getGotosCSV(grammar));
+				writer.write(table.getGotosCSV());
 				writer.flush();
 				writer.close();
 			}
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		System.out.println(table.getActionsCSV(grammar));
+		System.out.println(table.getActionsCSV());
 
-		System.out.println(table.getGotosCSV(grammar));
+		System.out.println(table.getGotosCSV());
 
 		System.out.println("FINISHED!");
 	}
 
-	public static List<Rule> parse(InputStream inStrm) {
-		BufferedReader reader = new BufferedReader(new InputStreamReader(inStrm));
-
-		return reader.lines().filter(e -> !e.isBlank()).map(e -> {
-			List<String> srcs = Arrays.asList(e.split("->", 2));
-			String productSymbol = srcs.get(0).trim();
-			ArrayList<String> symbols = new ArrayList<>();
-			if (srcs.size() > 1)
-				symbols.addAll(Arrays.asList(srcs.get(1).trim().split("\s+")));
-				
-			return new Rule(productSymbol, symbols);
-		}).toList();
-	}
-	private String begSymbol;
-
+	private String productSymbol;
 	private String endSymbol;
+
 	private HashMap<String, Integer> nonterminalSymbolIndices;
+
 	private List<String> nonterminalSymbols;
+
 	private HashMap<Rule, Integer> ruleIndices;
 
 	private List<Rule> rules;
@@ -142,29 +138,28 @@ public class Grammar {
 
 	private List<String> terminalSymbols;
 
-	public Grammar(String startSymbol, String endSymbol, InputStream inStrm) {
-		this(startSymbol, endSymbol, parse(inStrm));
+	public Grammar() {
+		this.productSymbol = null;
+		this.endSymbol = null;
+		this.nonterminalSymbolIndices = null;
+		this.ruleIndices = null;
+		this.rules = null;
+		this.terminalSymbolIndices = null;
+		this.terminalSymbols = null;
+	}
+	
+	public Grammar resource(Rule... rules) {
+		return resource(Arrays.asList(rules));
 	}
 
-	public Grammar(String startSymbol, String endSymbol, List<Rule> rules) {
-		this.begSymbol = startSymbol;
-		this.endSymbol = endSymbol;
-
-		this.terminalSymbols = new ArrayList<String>();
-		this.terminalSymbolIndices = new HashMap<String, Integer>();
-		cacheTerminalSymbolWithIndex(endSymbol); // terminal symbol contains end of symbol
-
-		this.nonterminalSymbolIndices = new HashMap<String, Integer>();
-		this.nonterminalSymbols = new ArrayList<String>();
-		cacheNonterminalSymbolWithIndex(startSymbol);
-
-		this.ruleIndices = new HashMap<Rule, Integer>();
-		this.rules = new ArrayList<Rule>();
-
+	public Grammar resource(List<Rule> rules) {
 		for (Rule rule : rules) {
 			cacheNonterminalSymbolWithIndex(rule.getProductSymbol());
 			if (!cacheRuleWithIndex(rule))
 				throw new RuntimeException("Error: Duplicated Rule: " + rule);
+			
+			if (rule.size() == 1 && rule.getFirstSymbol().equals(rule.getProductSymbol()))
+				throw new RuntimeException("Error: Invalid Rule: " + rule);
 		}
 
 		// DON'T MERGE FOR rules LOOP
@@ -174,10 +169,38 @@ public class Grammar {
 				if (!isNonterminalSymbol(symbol))
 					// We should call this method after saving all of nonterminal symbol has done
 					cacheTerminalSymbolWithIndex(symbol);
+
+		return this;
 	}
 
-	public Grammar(String startSymbol, String endSymbol, Rule... rules) {
-		this(startSymbol, endSymbol, Arrays.asList(rules));
+	public Grammar resource(InputStream inStrm) {
+		BufferedReader reader = new BufferedReader(new InputStreamReader(inStrm));
+
+		return resource(reader.lines().filter(e -> !e.isBlank()).map(e -> {
+			List<String> srcs = Arrays.asList(e.split("->", 2));
+			String productSymbol = srcs.get(0).trim();
+			ArrayList<String> symbols = new ArrayList<>();
+			if (srcs.size() > 1)
+				symbols.addAll(Arrays.asList(srcs.get(1).trim().split("\s+")));
+
+			return new Rule(productSymbol, symbols);
+		}).toList());
+	}
+
+	public Grammar(String productSymbol, String endSymbol) {
+		this.productSymbol = productSymbol;
+		this.endSymbol = endSymbol;
+
+		this.terminalSymbols = new ArrayList<String>();
+		this.terminalSymbolIndices = new HashMap<String, Integer>();
+		cacheTerminalSymbolWithIndex(endSymbol); // terminal symbol contains end of symbol
+
+		this.nonterminalSymbolIndices = new HashMap<String, Integer>();
+		this.nonterminalSymbols = new ArrayList<String>();
+		cacheNonterminalSymbolWithIndex(productSymbol);
+
+		this.ruleIndices = new HashMap<Rule, Integer>();
+		this.rules = new ArrayList<Rule>();
 	}
 
 	private boolean cacheNonterminalSymbolWithIndex(String symbol) {
@@ -206,24 +229,15 @@ public class Grammar {
 
 	public HashSet<Item> expandFirstItems() {
 		HashSet<Item> items = new HashSet<>(
-				expandSymbolsRules(getStartSymbol()).stream().map(e -> new Item(e)).toList());
+				expandSymbolsRules(getProductSymbol()).stream().map(e -> new Item(e)).toList());
 		HashSet<Item> dstItems = new HashSet<>();
 		for (Item item : items) {
 			HashSet<String> lookaheadSet = getLookaheadSetFromItems(items, item.getRule().getProductSymbol());
-			lookaheadSet.add("$");
+			lookaheadSet.add(getEndSymbol());
 			dstItems.add(new Item(item.getRule(), lookaheadSet));
 		}
 
-//		HashSet<String> lookaheadSet = new HashSet<>();
-//		lookaheadSet.add(getEndSymbol());
-//		HashSet<Item> items = expandItems(expandSymbolsRules(getStartSymbol()).stream().map(e -> new Item(e, lookaheadSet)).toList());
-
 		return dstItems;
-
-//		HashSet<String> lookaheadSet = new HashSet<>();
-//		lookaheadSet.add(getEndSymbol());
-//		return new HashSet<>(
-//				expandSymbolsRules(getStartSymbol()).stream().map(e -> new Item(e, lookaheadSet)).toList());
 	}
 
 	public HashSet<Item> expandItems(Collection<Item> orgItems) {
@@ -254,7 +268,6 @@ public class Grammar {
 
 //		System.out.println("-----------------------------");
 //		System.out.println(dstItems);
-
 		for (Item item : dstItems) {
 			if (item.getLookaheadSet().isEmpty())
 				System.out.println(item);
@@ -296,6 +309,10 @@ public class Grammar {
 		return expandSymbolsRules(Arrays.asList(symbols));
 	}
 
+	public String getProductSymbol() {
+		return productSymbol;
+	}
+
 	public List<String> getDotSymbols(Collection<Item> items) {
 		return items.stream().map(e -> e.getDotSymbol()).filter(e -> e != null).toList();
 	}
@@ -329,7 +346,6 @@ public class Grammar {
 			String currentSymbol = symbols.get(symbols.size() - 1);
 
 			for (Item item : items) {
-//				System.out.println(item);
 				if (item.isReplaceable() && item.getDotSymbol().equals(currentSymbol)) {
 					symbols.add(item.getProductSymbol());
 					found = true;
@@ -371,12 +387,24 @@ public class Grammar {
 		return this.nonterminalSymbolIndices.get(nonterminalSymbol);
 	}
 
+	public HashMap<String, Integer> getNonterminalSymbolIndices() {
+		return nonterminalSymbolIndices;
+	}
+
+	public List<String> getNonterminalSymbols() {
+		return nonterminalSymbols;
+	}
+
 	public String getNonterminalSymbolsCSV() {
 		return String.join(",", this.nonterminalSymbols.stream().map(e -> "\"" + e + "\"").toList());
 	}
 
 	public int getRuleIndexOf(Rule rule) {
 		return this.ruleIndices.get(rule);
+	}
+
+	public HashMap<Rule, Integer> getRuleIndices() {
+		return ruleIndices;
 	}
 
 	public List<Rule> getRules() {
@@ -388,16 +416,20 @@ public class Grammar {
 				this.rules.stream().filter(e -> e.getProductSymbol().equals(nonterminalSymbol)).toList());
 	}
 
-	public String getStartSymbol() {
-		return this.begSymbol;
-	}
-
 	public int getTerminalSymbolCount() {
 		return this.terminalSymbolIndices.size();
 	}
 
 	public int getTerminalSymbolIndexOf(String terminalSymbol) {
 		return this.terminalSymbolIndices.get(terminalSymbol);
+	}
+
+	public HashMap<String, Integer> getTerminalSymbolIndices() {
+		return terminalSymbolIndices;
+	}
+
+	public List<String> getTerminalSymbols() {
+		return terminalSymbols;
 	}
 
 	public String getTerminalSymbolsCSV() {
@@ -416,6 +448,38 @@ public class Grammar {
 		return this.terminalSymbolIndices.containsKey(symbol);
 	}
 
+	public void setProductSymbol(String productSymbol) {
+		this.productSymbol = productSymbol;
+	}
+
+	public void setEndSymbol(String endSymbol) {
+		this.endSymbol = endSymbol;
+	}
+
+	public void setNonterminalSymbolIndices(HashMap<String, Integer> nonterminalSymbolIndices) {
+		this.nonterminalSymbolIndices = nonterminalSymbolIndices;
+	}
+
+	public void setNonterminalSymbols(List<String> nonterminalSymbols) {
+		this.nonterminalSymbols = nonterminalSymbols;
+	}
+
+	public void setRuleIndices(HashMap<Rule, Integer> ruleIndices) {
+		this.ruleIndices = ruleIndices;
+	}
+
+	public void setRules(List<Rule> rules) {
+		this.rules = rules;
+	}
+
+	public void setTerminalSymbolIndices(HashMap<String, Integer> terminalSymbolIndices) {
+		this.terminalSymbolIndices = terminalSymbolIndices;
+	}
+
+	public void setTerminalSymbols(List<String> terminalSymbols) {
+		this.terminalSymbols = terminalSymbols;
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder stringBuilder = new StringBuilder();
@@ -432,16 +496,4 @@ public class Grammar {
 		return stringBuilder.toString();
 	}
 
-	public void validateNonterminalSymbolClasses() {
-		for (Rule rule : this.rules) {
-			try {
-				Class<?> klass = Class.forName(rule.getProductSymbol());
-				if (!klass.isAssignableFrom(Class.forName("Nonterminal")))
-					throw new RuntimeException(
-							"user defined Nonterminal class does not inherit System Nonterminal class");
-			} catch (ClassNotFoundException e) {
-				throw new RuntimeException(e);
-			}
-		}
-	}
 }

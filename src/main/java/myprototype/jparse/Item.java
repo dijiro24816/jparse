@@ -94,7 +94,7 @@ public class Item {
 	public static List<Item> generateBeginningItemsOf(Grammar grammar) {
 		HashSet<String> lookAheadSet = new HashSet<>();
 		lookAheadSet.add(grammar.getEndSymbol());
-		return Item.generateItemsOf(grammar, grammar.getStartSymbol(), lookAheadSet);
+		return Item.generateItemsOf(grammar, grammar.getProductSymbol(), lookAheadSet);
 	}
 
 	public static List<Item> generateItemsOf(Grammar grammar, String symbol, HashSet<String> lookAheadSet) {

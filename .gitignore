@@ -11,3 +11,4 @@ target/
 # for debug
 actions.csv
 gotos.csv
+syntaticsTable.ser
