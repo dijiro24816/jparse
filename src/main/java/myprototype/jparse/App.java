@@ -14,7 +14,7 @@ import myprototype.jparse.symbol.terminal.JavaLexer;
  */
 
 public class App {
-	public static void main(String[] args) throws IOException, InvalidTokenException, ClassNotFoundException {
+	public static void maina(String[] args) throws IOException, InvalidTokenException, ClassNotFoundException {
 		String grammarSource = """
 				Statement -> Expression
 				Statement -> Assignment
@@ -72,7 +72,7 @@ public class App {
 		System.out.println(symbol);
 	}
 
-	public static void maina(String[] args) throws IOException, InvalidTokenException {
+	public static void main(String[] args) throws IOException, InvalidTokenException {
 		Grammar grammar = new Grammar("CompilationUnit", "$").resource(new FileInputStream("JavaSyntax.txt"));
 
 		System.out.println("*** Grammar ***");
@@ -96,7 +96,7 @@ public class App {
 				
 				public class Hello {
 				    public static void main(String[] args) {
-				        System.out.println();
+				        System.out.println(1);
 				    }
 				}
 				""";

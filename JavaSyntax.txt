@@ -214,7 +214,7 @@ StatementExpression -> MethodInvocation
 
 
 # MethodInvocation -> MethodName ( )
-# MethodInvocation -> MethodName ( ArgumentList )
+MethodInvocation -> MethodName ( ArgumentList )
 # MethodInvocation -> TypeName . Identifier ( )
 # MethodInvocation -> TypeName . TypeArguments Identifier ( )
 # MethodInvocation -> TypeName . Identifier ( ArgumentList )
@@ -235,6 +235,122 @@ MethodInvocation -> ExpressionName . Identifier ( )
 # MethodInvocation -> TypeName . super . TypeArguments Identifier ( )
 # MethodInvocation -> TypeName . super . Identifier ( ArgumentList )
 # MethodInvocation -> TypeName . super . TypeArguments Identifier ( ArgumentList )
+
+
+
+
+
+
+
+
+
+
+
+
+#==========================================================================================
+
+
+ArgumentList -> Expression
+ArgumentList -> Expression _CommaExpression_Repeat
+
+_CommaExpression_Repeat -> , Expression
+_CommaExpression_Repeat -> _CommaExpression_Repeat , Expression
+
+# Expression -> LambdaExpression
+Expression -> AssignmentExpression
+
+AssignmentExpression -> ConditionalExpression
+# AssignmentExpression -> Assignment
+
+ConditionalExpression -> ConditionalOrExpression
+# ConditionalExpression -> ConditionalOrExpression ? Expression : ConditionalExpression
+# ConditionalExpression -> ConditionalOrExpression ? Expression : LambdaExpression
+
+ConditionalOrExpression -> ConditionalAndExpression
+# ConditionalOrExpression -> ConditionalOrExpression || ConditionalAndExpression
+
+ConditionalAndExpression -> InclusiveOrExpression
+# ConditionalAndExpression -> ConditionalAndExpression && InclusiveOrExpression
+
+InclusiveOrExpression -> ExclusiveOrExpression
+# InclusiveOrExpression -> InclusiveOrExpression | ExclusiveOrExpression
+
+ExclusiveOrExpression -> AndExpression
+# ExclusiveOrExpression -> ExclusiveOrExpression ^ AndExpression
+
+AndExpression -> EqualityExpression
+# AndExpression -> AndExpression & EqualityExpression
+
+EqualityExpression -> RelationalExpression
+# EqualityExpression -> EqualityExpression == RelationalExpression
+# EqualityExpression -> EqualityExpression != RelationalExpression
+
+RelationalExpression -> ShiftExpression
+# RelationalExpression -> RelationalExpression < ShiftExpression
+# RelationalExpression -> RelationalExpression > ShiftExpression
+# RelationalExpression -> RelationalExpression <= ShiftExpression
+# RelationalExpression -> RelationalExpression >= ShiftExpression
+# RelationalExpression -> InstanceofExpression
+
+
+ShiftExpression -> AdditiveExpression
+# ShiftExpression -> ShiftExpression << AdditiveExpression
+# ShiftExpression -> ShiftExpression >> AdditiveExpression
+# ShiftExpression -> ShiftExpression >>> AdditiveExpression
+
+AdditiveExpression -> MultiplicativeExpression
+# AdditiveExpression -> AdditiveExpression + MultiplicativeExpression
+# AdditiveExpression -> AdditiveExpression - MultiplicativeExpression
+
+MultiplicativeExpression -> UnaryExpression
+# MultiplicativeExpression -> MultiplicativeExpression * UnaryExpression
+# MultiplicativeExpression -> MultiplicativeExpression / UnaryExpression
+# MultiplicativeExpression -> MultiplicativeExpression % UnaryExpression
+
+# UnaryExpression -> PreIncrementExpression
+# UnaryExpression -> PreDecrementExpression
+# UnaryExpression -> + UnaryExpression
+# UnaryExpression -> - UnaryExpression
+UnaryExpression -> UnaryExpressionNotPlusMinus
+
+
+UnaryExpressionNotPlusMinus -> PostfixExpression
+# UnaryExpressionNotPlusMinus -> ~ UnaryExpression
+# UnaryExpressionNotPlusMinus -> ! UnaryExpression
+# UnaryExpressionNotPlusMinus -> CastExpression
+# UnaryExpressionNotPlusMinus -> SwitchExpression
+
+PostfixExpression -> Primary
+PostfixExpression -> ExpressionName
+PostfixExpression -> PostIncrementExpression
+PostfixExpression -> PostDecrementExpression
+
+Primary -> PrimaryNoNewArray
+# Primary -> ArrayCreationExpression
+
+PrimaryNoNewArray -> Literal
+# PrimaryNoNewArray -> ClassLiteral
+# PrimaryNoNewArray -> this
+# PrimaryNoNewArray -> TypeName . this
+# PrimaryNoNewArray -> ( Expression )
+# PrimaryNoNewArray -> ClassInstanceCreationExpression
+# PrimaryNoNewArray -> FieldAccess
+# PrimaryNoNewArray -> ArrayAccess
+# PrimaryNoNewArray -> MethodInvocation
+# PrimaryNoNewArray -> MethodReference
+
+Literal -> IntegerLiteral
+Literal -> FloatingPointLiteral
+Literal -> BooleanLiteral
+Literal -> CharacterLiteral
+Literal -> StringLiteral
+# Literal -> TextBlock
+Literal -> NullLiteral
+
+#==========================================================================================
+
+
+
 
 
 ExpressionName -> Identifier
