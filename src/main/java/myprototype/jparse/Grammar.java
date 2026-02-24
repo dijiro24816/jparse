@@ -1,11 +1,14 @@
 package myprototype.jparse;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Serializable;
+import java.nio.file.Files;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -172,11 +175,22 @@ public class Grammar implements Serializable {
 
 		return this;
 	}
+	
+	public Grammar resource(File src, File dst) {
+		if (Files.getLastModifiedTime(src.toPath())) {
+			
+		}
+		return resource(src);
+	}
+	
+	public Grammar resource(File src) {
+		return resource(new FileInputStream(inStrm));
+	}
 
 	public Grammar resource(InputStream inStrm) {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(inStrm));
 
-		return resource(reader.lines().filter(e -> !e.isBlank()).map(e -> {
+		return resource(reader.lines().filter(e -> !e.isBlank() && !e.trim().startsWith("#")).map(e -> {
 			List<String> srcs = Arrays.asList(e.split("->", 2));
 			String productSymbol = srcs.get(0).trim();
 			ArrayList<String> symbols = new ArrayList<>();

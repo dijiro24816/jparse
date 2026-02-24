@@ -136,6 +136,8 @@ PackageName -> PackageName . Identifier
 TypeName -> Identifier
 TypeName -> PackageOrTypeName . Identifier
 
+
+# this has reduce-reduce problem
 ExpressionName -> Identifier
 ExpressionName -> AmbiguousName . Identifier
 
