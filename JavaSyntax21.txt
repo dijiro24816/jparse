@@ -822,6 +822,7 @@ _CommaVariableInitializer_Repeat -> _CommaVariableInitializer_Repeat , VariableI
 Block -> { }
 Block -> { BlockStatements }
 
+BlockStatements -> BlockStatement
 BlockStatements -> BlockStatement _BlockStatement_Repeat
 
 _BlockStatement_Repeat -> BlockStatement

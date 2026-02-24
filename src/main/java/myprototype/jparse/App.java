@@ -76,28 +76,343 @@ public class App {
 		System.out.println(symbol);
 	}
 
-	public static void main(String[] args) throws ClassNotFoundException, IOException {
+	public static void main(String[] args) throws IOException, InvalidTokenException {
+		String grammarSource = """
+				CompilationUnit -> OrdinaryCompilationUnit
+				# CompilationUnit -> ModularCompilationUnit
+				
+				OrdinaryCompilationUnit -> 
+				OrdinaryCompilationUnit -> PackageDeclaration
+				OrdinaryCompilationUnit -> _ImportDeclaration_Repeat
+				OrdinaryCompilationUnit -> PackageDeclaration _ImportDeclaration_Repeat
+				OrdinaryCompilationUnit -> TopLevelClassOrInterfaceDeclaration
+				OrdinaryCompilationUnit -> PackageDeclaration TopLevelClassOrInterfaceDeclaration
+				OrdinaryCompilationUnit -> _ImportDeclaration_Repeat TopLevelClassOrInterfaceDeclaration
+				OrdinaryCompilationUnit -> PackageDeclaration _ImportDeclaration_Repeat TopLevelClassOrInterfaceDeclaration
+				
+				PackageDeclaration -> package Identifier ;
+				# PackageDeclaration -> _PackageModifier_Repeat package Identifier ;
+				PackageDeclaration -> package Identifier _PeriodIdentifier_Repeat ;
+				# PackageDeclaration -> _PackageModifier_Repeat package Identifier _PeriodIdentifier_Repeat ;
+				
+				ImportDeclaration -> SingleTypeImportDeclaration
+				ImportDeclaration -> TypeImportOnDemandDeclaration
+				# ImportDeclaration -> SingleStaticImportDeclaration
+				# ImportDeclaration -> StaticImportOnDemandDeclaration
+				
+				TypeName -> Identifier
+				TypeName -> PackageOrTypeName . Identifier
+				
+				_ImportDeclaration_Repeat -> ImportDeclaration
+				_ImportDeclaration_Repeat -> _ImportDeclaration_Repeat ImportDeclaration
+				
+				SingleTypeImportDeclaration -> import TypeName ;
+				
+				TypeImportOnDemandDeclaration -> import PackageOrTypeName . * ;
+				
+				PackageOrTypeName -> Identifier
+				PackageOrTypeName -> PackageOrTypeName . Identifier
+				
+				TopLevelClassOrInterfaceDeclaration -> ClassDeclaration
+				# TopLevelClassOrInterfaceDeclaration -> InterfaceDeclaration
+				TopLevelClassOrInterfaceDeclaration -> ;
+				
+				ClassDeclaration -> NormalClassDeclaration
+				# ClassDeclaration -> EnumDeclaration
+				# ClassDeclaration -> RecordDeclaration
+				
+				NormalClassDeclaration -> class Identifier ClassBody
+				NormalClassDeclaration -> _ClassModifier_Repeat class Identifier ClassBody
+				
+				ClassBody -> { }
+				ClassBody -> { _ClassBodyDeclaration_Repeat }
+				
+				_ClassModifier_Repeat -> ClassModifier
+				_ClassModifier_Repeat -> _ClassModifier_Repeat ClassModifier
+				
+				
+				# ClassModifier -> Annotation
+				ClassModifier -> public
+				ClassModifier -> protected
+				ClassModifier -> private
+				ClassModifier -> abstract
+				ClassModifier -> static
+				ClassModifier -> final
+				ClassModifier -> sealed
+				ClassModifier -> non-sealed
+				ClassModifier -> strictfp
+				
+				
+				_ClassBodyDeclaration_Repeat -> ClassBodyDeclaration
+				_ClassBodyDeclaration_Repeat -> _ClassBodyDeclaration_Repeat ClassBodyDeclaration
+				
+				
+				ClassBodyDeclaration -> ClassMemberDeclaration
+				# ClassBodyDeclaration -> InstanceInitializer
+				# ClassBodyDeclaration -> StaticInitializer
+				# ClassBodyDeclaration -> ConstructorDeclaration
+				
+				# ClassMemberDeclaration -> FieldDeclaration
+				ClassMemberDeclaration -> MethodDeclaration
+				# ClassMemberDeclaration -> ClassDeclaration
+				# ClassMemberDeclaration -> InterfaceDeclaration
+				ClassMemberDeclaration -> ;
+				
+				
+				MethodDeclaration -> MethodHeader MethodBody
+				MethodDeclaration -> _MethodModifier_Repeat MethodHeader MethodBody
+				
+				# MethodModifier -> Annotation
+				MethodModifier -> public
+				MethodModifier -> protected
+				MethodModifier -> private
+				MethodModifier -> abstract
+				MethodModifier -> static
+				MethodModifier -> final
+				MethodModifier -> synchronized
+				MethodModifier -> native
+				MethodModifier -> strictfp
+				
+				_MethodModifier_Repeat -> MethodModifier
+				_MethodModifier_Repeat -> _MethodModifier_Repeat MethodModifier
+				
+				MethodHeader -> Result MethodDeclarator
+				# MethodHeader -> Result MethodDeclarator Throws
+				# MethodHeader -> TypeParameters Result MethodDeclarator
+				# MethodHeader -> TypeParameters _Annotation_Repeat Result MethodDeclarator
+				# MethodHeader -> TypeParameters Result MethodDeclarator Throws
+				# MethodHeader -> TypeParameters _Annotation_Repeat Result MethodDeclarator Throws
+				
+				NumericType -> IntegralType
+				NumericType -> FloatingPointType
+				
+				UnannPrimitiveType -> NumericType
+				UnannPrimitiveType -> boolean
+				
+				UnannReferenceType -> UnannClassOrInterfaceType
+				# UnannReferenceType -> UnannTypeVariable
+				UnannReferenceType -> UnannArrayType
+				
+				Dims -> [ ]
+				# Dims -> _Annotation_Repeat [ ]
+				# Dims -> _Annotation_Repeat [ ] __Annotation_RepeatEmptySquareBrackets_Repeat
+				
+				UnannArrayType -> UnannPrimitiveType Dims
+				UnannArrayType -> UnannClassOrInterfaceType Dims
+				# UnannArrayType -> UnannTypeVariable Dims
+				
+				
+				UnannClassOrInterfaceType -> UnannClassType
+				# UnannClassOrInterfaceType -> UnannInterfaceType
+				
+				UnannClassType -> Identifier
+				# UnannClassType -> TypeIdentifier TypeArguments
+				# UnannClassType -> PackageName . TypeIdentifier
+				#UnannClassType -> PackageName . _Annotation_Repeat TypeIdentifier
+				# UnannClassType -> PackageName . TypeIdentifier TypeArguments
+				# UnannClassType -> PackageName . _Annotation_Repeat TypeIdentifier TypeArguments
+				UnannClassType -> UnannClassOrInterfaceType . Identifier
+				# UnannClassType -> UnannClassOrInterfaceType . _Annotation_Repeat TypeIdentifier
+				# UnannClassType -> UnannClassOrInterfaceType . TypeIdentifier TypeArguments
+				# UnannClassType -> UnannClassOrInterfaceType . _Annotation_Repeat TypeIdentifier TypeArguments
+				
+				UnannType -> UnannPrimitiveType
+				UnannType -> UnannReferenceType
+				
+				Result -> UnannType
+				Result -> void
+				
+				MethodDeclarator -> Identifier ( )
+				# MethodDeclarator -> Identifier ( ReceiverParameter , )
+				MethodDeclarator -> Identifier ( FormalParameterList )
+				# MethodDeclarator -> Identifier ( ReceiverParameter , FormalParameterList )
+				# MethodDeclarator -> Identifier ( ) Dims
+				# MethodDeclarator -> Identifier ( ReceiverParameter , ) Dims
+				# MethodDeclarator -> Identifier ( FormalParameterList ) Dims
+				# MethodDeclarator -> Identifier ( ReceiverParameter , FormalParameterList ) Dims
+				
+				FormalParameterList -> FormalParameter
+				FormalParameterList -> FormalParameter _CommaFormalParameter_Repeat
+				
+				_CommaFormalParameter_Repeat -> , FormalParameter
+				_CommaFormalParameter_Repeat -> _CommaFormalParameter_Repeat , FormalParameter
+				
+				FormalParameter -> UnannType VariableDeclaratorId
+				# FormalParameter -> _VariableModifier_Repeat UnannType VariableDeclaratorId
+				# FormalParameter -> VariableArityParameter
+				
+				VariableDeclaratorId -> Identifier
+				# VariableDeclaratorId -> Identifier Dims
+				
+					
+				MethodBody -> Block
+				MethodBody -> ;
+				
+				Block -> { }
+				Block -> { BlockStatements }
+				
+				BlockStatements -> BlockStatement
+				BlockStatements -> BlockStatement _BlockStatement_Repeat
+				
+				_BlockStatement_Repeat -> BlockStatement
+				_BlockStatement_Repeat -> _BlockStatement_Repeat BlockStatement
+				
+				# BlockStatement -> LocalClassOrInterfaceDeclaration
+				# BlockStatement -> LocalVariableDeclarationStatement
+				BlockStatement -> Statement
+				
+				Statement -> StatementWithoutTrailingSubstatement
+				# Statement -> LabeledStatement
+				# Statement -> IfThenStatement
+				# Statement -> IfThenElseStatement
+				# Statement -> WhileStatement
+				# Statement -> ForStatement
+				
+				StatementWithoutTrailingSubstatement -> Block
+				# StatementWithoutTrailingSubstatement -> EmptyStatement
+				StatementWithoutTrailingSubstatement -> ExpressionStatement
+				# StatementWithoutTrailingSubstatement -> AssertStatement
+				# StatementWithoutTrailingSubstatement -> SwitchStatement
+				# StatementWithoutTrailingSubstatement -> DoStatement
+				# StatementWithoutTrailingSubstatement -> BreakStatement
+				# StatementWithoutTrailingSubstatement -> ContinueStatement
+				# StatementWithoutTrailingSubstatement -> ReturnStatement
+				# StatementWithoutTrailingSubstatement -> SynchronizedStatement
+				# StatementWithoutTrailingSubstatement -> ThrowStatement
+				# StatementWithoutTrailingSubstatement -> TryStatement
+				# StatementWithoutTrailingSubstatement -> YieldStatement
+				
+				ExpressionStatement -> StatementExpression ;
+				
+				# StatementExpression -> Assignment
+				# StatementExpression -> PreIncrementExpression
+				# StatementExpression -> PreDecrementExpression
+				# StatementExpression -> PostIncrementExpression
+				# StatementExpression -> PostDecrementExpression
+				StatementExpression -> MethodInvocation
+				# StatementExpression -> ClassInstanceCreationExpression
+				
+				
+				# MethodInvocation -> MethodName ( )
+				# MethodInvocation -> MethodName ( ArgumentList )
+				# MethodInvocation -> TypeName . Identifier ( )
+				# MethodInvocation -> TypeName . TypeArguments Identifier ( )
+				# MethodInvocation -> TypeName . Identifier ( ArgumentList )
+				# MethodInvocation -> TypeName . TypeArguments Identifier ( ArgumentList )
+				MethodInvocation -> ExpressionName . Identifier ( )
+				# MethodInvocation -> ExpressionName . TypeArguments Identifier ( )
+				# MethodInvocation -> ExpressionName . Identifier ( ArgumentList )
+				# MethodInvocation -> ExpressionName . TypeArguments Identifier ( ArgumentList )
+				# MethodInvocation -> Primary . Identifier ( )
+				# MethodInvocation -> Primary . TypeArguments Identifier ( )
+				# MethodInvocation -> Primary . Identifier ( ArgumentList )
+				# MethodInvocation -> Primary . TypeArguments Identifier ( ArgumentList )
+				# MethodInvocation -> super . Identifier ( )
+				# MethodInvocation -> super . TypeArguments Identifier ( )
+				# MethodInvocation -> super . Identifier ( ArgumentList )
+				# MethodInvocation -> super . TypeArguments Identifier ( ArgumentList )
+				# MethodInvocation -> TypeName . super . Identifier ( )
+				# MethodInvocation -> TypeName . super . TypeArguments Identifier ( )
+				# MethodInvocation -> TypeName . super . Identifier ( ArgumentList )
+				# MethodInvocation -> TypeName . super . TypeArguments Identifier ( ArgumentList )
+				
+				
+				ExpressionName -> Identifier
+				ExpressionName -> ExpressionName . Identifier
+				""";
+
+		Grammar grammar = new Grammar("CompilationUnit", "$").resource(new ByteArrayInputStream(grammarSource.getBytes()));
+
+		System.out.println("*** Grammar ***");
+		System.out.println(grammar);
+
+		System.out.println();
+		System.out.println("*** Syntatics Table ***");
+		SyntaticsTable syntaticsTable = new SyntaticsTable(grammar);
+		syntaticsTable.createState();
+
+		System.out.println("actions.csv < ```");
+		System.out.println(syntaticsTable.getActionsCSV());
+		System.out.println("```");
+
+		System.out.println("gotos.csv < ```");
+		System.out.println(syntaticsTable.getGotosCSV());
+		System.out.println("```");
+
+		String sourceCode = """
+				import hello.world;
+				
+				public class Hello {
+				    public static void main(String[] args) {
+				        System.out.println();
+				    }
+				}
+				""";
+//		class TypeIdentifier {
+//			   public static void Identifier ( TypeIdentifier [ ] Identifier ) {
+//			       Identifier . Identifier ( ) ;
+//			   }
+//			}
+		String sourceToken = """
+				import Identifier . Identifier . * ;
+
+				class Identifier {
+				    public static void Identifier ( Identifier [ ] Identifier ) { 
+				        Identifier . Identifier . Identifier ( ) ;
+				    }
+				}
+
+				""" + "$" + System.lineSeparator();
+
+		System.out.println("*** Source ***");
+		System.out.println("```");
+		System.out.print(sourceCode);
+		System.out.println("```");
+
+		System.out.println();
+		System.out.println("*** Loaded Token ***");
+		Lexer lexerForPrint = new JavaLexer(grammar.getEndSymbol());
+		InputStream inStrm = new ByteArrayInputStream(sourceCode.getBytes());
+		for (;;) {
+			Symbol symbol = lexerForPrint.getSymbol(inStrm);
+
+			if (grammar.isEndSymbol(symbol)) {
+				System.out.println(symbol);
+				break;
+			}
+
+			System.out.println(symbol);
+		}
+
+		System.out.println("*** Parser Stack ***");
+		Lexer lexer = new JavaLexer(grammar.getEndSymbol());
+		Parser parser = new Parser(new BufferedLexer(lexer), syntaticsTable);
+		Symbol symbol = parser.parse(new ByteArrayInputStream(sourceCode.getBytes()));
+		System.out.println(symbol);
+	}
+
+	public static void mainaa(String[] args) throws ClassNotFoundException, IOException {
 		Runtime r = Runtime.getRuntime();
-	    System.out.println("version    : " + r.version());
-	    System.out.println("maxMemory  : " + r.maxMemory());
-	    System.out.println("totalMemory: " + r.totalMemory());
+		System.out.println("version    : " + r.version());
+		System.out.println("maxMemory  : " + r.maxMemory());
+		System.out.println("totalMemory: " + r.totalMemory());
 //		System.exit(0);
-		
+
 		Grammar grammar;
 		SyntaticsTable syntaticsTable;
 
 //		String fname = "syntaticsTable.ser";
 //		if (!new File(fname).exists()) {
-			grammar = new Grammar("CompilationUnit", "$").resource(new FileInputStream("JavaSyntax21.txt"));
-			syntaticsTable = new SyntaticsTable(grammar);
-			syntaticsTable.createState();
-			
+		grammar = new Grammar("CompilationUnit", "$").resource(new FileInputStream("JavaSyntax21.txt"));
+		syntaticsTable = new SyntaticsTable(grammar);
+		syntaticsTable.createState();
+
 //			syntaticsTable.serialize(new ObjectOutputStream(new FileOutputStream(fname)));
 //		} else {
 //			syntaticsTable = SyntaticsTable.deserialize(new ObjectInputStream(new FileInputStream(fname)));
 //			grammar = syntaticsTable.getGrammar();
 //		}
-		
+
 		System.out.println("*** Grammar ***");
 		System.out.println(grammar);
 

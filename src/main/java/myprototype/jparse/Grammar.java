@@ -176,17 +176,6 @@ public class Grammar implements Serializable {
 		return this;
 	}
 	
-	public Grammar resource(File src, File dst) {
-		if (Files.getLastModifiedTime(src.toPath())) {
-			
-		}
-		return resource(src);
-	}
-	
-	public Grammar resource(File src) {
-		return resource(new FileInputStream(inStrm));
-	}
-
 	public Grammar resource(InputStream inStrm) {
 		BufferedReader reader = new BufferedReader(new InputStreamReader(inStrm));
 

@@ -11,49 +11,55 @@ import java.util.List;
 
 public class SyntaticsTable implements Serializable {
 	private static final long serialVersionUID = 1L;
-	
+
 	public static SyntaticsTable deserialize(ObjectInputStream inStrm) throws ClassNotFoundException, IOException {
-		return (SyntaticsTable)inStrm.readObject();
+		return (SyntaticsTable) inStrm.readObject();
 	}
+
 	public static long getSerialversionuid() {
 		return serialVersionUID;
 	}
+
 	private Grammar grammar;
 
 	private List<Action[]> nonterminalSection;
-	
+
 	private List<Action[]> terminalSection;
-	
+
 	public SyntaticsTable() {
 		this.grammar = null;
 		this.terminalSection = null;
 		this.nonterminalSection = null;
 	}
-	
+
 	public SyntaticsTable(Grammar grammar) {
 		this.grammar = grammar;
 		this.terminalSection = new ArrayList<Action[]>();
 		this.nonterminalSection = new ArrayList<Action[]>();
 	}
-	
+
 	public int createState() {
 		if (this.terminalSection.size() + this.nonterminalSection.size() > 0)
 			return 0;
-		
+
 		int state = createState(new HashMap<StateKey, Integer>(), StateKey.create(grammar.expandFirstItems()));
-		
+
 		int lastState = getNewState();
 		if (grammar.isNonterminalSymbol(grammar.getProductSymbol())) {
-			setNonterminalSection(state, grammar.getNonterminalSymbolIndexOf(grammar.getProductSymbol()), new Action(ActionKind.Goto, lastState));
+			setNonterminalSection(state, grammar.getNonterminalSymbolIndexOf(grammar.getProductSymbol()),
+					new Action(ActionKind.Goto, lastState));
 		} else {
-			setTerminalSection(state, grammar.getTerminalSymbolIndexOf(grammar.getProductSymbol()), new Action(ActionKind.Shift, lastState));
+			setTerminalSection(state, grammar.getTerminalSymbolIndexOf(grammar.getProductSymbol()),
+					new Action(ActionKind.Shift, lastState));
 		}
 		if (grammar.isNonterminalSymbol(grammar.getEndSymbol())) {
-			setNonterminalSection(lastState, grammar.getNonterminalSymbolIndexOf(grammar.getEndSymbol()), new Action(ActionKind.Accept));
+			setNonterminalSection(lastState, grammar.getNonterminalSymbolIndexOf(grammar.getEndSymbol()),
+					new Action(ActionKind.Accept));
 		} else {
-			setTerminalSection(lastState, grammar.getTerminalSymbolIndexOf(grammar.getEndSymbol()), new Action(ActionKind.Accept));
+			setTerminalSection(lastState, grammar.getTerminalSymbolIndexOf(grammar.getEndSymbol()),
+					new Action(ActionKind.Accept));
 		}
-		
+
 		return state;
 	}
 
@@ -83,8 +89,6 @@ public class SyntaticsTable implements Serializable {
 //			
 //			System.exit(0);
 //		}
-		
-
 
 		keyStates.put(key, currentState);
 //		System.out.println("" + currentState + " -" + key);
@@ -93,14 +97,12 @@ public class SyntaticsTable implements Serializable {
 			// Check reduce-reduce problem
 			if (closures.size() > 1) {
 //				System.out.println(closures);
-				
-				
-				
+
 				// Java has reduce-reduce problem in:
-				//   BlockStatement.LocalVariableDeclarationStatement.VariableModifier.Annotation
-				//   BlockStatement.ClassOrInterfaceDeclaration.Modifier.Annotation
+				// BlockStatement.LocalVariableDeclarationStatement.VariableModifier.Annotation
+				// BlockStatement.ClassOrInterfaceDeclaration.Modifier.Annotation
 				boolean skip = false;
-				
+
 				if (closures.stream().anyMatch(e -> e.getProductSymbol().equals("Modifier"))) {
 					skip = true;
 				} else if (closures.stream().anyMatch(e -> e.getProductSymbol().equals("Statement"))) {
@@ -112,57 +114,58 @@ public class SyntaticsTable implements Serializable {
 				} else if (closures.stream().anyMatch(e -> e.getProductSymbol().equals("ExpressionName"))) {
 					skip = true;
 				} else if (closures.stream().anyMatch(e -> e.getProductSymbol().equals("ElementValue"))) {
-				    skip = true;
-			    } else if (closures.stream().anyMatch(e -> e.getProductSymbol().equals("InterfaceType"))) {
-				    skip = true;
-			    } else if (closures.stream().anyMatch(e -> e.getProductSymbol().equals("ClassType"))) {
-				    skip = true;
-			    } else if (closures.stream().anyMatch(e -> e.getProductSymbol().equals("PrimaryNoNewArray"))) {
-				    skip = true;
-			    } else if (closures.stream().anyMatch(e -> e.getProductSymbol().equals("VariableModifier"))) {
-				    skip = true;
-			    } else if (closures.stream().anyMatch(e -> e.getProductSymbol().equals("PostfixExpression"))) {
-				    skip = true;
-			    } else if (closures.stream().anyMatch(e -> e.getProductSymbol().equals("UnannClassType"))) {
-				    skip = true;
-			    } else if (closures.stream().anyMatch(e -> e.getProductSymbol().equals("UnannClassOrInterfaceType"))) {
-				    skip = true;
-			    } else if (closures.stream().anyMatch(e -> e.getProductSymbol().equals("AdditionalBound"))) {
-				    skip = true;
-			    } else if (closures.stream().anyMatch(e -> e.getProductSymbol().equals("MethodModifier"))) {
-				    skip = true;
-			    } else if (closures.stream().anyMatch(e -> e.getProductSymbol().equals("PrimitiveType"))) {
-				    skip = true;
-			    } else if (closures.stream().anyMatch(e -> e.getProductSymbol().equals("AnnotationInterfaceElementModifier"))) {
-				    skip = true;
-			    } else if (closures.stream().anyMatch(e -> e.getProductSymbol().equals("ClassOrInterfaceType"))) {
-				    skip = true;
-			    } else if (closures.stream().anyMatch(e -> e.getProductSymbol().equals("ClassModifier"))) {
-				    skip = true;
-			    }
-				
-				
+					skip = true;
+				} else if (closures.stream().anyMatch(e -> e.getProductSymbol().equals("InterfaceType"))) {
+					skip = true;
+				} else if (closures.stream().anyMatch(e -> e.getProductSymbol().equals("ClassType"))) {
+					skip = true;
+				} else if (closures.stream().anyMatch(e -> e.getProductSymbol().equals("PrimaryNoNewArray"))) {
+					skip = true;
+				} else if (closures.stream().anyMatch(e -> e.getProductSymbol().equals("VariableModifier"))) {
+					skip = true;
+				} else if (closures.stream().anyMatch(e -> e.getProductSymbol().equals("PostfixExpression"))) {
+					skip = true;
+				} else if (closures.stream().anyMatch(e -> e.getProductSymbol().equals("UnannClassType"))) {
+					skip = true;
+				} else if (closures.stream().anyMatch(e -> e.getProductSymbol().equals("UnannClassOrInterfaceType"))) {
+					skip = true;
+				} else if (closures.stream().anyMatch(e -> e.getProductSymbol().equals("AdditionalBound"))) {
+					skip = true;
+				} else if (closures.stream().anyMatch(e -> e.getProductSymbol().equals("MethodModifier"))) {
+					skip = true;
+				} else if (closures.stream().anyMatch(e -> e.getProductSymbol().equals("PrimitiveType"))) {
+					skip = true;
+				} else if (closures.stream()
+						.anyMatch(e -> e.getProductSymbol().equals("AnnotationInterfaceElementModifier"))) {
+					skip = true;
+				} else if (closures.stream().anyMatch(e -> e.getProductSymbol().equals("ClassOrInterfaceType"))) {
+					skip = true;
+				} else if (closures.stream().anyMatch(e -> e.getProductSymbol().equals("ClassModifier"))) {
+					skip = true;
+				}
+
 				if (!skip)
 					throw new RuntimeException("The Grammar has reduce-reduce problem!");
 
 //				System.out.println("skip");
 			}
-			Item closure = closures.get(0);
+//			Item closure = closures.get(0);
 
 			// Set reduce action as default
 			// The value is rule index with negative sign
 			// TODO: Use follow-set or lookahead-set
 
-			for (String symbol : closure.getLookaheadSet()) {
-				setTerminalSection(currentState, grammar.getTerminalSymbolIndexOf(symbol),
-						new Action(ActionKind.Reduce, grammar.getRuleIndexOf(closure.getRule())));
+			for (Item closure : closures) {
+				for (String symbol : closure.getLookaheadSet()) {
+					setTerminalSection(currentState, grammar.getTerminalSymbolIndexOf(symbol),
+							new Action(ActionKind.Reduce, grammar.getRuleIndexOf(closure.getRule())));
+				}
 			}
-			
-			
+
 //			System.out.println("closure " + currentState + ": " + closure);
 
 //			System.out.println(closure);
-			
+
 			// TODO: We should return ?
 		}
 		for (StateKey derivativeKey : key.getDerivativeKeys(grammar)) {
@@ -176,13 +179,14 @@ public class SyntaticsTable implements Serializable {
 						new Action(ActionKind.Shift, createState(keyStates, derivativeKey)));
 			}
 		}
-		
+
 		return currentState;
 
 	}
 
-	public Action getAction(int state, String symbol) { 
-		return this.grammar.isNonterminalSymbol(symbol) ? getNonterminalAction(state, symbol) : getTerminalAction(state, symbol);
+	public Action getAction(int state, String symbol) {
+		return this.grammar.isNonterminalSymbol(symbol) ? getNonterminalAction(state, symbol)
+				: getTerminalAction(state, symbol);
 	}
 
 	public String getActionsCSV() {
@@ -209,7 +213,7 @@ public class SyntaticsTable implements Serializable {
 				if (j + 1 < getTerminalSectionColumnLength())
 					stringBuilder.append(',');
 			}
-			
+
 			if (i + 1 < this.terminalSection.size())
 				stringBuilder.append(System.lineSeparator());
 		}
@@ -242,7 +246,7 @@ public class SyntaticsTable implements Serializable {
 				if (j + 1 < getNonterminalSectionColumnLength())
 					stringBuilder.append(',');
 			}
-			
+
 			if (i + 1 < this.nonterminalSection.size())
 				stringBuilder.append(System.lineSeparator());
 		}
@@ -270,27 +274,27 @@ public class SyntaticsTable implements Serializable {
 	public Action getNonterminalAction(int state, String symbol) {
 		return this.nonterminalSection.get(state)[this.grammar.getNonterminalSymbolIndexOf(symbol)];
 	}
-	
+
 	public List<Action[]> getNonterminalSection() {
 		return nonterminalSection;
 	}
-	
+
 	private int getNonterminalSectionColumnLength() {
-		return  this.grammar.getNonterminalSymbolCount();
+		return this.grammar.getNonterminalSymbolCount();
 	}
-	
+
 	public Rule getRuleOf(int index) {
 		return this.grammar.getRules().get(index);
 	}
-	
+
 	public Action getTerminalAction(int state, String symbol) {
 		return this.terminalSection.get(state)[this.grammar.getTerminalSymbolIndexOf(symbol)];
 	}
-	
+
 	public List<Action[]> getTerminalSection() {
 		return terminalSection;
 	}
-	
+
 	private int getTerminalSectionColumnLength() {
 		return this.grammar.getTerminalSymbolCount();
 	}
@@ -327,7 +331,7 @@ public class SyntaticsTable implements Serializable {
 	@Override
 	public String toString() {
 		StringBuilder out = new StringBuilder();
-		
+
 		for (Action[] actions : this.terminalSection) {
 			out.append(Arrays.toString(actions));
 			out.append(System.lineSeparator());
