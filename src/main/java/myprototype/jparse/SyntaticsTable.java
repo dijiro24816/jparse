@@ -38,9 +38,9 @@ public class SyntaticsTable implements Serializable {
 		this.nonterminalSection = new ArrayList<Action[]>();
 	}
 
-	public int createState() {
+	public void setup() {
 		if (this.terminalSection.size() + this.nonterminalSection.size() > 0)
-			return 0;
+			return;
 
 		int state = createState(new HashMap<StateKey, Integer>(), StateKey.create(grammar.expandFirstItems()));
 
@@ -59,8 +59,6 @@ public class SyntaticsTable implements Serializable {
 			setTerminalSection(lastState, grammar.getTerminalSymbolIndexOf(grammar.getEndSymbol()),
 					new Action(ActionKind.Accept));
 		}
-
-		return state;
 	}
 
 	private int createState(HashMap<StateKey, Integer> keyStates, StateKey key) {

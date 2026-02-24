@@ -1,7 +1,7 @@
 package myprototype.jparse;
 
 public enum ActionKind {
-	Beginning,
+	Begin,
 	
 	Shift,
 	Reduce,

@@ -19,17 +19,17 @@ public class Parser {
 	
 	public Symbol parse(InputStream inStrm) throws IOException, InvalidTokenException {
 		return parse(inStrm, (rule, stack) -> {
-			return null;
+			return new SyntaxNode(rule, stack);
 		});
 	}
 	
 	public Symbol parse(InputStream inStrm, BiFunction<Rule, List<Symbol>, Object> compounder) throws IOException, InvalidTokenException {
 		StateSymbolStack stack = null;
-		this.table.createState();
-		Action action = new Action(ActionKind.Beginning, 0);
+		this.table.setup();
+		Action action = new Action(ActionKind.Begin, 0);
 		for (;;) {
 			switch (action.getKind()) {
-			case Beginning:
+			case Begin:
 				stack = new StateSymbolStack();
 				stack.push(action.getArgumentValue());
 				break;

@@ -14,7 +14,7 @@ public class Action implements Serializable {
 
 	public Action() {
 		this.argumentValue = 0;
-		this.kind = ActionKind.Beginning;
+		this.kind = ActionKind.Begin;
 	}
 	
 	public Action(ActionKind kind) {
@@ -65,7 +65,7 @@ public class Action implements Serializable {
 			stringBuilder.append(argumentValue);
 			break;
 		
-		case Beginning:
+		case Begin:
 			stringBuilder.append('b');
 		}
 		

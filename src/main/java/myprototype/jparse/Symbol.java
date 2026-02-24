@@ -1,6 +1,10 @@
 package myprototype.jparse;
 
-public class Symbol {
+import java.io.Serializable;
+
+public class Symbol implements Serializable {
+	private static final long serialVersionUID = 1L;
+	
 	private String label;
 	private int beg;
 	private int end;
