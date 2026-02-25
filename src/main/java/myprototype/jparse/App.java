@@ -2,7 +2,6 @@ package myprototype.jparse;
 
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -96,7 +95,7 @@ public class App {
 				
 				public class Hello {
 				    public static void main(String[] args) {
-				        System.out.println(1);
+				        System.out.println();
 				    }
 				}
 				""";

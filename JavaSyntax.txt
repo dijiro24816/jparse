@@ -321,9 +321,9 @@ UnaryExpressionNotPlusMinus -> PostfixExpression
 # UnaryExpressionNotPlusMinus -> SwitchExpression
 
 PostfixExpression -> Primary
-PostfixExpression -> ExpressionName
-PostfixExpression -> PostIncrementExpression
-PostfixExpression -> PostDecrementExpression
+# PostfixExpression -> ExpressionName
+# PostfixExpression -> PostIncrementExpression
+# PostfixExpression -> PostDecrementExpression
 
 Primary -> PrimaryNoNewArray
 # Primary -> ArrayCreationExpression
