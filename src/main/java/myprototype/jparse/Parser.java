@@ -1,5 +1,8 @@
 package myprototype.jparse;
 
+import java.io.ByteArrayInputStream;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
@@ -12,9 +15,17 @@ public class Parser {
 	private BufferedLexer lexer;
 	private SyntaticsTable table;
 
-	public Parser(BufferedLexer lexer, SyntaticsTable table) {
+	public Parser(Lexer lexer, SyntaticsTable table) {
 		this.table = table;
-		this.lexer = lexer;
+		this.lexer = new BufferedLexer(lexer);
+	}
+	
+	public Symbol parseFile(String fileName) throws FileNotFoundException, IOException, InvalidTokenException {
+		return parse(new FileInputStream(fileName));
+	}
+	
+	public Symbol parseCode(String code) throws IOException, InvalidTokenException {
+		return parse(new ByteArrayInputStream(code.getBytes()));
 	}
 	
 	public Symbol parse(InputStream inStrm) throws IOException, InvalidTokenException {

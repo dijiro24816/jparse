@@ -101,7 +101,7 @@ public class AppOrg {
 
 		try {
 			Lexer lexer = new TokenBasedLexer(src);
-			Parser parser = new Parser(new BufferedLexer(lexer), syntaticsTable);
+			Parser parser = new Parser(lexer, syntaticsTable);
 			System.out.println();
 			System.out.println("*** Parser Stack ***");
 			System.out.println("Accept " + parser.parse(new ByteArrayInputStream(src.getBytes())));

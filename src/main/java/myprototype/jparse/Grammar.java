@@ -1,14 +1,11 @@
 package myprototype.jparse;
 
 import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Serializable;
-import java.nio.file.Files;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -188,6 +185,10 @@ public class Grammar implements Serializable {
 
 			return new Rule(productSymbol, symbols);
 		}).toList());
+	}
+	
+	public Grammar(String productSymbol) {
+		this(productSymbol, "$");
 	}
 
 	public Grammar(String productSymbol, String endSymbol) {

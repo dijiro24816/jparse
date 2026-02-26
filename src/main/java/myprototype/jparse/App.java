@@ -70,7 +70,7 @@ public class App {
 
 		System.out.println("*** Parser Stack ***");
 		Lexer lexer = new JavaLexer(grammar.getEndSymbol());
-		Parser parser = new Parser(new BufferedLexer(lexer), syntaticsTable);
+		Parser parser = new Parser(lexer, syntaticsTable);
 		Symbol symbol = parser.parse(new ByteArrayInputStream(sourceCode.getBytes()));
 		System.out.println(symbol);
 	}
@@ -149,7 +149,7 @@ public class App {
 
 		System.out.println("*** Parser Stack ***");
 		Lexer lexer = new JavaLexer(grammar.getEndSymbol());
-		Parser parser = new Parser(new BufferedLexer(lexer), syntaticsTable);
+		Parser parser = new Parser(lexer, syntaticsTable);
 		Symbol symbol = parser.parse(new ByteArrayInputStream(sourceCode.getBytes()));
 		System.out.println(symbol);
 	}

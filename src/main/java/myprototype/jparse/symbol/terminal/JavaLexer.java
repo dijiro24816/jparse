@@ -17,6 +17,10 @@ public class JavaLexer implements Lexer {
 		this.endSymbol = endSymbol;
 	}
 	
+	public JavaLexer() {
+		this("$");
+	}
+	
 	public JavaLexer(String endSymbol) {
 		this(new TextBuffer(), endSymbol);
 	}
