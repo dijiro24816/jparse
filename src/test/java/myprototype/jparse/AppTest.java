@@ -12,7 +12,6 @@ public class AppTest {
      */
     @Test
     public void shouldAnswerWithTrue() {
-        JavaParser javaParser = new JavaParser();
         
     }
 }

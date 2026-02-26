@@ -213,7 +213,7 @@ StatementExpression -> MethodInvocation
 # StatementExpression -> ClassInstanceCreationExpression
 
 
-# MethodInvocation -> MethodName ( )
+MethodInvocation -> MethodName ( )
 MethodInvocation -> MethodName ( ArgumentList )
 # MethodInvocation -> TypeName . Identifier ( )
 # MethodInvocation -> TypeName . TypeArguments Identifier ( )
@@ -221,7 +221,7 @@ MethodInvocation -> MethodName ( ArgumentList )
 # MethodInvocation -> TypeName . TypeArguments Identifier ( ArgumentList )
 MethodInvocation -> ExpressionName . Identifier ( )
 # MethodInvocation -> ExpressionName . TypeArguments Identifier ( )
-# MethodInvocation -> ExpressionName . Identifier ( ArgumentList )
+MethodInvocation -> ExpressionName . Identifier ( ArgumentList )
 # MethodInvocation -> ExpressionName . TypeArguments Identifier ( ArgumentList )
 # MethodInvocation -> Primary . Identifier ( )
 # MethodInvocation -> Primary . TypeArguments Identifier ( )
@@ -237,7 +237,7 @@ MethodInvocation -> ExpressionName . Identifier ( )
 # MethodInvocation -> TypeName . super . TypeArguments Identifier ( ArgumentList )
 
 
-
+MethodName -> Identifier
 
 
 
@@ -321,7 +321,7 @@ UnaryExpressionNotPlusMinus -> PostfixExpression
 # UnaryExpressionNotPlusMinus -> SwitchExpression
 
 PostfixExpression -> Primary
-# PostfixExpression -> ExpressionName
+PostfixExpression -> ExpressionName
 # PostfixExpression -> PostIncrementExpression
 # PostfixExpression -> PostDecrementExpression
 
