@@ -1,0 +1,10 @@
+package jparse.symbol.terminal.keyword;
+
+import jparse.symbol.SymbolEnum;
+import jparse.symbol.terminal.KeywordToken;
+
+public class CaseKeywordToken extends KeywordToken {
+	public CaseKeywordToken(int beg, int end) {
+		super(SymbolEnum.CASE_KEYWORD_TOKEN, beg, end);
+	}
+}

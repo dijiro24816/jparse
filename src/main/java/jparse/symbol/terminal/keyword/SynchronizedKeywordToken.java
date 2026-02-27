@@ -1,0 +1,10 @@
+package jparse.symbol.terminal.keyword;
+
+import jparse.symbol.SymbolEnum;
+import jparse.symbol.terminal.KeywordToken;
+
+public class SynchronizedKeywordToken extends KeywordToken {
+	public SynchronizedKeywordToken(int beg, int end) {
+		super(SymbolEnum.SYNCHRONIZED_KEYWORD_TOKEN, beg, end);
+	}
+}
