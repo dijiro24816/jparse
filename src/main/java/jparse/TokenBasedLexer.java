@@ -5,11 +5,9 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.List;
 
-import jparse.symbol.terminal.InvalidTokenException;
-
 public class TokenBasedLexer implements Lexer {
-	public List<Token> symbols;
 	public int i = 0;
+	public List<Token> symbols;
 	
 	public TokenBasedLexer(String src) {
 		this.symbols = Arrays.asList(src.trim().split("\\s+")).stream().map(e -> new Token(e, -1, -1)).toList();

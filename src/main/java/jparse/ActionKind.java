@@ -1,13 +1,10 @@
 package jparse;
 
 public enum ActionKind {
+	Accept,
 	Begin,
-	
-	Shift,
-	Reduce,
 	Goto,
-	Accept
+	Reduce,
+	Shift
 	;
-	
-	
 }

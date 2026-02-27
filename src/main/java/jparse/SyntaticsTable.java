@@ -38,29 +38,6 @@ public class SyntaticsTable implements Serializable {
 		this.nonterminalSection = new ArrayList<Action[]>();
 	}
 
-	public void setup() {
-		if (this.terminalSection.size() + this.nonterminalSection.size() > 0)
-			return;
-
-		int state = createState(new HashMap<StateKey, Integer>(), StateKey.create(grammar.expandFirstItems()));
-
-		int lastState = getNewState();
-		if (grammar.isNonterminalSymbol(grammar.getProductSymbol())) {
-			setNonterminalSection(state, grammar.getNonterminalSymbolIndexOf(grammar.getProductSymbol()),
-					new Action(ActionKind.Goto, lastState));
-		} else {
-			setTerminalSection(state, grammar.getTerminalSymbolIndexOf(grammar.getProductSymbol()),
-					new Action(ActionKind.Shift, lastState));
-		}
-		if (grammar.isNonterminalSymbol(grammar.getEndSymbol())) {
-			setNonterminalSection(lastState, grammar.getNonterminalSymbolIndexOf(grammar.getEndSymbol()),
-					new Action(ActionKind.Accept));
-		} else {
-			setTerminalSection(lastState, grammar.getTerminalSymbolIndexOf(grammar.getEndSymbol()),
-					new Action(ActionKind.Accept));
-		}
-	}
-
 	private int createState(HashMap<StateKey, Integer> keyStates, StateKey key) {
 
 		if (keyStates.containsKey(key))
@@ -90,7 +67,7 @@ public class SyntaticsTable implements Serializable {
 
 		keyStates.put(key, currentState);
 //		System.out.println("" + currentState + " -" + key);
-		List<Item> closures = key.getClosures();
+		List<Item> closures = key.closures();
 		if (closures.size() > 0) {
 			// Check reduce-reduce problem
 			if (closures.size() > 1) {
@@ -167,7 +144,7 @@ public class SyntaticsTable implements Serializable {
 			// TODO: We should return ?
 		}
 		for (StateKey derivativeKey : key.getDerivativeKeys(grammar)) {
-			String rootSymbol = derivativeKey.getRootSymbol();
+			String rootSymbol = derivativeKey.rootSymbol();
 			if (grammar.isNonterminalSymbol(rootSymbol)) {
 				setNonterminalSection(currentState, grammar.getNonterminalSymbolIndexOf(rootSymbol),
 						new Action(ActionKind.Goto, createState(keyStates, derivativeKey)));
@@ -324,6 +301,29 @@ public class SyntaticsTable implements Serializable {
 
 	public void setTerminalSection(List<Action[]> terminalSection) {
 		this.terminalSection = terminalSection;
+	}
+
+	public void setup() {
+		if (this.terminalSection.size() + this.nonterminalSection.size() > 0)
+			return;
+
+		int state = createState(new HashMap<StateKey, Integer>(), StateKey.create(grammar.expandFirstItems()));
+
+		int lastState = getNewState();
+		if (grammar.isNonterminalSymbol(grammar.getProductSymbol())) {
+			setNonterminalSection(state, grammar.getNonterminalSymbolIndexOf(grammar.getProductSymbol()),
+					new Action(ActionKind.Goto, lastState));
+		} else {
+			setTerminalSection(state, grammar.getTerminalSymbolIndexOf(grammar.getProductSymbol()),
+					new Action(ActionKind.Shift, lastState));
+		}
+		if (grammar.isNonterminalSymbol(grammar.getEndSymbol())) {
+			setNonterminalSection(lastState, grammar.getNonterminalSymbolIndexOf(grammar.getEndSymbol()),
+					new Action(ActionKind.Accept));
+		} else {
+			setTerminalSection(lastState, grammar.getTerminalSymbolIndexOf(grammar.getEndSymbol()),
+					new Action(ActionKind.Accept));
+		}
 	}
 
 	@Override

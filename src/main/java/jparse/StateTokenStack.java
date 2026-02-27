@@ -13,24 +13,19 @@ public class StateTokenStack {
 		this.tokens = new Stack<>();
 	}
 
-	public int push(Integer item) {
-		return states.push(item);
+	public int getCurrentState() {
+		return states.peek();
 	}
 	
-	public Token push(Token item) {
-		return tokens.push(item);
+	public Token getCurrentSymbol() {
+		return this.tokens.peek();
 	}
 	
-	public void push(Token symbol, int state) {
-		push(symbol);
-		push(state);
-	}
-
 	public Token pop() {
 		this.states.pop();
 		return tokens.pop();
 	}
-	
+
 	public List<Token> pop(int length) {
 		List<Token> symbols = new ArrayList<>();
 		for (int i = 0; i < length; i++)
@@ -38,13 +33,18 @@ public class StateTokenStack {
 		
 		return symbols;
 	}
+	
+	public int push(Integer item) {
+		return states.push(item);
+	}
 
-	public int getCurrentState() {
-		return states.peek();
+	public Token push(Token item) {
+		return tokens.push(item);
 	}
 	
-	public Token getCurrentSymbol() {
-		return this.tokens.peek();
+	public void push(Token symbol, int state) {
+		push(symbol);
+		push(state);
 	}
 
 	@Override

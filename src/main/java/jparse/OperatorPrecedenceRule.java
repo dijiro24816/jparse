@@ -6,8 +6,8 @@ import java.util.HashSet;
 
 public class OperatorPrecedenceRule {
 
-	private HashMap<String, Integer> symbolLevels;
 	private ArrayList<PrecedenceDirection> levelDirections;
+	private HashMap<String, Integer> symbolLevels;
 
 	public OperatorPrecedenceRule() {
 		this.symbolLevels = new HashMap<>();
@@ -20,16 +20,16 @@ public class OperatorPrecedenceRule {
 		this.levelDirections.add(direction);
 	}
 
-	public PrecedenceRuleInfo getInfo(String symbol) {
-		return new PrecedenceRuleInfo(getPrecedenceDirection(symbol),
-				getHighPrioritySymbols(symbol, PrecedenceDirection.Left),
-				getHighPrioritySymbols(symbol, PrecedenceDirection.Right));
-	}
-
 	public HashSet<String> getHighPrioritySymbols(String symbol, PrecedenceDirection direction) {
 		int symbolLevel = this.symbolLevels.get(symbol);
 		return new HashSet<String>(this.symbolLevels.entrySet().stream().filter(e -> e.getValue() > symbolLevel)
 				.filter(e -> this.levelDirections.get(e.getValue()) == direction).map(e -> e.getKey()).toList());
+	}
+
+	public PrecedenceRuleInfo getInfo(String symbol) {
+		return new PrecedenceRuleInfo(getPrecedenceDirection(symbol),
+				getHighPrioritySymbols(symbol, PrecedenceDirection.Left),
+				getHighPrioritySymbols(symbol, PrecedenceDirection.Right));
 	}
 
 	public PrecedenceDirection getPrecedenceDirection(String symbol) {

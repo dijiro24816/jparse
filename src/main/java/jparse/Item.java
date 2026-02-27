@@ -5,28 +5,26 @@ import java.util.List;
 import java.util.Objects;
 
 public class Item {
-	private Rule rule;
+	public static List<Item> generateBeginningItemsOf(Grammar grammar) {
+		HashSet<String> lookAheadSet = new HashSet<>();
+		lookAheadSet.add(grammar.getEndSymbol());
+		return Item.generateItemsOf(grammar, grammar.getProductSymbol(), lookAheadSet);
+	}
+	public static List<Item> generateItemsOf(Grammar grammar, String symbol, HashSet<String> lookAheadSet) {
+		return grammar.getRulesOf(symbol).stream().map(e -> new Item(e, lookAheadSet)).toList();
+	}
 	private int dot;
+	
 	private HashSet<String> lookaheadSet;
-	
-	public String getProductSymbol() {
-		return rule.productSymbol();
-	}
 
-	public Rule getRule() {
-		return rule;
-	}
+	private Rule rule;
 
-	public int getDot() {
-		return dot;
+	public Item(Rule rule) {
+		this(rule, new HashSet<String>());
 	}
 	
-	public int size() {
-		return this.rule.size();
-	}
-	
-	public HashSet<String> getLookaheadSet() {
-		return this.lookaheadSet;
+	public Item(Rule rule, HashSet<String> lookAhead) {
+		this(rule, lookAhead, 0);
 	}
 	
 	public Item(Rule rule, HashSet<String> lookaheadSet, int dot) {
@@ -34,49 +32,29 @@ public class Item {
 		this.lookaheadSet = lookaheadSet;
 		this.dot = dot;
 	}
-
-	public Item(Rule rule, HashSet<String> lookAhead) {
-		this(rule, lookAhead, 0);
-	}
-	
-	public Item(Rule rule) {
-		this(rule, new HashSet<String>());
-	}
-
-	public boolean isTakingTheClosure() {
-		return getRestSymbolsCount() == 0;
-	}
-	
-	public boolean isReachingLastSymbol() {
-		return getRestSymbolsCount() == 1;
-	}
-	
-	public boolean isReplaceable() {
-		return getDot() == 0 && getRule().isReplaceable();
-	}
-	
-	public int getRestSymbolsCount() {
-		return this.rule.symbols().size() - this.dot;
-	}
-
-	public String getDotSymbol() {
-		return isTakingTheClosure() ? null : this.rule.symbols().get(this.dot);
-	}
-	
-	public String getDotNextSymbol() {
-		return this.rule.symbols().get(this.dot + 1);
-	}
-	
-	public String getRightSymbolsString() {
-		return String.join(" ", this.rule.symbols().subList(this.dot, this.rule.symbols().size()));
-	}
 	
 	public String beforeSymbolsString() {
 		return String.join(" ", this.rule.symbols().subList(0, this.dot));
 	}
+
+	@Override
+	protected Item clone() {
+		return new Item(this.rule, this.lookaheadSet, this.dot);
+	}
 	
-	public boolean isDotNonterminal(Grammar grammar) {
-		return grammar.isNonterminalSymbol(getDotSymbol());
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+
+		if (obj == null)
+			return false;
+
+		if (getClass() != obj.getClass())
+			return false;
+
+		Item other = (Item) obj;
+		return this.dot == other.getDot() && this.rule.equals(other.getRule()) && this.lookaheadSet.equals(other.getLookaheadSet());
 	}
 
 	public List<Item> generateDotItemsOf(Grammar grammar, HashSet<String> orgLookaheadSet) {
@@ -91,14 +69,49 @@ public class Item {
 		
 	}
 	
-	public static List<Item> generateBeginningItemsOf(Grammar grammar) {
-		HashSet<String> lookAheadSet = new HashSet<>();
-		lookAheadSet.add(grammar.getEndSymbol());
-		return Item.generateItemsOf(grammar, grammar.getProductSymbol(), lookAheadSet);
+	public int getDot() {
+		return dot;
+	}
+	
+	public String getDotNextSymbol() {
+		return this.rule.symbols().get(this.dot + 1);
+	}
+	
+	public String getDotSymbol() {
+		return isTakingTheClosure() ? null : this.rule.symbols().get(this.dot);
 	}
 
-	public static List<Item> generateItemsOf(Grammar grammar, String symbol, HashSet<String> lookAheadSet) {
-		return grammar.getRulesOf(symbol).stream().map(e -> new Item(e, lookAheadSet)).toList();
+	public HashSet<String> getLookaheadSet() {
+		return this.lookaheadSet;
+	}
+	
+	public String getProductSymbol() {
+		return rule.productSymbol();
+	}
+	
+	public int getRestSymbolsCount() {
+		return this.rule.symbols().size() - this.dot;
+	}
+	
+	public String getRightSymbolsString() {
+		return String.join(" ", this.rule.symbols().subList(this.dot, this.rule.symbols().size()));
+	}
+	
+	public Rule getRule() {
+		return rule;
+	}
+
+	@Override
+	public int hashCode() {
+		return Objects.hash(this.dot) + this.rule.hashCode();
+	}
+	
+	public void increaseDot() {
+		this.dot++;
+	}
+
+	public boolean isDotNonterminal(Grammar grammar) {
+		return grammar.isNonterminalSymbol(getDotSymbol());
 	}
 	
 //	public static List<Item> expandDot(Grammar grammar, HashSet<String> lookAheadSet, ArrayDeque<Item> itemQueue) {
@@ -128,34 +141,21 @@ public class Item {
 
 	
 	
-	public void increaseDot() {
-		this.dot++;
+	public boolean isReachingLastSymbol() {
+		return getRestSymbolsCount() == 1;
 	}
 
-	@Override
-	public int hashCode() {
-		return Objects.hash(this.dot) + this.rule.hashCode();
+	public boolean isReplaceable() {
+		return getDot() == 0 && getRule().isReplaceable();
 	}
 	
-	@Override
-	public boolean equals(Object obj) {
-		if (this == obj)
-			return true;
-
-		if (obj == null)
-			return false;
-
-		if (getClass() != obj.getClass())
-			return false;
-
-		Item other = (Item) obj;
-		return this.dot == other.getDot() && this.rule.equals(other.getRule()) && this.lookaheadSet.equals(other.getLookaheadSet());
+	public boolean isTakingTheClosure() {
+		return getRestSymbolsCount() == 0;
 	}
 
 
-	@Override
-	protected Item clone() {
-		return new Item(this.rule, this.lookaheadSet, this.dot);
+	public int size() {
+		return this.rule.size();
 	}
 
 	@Override

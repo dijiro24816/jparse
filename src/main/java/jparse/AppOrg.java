@@ -1,16 +1,18 @@
 package jparse;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
-
-import jparse.symbol.terminal.InvalidTokenException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 
 public class AppOrg {
 
-	public static void mainaa(String[] args) throws ClassNotFoundException, IOException {
+	public static void main(String[] args) throws ClassNotFoundException, IOException {
 		Runtime r = Runtime.getRuntime();
 		System.out.println("version    : " + r.version());
 		System.out.println("maxMemory  : " + r.maxMemory());
@@ -20,17 +22,17 @@ public class AppOrg {
 		Grammar grammar;
 		SyntaticsTable syntaticsTable;
 
-//		String fname = "syntaticsTable.ser";
-//		if (!new File(fname).exists()) {
+		String fname = "syntaticsTable.ser";
+		if (!new File(fname).exists()) {
 		grammar = new Grammar("CompilationUnit", "$").resource(new FileInputStream("JavaSyntax21.txt"));
 		syntaticsTable = new SyntaticsTable(grammar);
 		syntaticsTable.setup();
 
-//			syntaticsTable.serialize(new ObjectOutputStream(new FileOutputStream(fname)));
-//		} else {
-//			syntaticsTable = SyntaticsTable.deserialize(new ObjectInputStream(new FileInputStream(fname)));
-//			grammar = syntaticsTable.getGrammar();
-//		}
+			syntaticsTable.serialize(new ObjectOutputStream(new FileOutputStream(fname)));
+		} else {
+			syntaticsTable = SyntaticsTable.deserialize(new ObjectInputStream(new FileInputStream(fname)));
+			grammar = syntaticsTable.getGrammar();
+		}
 
 		System.out.println("*** Grammar ***");
 		System.out.println(grammar);

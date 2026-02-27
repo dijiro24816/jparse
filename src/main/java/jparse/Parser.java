@@ -9,8 +9,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.function.BiFunction;
 
-import jparse.symbol.terminal.InvalidTokenException;
-
 public class Parser {
 	private BufferedLexer lexer;
 	private SyntaticsTable table;
@@ -18,14 +16,6 @@ public class Parser {
 	public Parser(Lexer lexer, SyntaticsTable table) {
 		this.table = table;
 		this.lexer = new BufferedLexer(lexer);
-	}
-	
-	public Token parseFile(String fileName) throws FileNotFoundException, IOException, InvalidTokenException {
-		return parse(new FileInputStream(fileName));
-	}
-	
-	public Token parseCode(String code) throws IOException, InvalidTokenException {
-		return parse(new ByteArrayInputStream(code.getBytes()));
 	}
 	
 	public Token parse(InputStream inStrm) throws IOException, InvalidTokenException {
@@ -39,26 +29,26 @@ public class Parser {
 		this.table.setup();
 		Action action = new Action(ActionKind.Begin, 0);
 		for (;;) {
-			switch (action.getKind()) {
+			switch (action.kind()) {
 			case Begin:
 				stack = new StateTokenStack();
-				stack.push(action.getArgumentValue());
+				stack.push(action.argumentValue());
 				break;
 				
 			case Shift:
 				System.out.print(stack);
-				System.out.println(" (" + this.lexer.peek(inStrm).label() + ") Shift Symbol -- " + action.getArgumentValue());
+				System.out.println(" (" + this.lexer.peek(inStrm).label() + ") Shift Symbol -- " + action.argumentValue());
 				
 				stack.push(this.lexer.getSymbol(inStrm));
-				stack.push(action.getArgumentValue());
+				stack.push(action.argumentValue());
 				
 				break;
 				
 			case Reduce:
 				System.out.print(stack);
-				System.out.println(" (" + this.lexer.peek(inStrm).label() + ") Reduce Rule -- " + action.getArgumentValue() + ": " + table.getRuleOf(action.getArgumentValue()));
+				System.out.println(" (" + this.lexer.peek(inStrm).label() + ") Reduce Rule -- " + action.argumentValue() + ": " + table.getRuleOf(action.argumentValue()));
 				
-				Rule rule = table.getRuleOf(action.getArgumentValue());
+				Rule rule = table.getRuleOf(action.argumentValue());
 				List<Token> fromSymbols = stack.pop(rule.symbols().size());
 				Collections.reverse(fromSymbols);
 				
@@ -80,13 +70,13 @@ public class Parser {
 				System.out.print(stack);
 				
 				action = table.getNonterminalAction(stack.getCurrentState(), toSymbol.label());
-				if (action.getKind() == ActionKind.Accept) {
+				if (action.kind() == ActionKind.Accept) {
 					System.out.println(" Accept");
 					return toSymbol;
 				}
-				System.out.println(" Goto State -- " + action.getArgumentValue());
+				System.out.println(" Goto State -- " + action.argumentValue());
 				
-				stack.push(action.getArgumentValue());
+				stack.push(action.argumentValue());
 				
 //				action = this.table.getNonterminalAction(stack.getCurrentState(), toSymbol.getLabel());
 //				continue;
@@ -95,9 +85,9 @@ public class Parser {
 			case Goto:
 				stack.push(this.lexer.getSymbol(inStrm));
 				System.out.print(stack);
-				System.out.println("Goto State -- " + action.getArgumentValue());
+				System.out.println("Goto State -- " + action.argumentValue());
 				
-				stack.push(action.getArgumentValue());
+				stack.push(action.argumentValue());
 				break;
 				
 			case Accept:
@@ -115,5 +105,13 @@ public class Parser {
 			
 			
 		}
+	}
+	
+	public Token parseCode(String code) throws IOException, InvalidTokenException {
+		return parse(new ByteArrayInputStream(code.getBytes()));
+	}
+	
+	public Token parseFile(String fileName) throws FileNotFoundException, IOException, InvalidTokenException {
+		return parse(new FileInputStream(fileName));
 	}
 }
