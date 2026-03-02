@@ -25,7 +25,7 @@ public class App {
 		String fname = "syntaticsTable.ser";
 		if (!new File(fname).exists()) {
 			System.out.println("Syntatics Table Making ...");
-			grammar = new Grammar("CompilationUnit", "$").resource(new FileInputStream("JavaSyntax.txt"));
+			grammar = Grammar.loadFile("JavaSyntax.txt");
 			syntaticsTable = new SyntaticsTable(grammar);
 			syntaticsTable.setup();
 
@@ -118,7 +118,7 @@ public class App {
 		String fname = "syntaticsTable.ser";
 		if (!new File(fname).exists()) {
 			System.out.println("Syntatics Table Making ...");
-			grammar = new Grammar("Statement").resource(new ByteArrayInputStream(grammarSource.getBytes()));
+			grammar = Grammar.loadString(grammarSource);
 			syntaticsTable = new SyntaticsTable(grammar);
 			syntaticsTable.setup();
 

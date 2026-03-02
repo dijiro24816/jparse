@@ -24,7 +24,7 @@ public class AppOrg {
 
 		String fname = "syntaticsTable.ser";
 		if (!new File(fname).exists()) {
-		grammar = new Grammar("CompilationUnit", "$").resource(new FileInputStream("JavaSyntax21.txt"));
+		grammar = Grammar.loadFile("JavaSyntax21.txt");
 		syntaticsTable = new SyntaticsTable(grammar);
 		syntaticsTable.setup();
 
