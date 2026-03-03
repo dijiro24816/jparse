@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 
-import jparse.TextBuffer;
+import jparse.Scratchpad;
 import jparse.Token;
 
 public class PunctuationTokenRelation {
@@ -17,13 +17,13 @@ public class PunctuationTokenRelation {
 		this.relations = relations;
 	}
 
-	private Token extractInternal(TextBuffer textBuffer, InputStream inStrm)
+	private Token extractInternal(Scratchpad textBuffer, InputStream inStrm)
 			throws InstantiationException, IllegalAccessException, IllegalArgumentException, InvocationTargetException,
 			NoSuchMethodException, SecurityException, IOException {
 		return extractInternal(textBuffer, inStrm, 0);
 	}
 
-	private Token extractInternal(TextBuffer textBuffer, InputStream inStrm, int count)
+	private Token extractInternal(Scratchpad textBuffer, InputStream inStrm, int count)
 			throws IOException, InstantiationException, IllegalAccessException, IllegalArgumentException,
 			InvocationTargetException, NoSuchMethodException, SecurityException {
 		int index = textBuffer.getIndex();
@@ -98,7 +98,7 @@ public class PunctuationTokenRelation {
 					new PunctuationTokenRelation('='))
 	};
 
-	public static Token extract(TextBuffer textBuffer, InputStream inStrm)
+	public static Token extract(Scratchpad textBuffer, InputStream inStrm)
 			throws IOException, InstantiationException, IllegalAccessException, IllegalArgumentException,
 			InvocationTargetException, NoSuchMethodException, SecurityException {
 		int index = textBuffer.getIndex();

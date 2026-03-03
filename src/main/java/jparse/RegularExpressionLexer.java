@@ -8,10 +8,10 @@ public class RegularExpressionLexer implements Lexer {
 	
 	private boolean isInsideBracketExpression = false;
 	
-	public TextBuffer textBuffer;
+	public Scratchpad textBuffer;
 	
 	public RegularExpressionLexer() {
-		this.textBuffer = new TextBuffer();
+		this.textBuffer = new Scratchpad();
 	}
 	
 	@Override

@@ -71,9 +71,9 @@ public class TextBuffer {
 		return stringBuilder.delete(begIndex, endIndex);
 	}
 	
-	public ErasedString erase(int length) {
-		return erase(0, length);
-	}
+//	public ErasedString erase(int length) {
+//		return erase(0, length);
+//	}
 	
 	public ErasedString erase(int begIndex, int endIndex) {
 //		System.out.println("Before: \"" + stringBuilder.toString() + "\"");
@@ -98,9 +98,9 @@ public class TextBuffer {
 	}
 
 	// Extract from stringBuilder, but keep stringBuilder's character after the specified length
-	public String extract(int length) {
-		return extract(0, length);
-	}
+//	public String extract(int length) {
+//		return extract(0, length);
+//	}
 
 	public String extract(int begIndex, int endIndex) {
 		String s = copy(begIndex, endIndex);
@@ -163,7 +163,7 @@ public class TextBuffer {
 		return index;
 	}
 
-	public int getLength() {
+	private int getLength() {
 		return stringBuilder.length();
 	}
 
@@ -173,11 +173,11 @@ public class TextBuffer {
 		return ch;
 	}
 	
-	public int getRawLength() {
-		return getRawLength(0, getLength());
-	}
+//	public int getRawLength() {
+//		return getRawLength(0, getLength());
+//	}
 
-	public int getRawLength(int begIndex, int endIndex) {
+	private int getRawLength(int begIndex, int endIndex) {
 		return endIndex - begIndex +
 				erasedStrings.stream()
 						.filter(es -> (es.index > begIndex && es.index < endIndex))
@@ -203,7 +203,7 @@ public class TextBuffer {
 		return pullCharacter(inStrm);
 	}
 	
-	public int length() {
+	private int length() {
 		return stringBuilder.length();
 	}
 	
@@ -222,7 +222,7 @@ public class TextBuffer {
 		return ch < 0 ? ch : stringBuilder.charAt(getIndex() + nth);
 	}
 
-	public int pullByteCharacter(InputStream inStrm) throws IOException {
+	private int pullByteCharacter(InputStream inStrm) throws IOException {
 		int ch = inStrm.read();
 		stringBuilder.append((char)ch);
 		count++;
@@ -254,10 +254,6 @@ public class TextBuffer {
 		stringBuilder.insert(begIndex, (char)ch);
 	}
 
-	public void setIndex(int index) {
-		this.index = index; 
-	}
-	
 	// Read character without putting on stringBuilder
 	public int skip(InputStream inStrm) throws IOException {
 		int ch = inStrm.read();

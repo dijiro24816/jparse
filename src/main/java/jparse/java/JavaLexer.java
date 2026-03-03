@@ -7,16 +7,16 @@ import java.util.HexFormat;
 
 import jparse.InvalidTokenException;
 import jparse.Lexer;
-import jparse.TextBuffer;
+import jparse.Scratchpad;
 import jparse.Token;
 import jparse.Util;
 
 public class JavaLexer implements Lexer {
-	private TextBuffer textBuffer;
+	private Scratchpad scratchpad;
 	private String endSymbol;
 	
-	public JavaLexer(TextBuffer textBuffer, String endSymbol) {
-		this.textBuffer = textBuffer;
+	public JavaLexer(Scratchpad scratchpad, String endSymbol) {
+		this.scratchpad = scratchpad;
 		this.endSymbol = endSymbol;
 	}
 	
@@ -25,17 +25,42 @@ public class JavaLexer implements Lexer {
 	}
 	
 	public JavaLexer(String endSymbol) {
-		this(new TextBuffer(), endSymbol);
+		this(new Scratchpad() {
+			public int pullCharacter(InputStream inStrm) throws IOException {
+				int begIndex = length();
+				
+				int ch = getCharacter(inStrm);
+				
+				if (ch != '\\')
+					return ch;
+				
+				if (super.pullCharacter(inStrm) != 'u')
+					return ch;
+				
+				for (int i = 0; i < 4; i++)
+					super.pullCharacter(inStrm);
+				
+				ch = (int) Util.parseHexDecimalDigits(copy(begIndex + 2, begIndex + 6));
+				replaceAsCharacter(begIndex, begIndex + 6, ch);
+				
+				return ch;
+			}
+
+			public void replaceAsCharacter(int begIndex, int endIndex, int ch) {
+				erase(begIndex, endIndex, 1);
+				buffer.insert(begIndex, (char)ch);
+			}
+		}, endSymbol);
 	}
 
 	public Token extractAfterJavaLetter(InputStream inStrm) throws IOException, InvalidTokenException {
 		int ch, length = 0;
-		while ((ch = textBuffer.getCharacter(inStrm)) >= 0 && (isJavaLetter(ch) || Character.isDigit(ch)))
+		while ((ch = scratchpad.getCharacter(inStrm)) >= 0 && (isJavaLetter(ch) || Character.isDigit(ch)))
 			length++;
 
-		int beg = textBuffer.getFirstByteCount();
-		String s = textBuffer.extract(length);
-		int end = textBuffer.getFirstByteCount();
+		int beg = scratchpad.getFirstByteCount();
+		String s = scratchpad.extract(0, length);
+		int end = scratchpad.getFirstByteCount();
 
 		Token symbol;
 
@@ -184,66 +209,66 @@ public class JavaLexer implements Lexer {
 	}
 
 	public long extractOctalDigits(InputStream inStrm) throws IOException, InvalidTokenException {
-		int start = textBuffer.getIndex();
-		int end = start + textBuffer.countLength(inStrm, (Integer ch) -> {
+		int start = scratchpad.getIndex();
+		int end = start + scratchpad.countLength(inStrm, (Integer ch) -> {
 			return Util.isOctalDigit(ch);
 		});
 
-		return Util.parseOctalDigits(textBuffer.extract(start, end));
+		return Util.parseOctalDigits(scratchpad.extract(start, end));
 	}
 
 	public long extractHexdecimalDigits(InputStream inStrm) throws IOException, InvalidTokenException {
-		int start = textBuffer.getIndex();
-		int end = start + textBuffer.countLength(inStrm, (Integer ch) -> {
+		int start = scratchpad.getIndex();
+		int end = start + scratchpad.countLength(inStrm, (Integer ch) -> {
 			return Util.isHexDecimalDigit(ch);
 		});
 
-		return Util.parseHexDecimalDigits(textBuffer.extract(start, end));
+		return Util.parseHexDecimalDigits(scratchpad.extract(start, end));
 	}
 
 	public Token extractAfterBinaryExponent(InputStream inStrm, String left)
 			throws IOException, InvalidTokenException {
-		int beg = textBuffer.getFirstByteCount() - left.length();
+		int beg = scratchpad.getFirstByteCount() - left.length();
 
 		double value = 0;
 		long exponent = 0;
 
-		int ch = textBuffer.peek(inStrm, 1);
+		int ch = scratchpad.peek(inStrm, 1);
 		boolean minus = false;
 		switch (ch) {
 		case '-':
 			minus = true;
 		case '+':
-			textBuffer.erase(2);
+			scratchpad.erase(0, 2);
 			break;
 		default:
-			textBuffer.erase(1);
+			scratchpad.erase(0, 1);
 		}
 
 		int length = 0;
-		while ((ch = textBuffer.getCharacter(inStrm)) >= 0 && Util.isHexDecimalDigit(ch))
+		while ((ch = scratchpad.getCharacter(inStrm)) >= 0 && Util.isHexDecimalDigit(ch))
 			length++;
 
-		String right = textBuffer.extract(length);
+		String right = scratchpad.extract(0, length);
 
 		value = Util.parseHexDecimalDigits(left);
 		exponent = Util.parseDecimalDigits(right);
 
 		value = Math.pow(value, minus ? -exponent : exponent);
 
-		textBuffer.erase(length);
-		int end = textBuffer.getFirstByteCount();
+		scratchpad.erase(0, length);
+		int end = scratchpad.getFirstByteCount();
 
 		return new Token("FlotingPointLiteral", beg, end, value);
 	}
 
 	public Token extractAfterDigit(InputStream inStrm) throws IOException, InvalidTokenException {
-		int ch = textBuffer.peek(inStrm);
+		int ch = scratchpad.peek(inStrm);
 		int length = 0;
 
-		int offset = textBuffer.getIndex();
+		int offset = scratchpad.getIndex();
 
-		int beg = textBuffer.getByteCount(offset);
+		int beg = scratchpad.getByteCount(offset);
 		int end;
 		String s;
 		long value = 0;
@@ -252,8 +277,8 @@ public class JavaLexer implements Lexer {
 		double floatingPointValue;
 
 		// Decimal Integer Literal or Decimal Floating Point Literal
-		if (ch != '0' || ch == '.' || textBuffer.peek(inStrm, 1) == '.') {
-			while ((ch = textBuffer.getCharacter(inStrm)) >= 0) {
+		if (ch != '0' || ch == '.' || scratchpad.peek(inStrm, 1) == '.') {
+			while ((ch = scratchpad.getCharacter(inStrm)) >= 0) {
 				if (ch == '.' && !isFloatingPoint) { // Don't allow this process second time
 					isFloatingPoint = true;
 					length++;
@@ -267,8 +292,8 @@ public class JavaLexer implements Lexer {
 				length++;
 			}
 
-			s = textBuffer.extract(length);
-			end = textBuffer.getFirstByteCount();
+			s = scratchpad.extract(0, length);
+			end = scratchpad.getFirstByteCount();
 
 			if (isFloatingPoint) {
 				floatingPointValue = Double.parseDouble(s);
@@ -279,16 +304,16 @@ public class JavaLexer implements Lexer {
 			return new Token("IntegerLiteral", beg, end, value);
 		}
 
-		switch (textBuffer.peek(inStrm, 1)) {
+		switch (scratchpad.peek(inStrm, 1)) {
 		case 'x':
 		case 'X': // Hexdecimal Integer Literal
-			textBuffer.erase(2);
+			scratchpad.erase(0, 2);
 
-			while ((ch = textBuffer.getCharacter(inStrm)) >= 0) {
+			while ((ch = scratchpad.getCharacter(inStrm)) >= 0) {
 				int num;
 
 				if (ch == 'p')
-					return extractAfterBinaryExponent(inStrm, textBuffer.extract(length));
+					return extractAfterBinaryExponent(inStrm, scratchpad.extract(0, length));
 
 				if (ch >= '0' && ch <= '9')
 					num = ch - '0';
@@ -302,25 +327,25 @@ public class JavaLexer implements Lexer {
 				length++;
 			}
 
-			s = textBuffer.extract(length);
+			s = scratchpad.extract(0, length);
 			value = HexFormat.fromHexDigitsToLong(s);
-			end = textBuffer.getFirstByteCount();
+			end = scratchpad.getFirstByteCount();
 
 			return new Token("IntegerLiteral", beg, end, value);
 
 		case 'b':
 		case 'B': {
 			// Binary Integer Literal
-			textBuffer.erase(2);
-			while ((ch = textBuffer.getCharacter(inStrm)) >= 0) {
+			scratchpad.erase(0, 2);
+			while ((ch = scratchpad.getCharacter(inStrm)) >= 0) {
 				if (ch < '0' || ch > '1')
 					break;
 
 				length++;
 			}
 
-			s = textBuffer.extract(length);
-			end = textBuffer.getFirstByteCount();
+			s = scratchpad.extract(0, length);
+			end = scratchpad.getFirstByteCount();
 
 			int m = 1;
 			int i = s.length();
@@ -335,17 +360,17 @@ public class JavaLexer implements Lexer {
 
 		default: {
 			// Octal Integer Literal
-			textBuffer.erase(1);
+			scratchpad.erase(0, 1);
 
-			while ((ch = textBuffer.getCharacter(inStrm)) >= 0) {
+			while ((ch = scratchpad.getCharacter(inStrm)) >= 0) {
 				if (ch < '0' || ch > '7')
 					break;
 
 				length++;
 			}
 
-			s = textBuffer.extract(length);
-			end = textBuffer.getFirstByteCount();
+			s = scratchpad.extract(0, length);
+			end = scratchpad.getFirstByteCount();
 
 			int m = 1;
 			int i = s.length();
@@ -362,11 +387,11 @@ public class JavaLexer implements Lexer {
 	}
 
 	public int extractEscapeSequence(InputStream inStrm) throws IOException, InvalidTokenException {
-		int beg = textBuffer.getFirstByteCount();
-		int offset = textBuffer.getIndex();
+		int beg = scratchpad.getFirstByteCount();
+		int offset = scratchpad.getIndex();
 
-		textBuffer.jump(inStrm, offset + 1);
-		int ch = textBuffer.getCharacter(inStrm); // go after '\' character
+		scratchpad.jump(inStrm, offset + 1);
+		int ch = scratchpad.getCharacter(inStrm); // go after '\' character
 
 		switch (ch) {
 		case 'b':
@@ -407,58 +432,58 @@ public class JavaLexer implements Lexer {
 				return 0;
 			}
 
-			textBuffer.getPreviousCharacter(inStrm);
+			scratchpad.getPreviousCharacter(inStrm);
 			ch = (int) extractOctalDigits(inStrm);
-			textBuffer.erase(offset, offset + 1); // erase '\\'
+			scratchpad.erase(offset, offset + 1); // erase '\\'
 			return ch;
 		}
 
-		textBuffer.erase(offset, offset + 2); // erase '\\' + '[btnfr"\'\\]'
+		scratchpad.erase(offset, offset + 2); // erase '\\' + '[btnfr"\'\\]'
 		return ch;
 	}
 
 	public Token extractStringLiteralToken(InputStream inStrm) throws IOException, InvalidTokenException {
-		int beg = textBuffer.getFirstByteCount();
-		int offset = textBuffer.getIndex();
+		int beg = scratchpad.getFirstByteCount();
+		int offset = scratchpad.getIndex();
 
 		StringBuilder sb = new StringBuilder();
 
-		textBuffer.jump(inStrm, offset + 1); // jump after '"'
+		scratchpad.jump(inStrm, offset + 1); // jump after '"'
 		int ch;
-		while ((ch = textBuffer.peek(inStrm)) != '"') {
+		while ((ch = scratchpad.peek(inStrm)) != '"') {
 			if (ch < 0)
 				throw new InvalidTokenException();
 			ch = extractSingleCharacter(inStrm);
 			sb.append((char) ch);
 		}
 
-		textBuffer.erase(offset, offset + 2); // erase '"' + '"'
+		scratchpad.erase(offset, offset + 2); // erase '"' + '"'
 
-		return new Token("StringLiteral", beg, textBuffer.getByteCount(offset), sb.toString());
+		return new Token("StringLiteral", beg, scratchpad.getByteCount(offset), sb.toString());
 	}
 
 	public int extractSingleCharacter(InputStream inStrm) throws IOException, InvalidTokenException {
-		int start = textBuffer.getIndex();
+		int start = scratchpad.getIndex();
 
-		int ch = textBuffer.peek(inStrm); // go after '\''
+		int ch = scratchpad.peek(inStrm); // go after '\''
 		if (ch < 0)
 			throw new InvalidTokenException();
 
 		if (ch == '\\') {
 			ch = extractEscapeSequence(inStrm);
 		} else {
-			textBuffer.erase(start, start + 1); // erase single character
+			scratchpad.erase(start, start + 1); // erase single character
 		}
 
 		return ch;
 	}
 
 	public Token extractCharacterLiteralToken(InputStream inStrm) throws IOException, InvalidTokenException {
-		int beg = textBuffer.getFirstByteCount();
-		int offset = textBuffer.getIndex();
+		int beg = scratchpad.getFirstByteCount();
+		int offset = scratchpad.getIndex();
 
-		textBuffer.jump(inStrm, offset + 1); // jump after '\''
-		if (textBuffer.peek(inStrm) == '\'')
+		scratchpad.jump(inStrm, offset + 1); // jump after '\''
+		if (scratchpad.peek(inStrm) == '\'')
 			throw new InvalidTokenException();
 
 		int ch;
@@ -469,16 +494,16 @@ public class JavaLexer implements Lexer {
 			return null;
 		}
 
-		if (textBuffer.getCharacter(inStrm) != '\'')
+		if (scratchpad.getCharacter(inStrm) != '\'')
 			throw new InvalidTokenException();
 
-		textBuffer.erase(offset, offset + 2); // erase '\'' + '\''
-		return new Token("CharacterLiteral", ch, beg, textBuffer.getFirstByteCount());
+		scratchpad.erase(offset, offset + 2); // erase '\'' + '\''
+		return new Token("CharacterLiteral", ch, beg, scratchpad.getFirstByteCount());
 	}
 
 	public Token extractPunctuation(InputStream inStrm) throws IOException {
 		try {
-			return PunctuationTokenRelation.extract(textBuffer, inStrm);
+			return PunctuationTokenRelation.extract(scratchpad, inStrm);
 		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
 				| NoSuchMethodException | SecurityException | IOException e) {
 			e.printStackTrace();
@@ -495,17 +520,17 @@ public class JavaLexer implements Lexer {
 
 	public Token tokenize(InputStream inStrm) throws IOException, InvalidTokenException {
 		int ch;
-		while ((ch = textBuffer.peek(inStrm)) >= 0) {
+		while ((ch = scratchpad.peek(inStrm)) >= 0) {
 			if (ch != '\n' && (ch < ' ' || ch > 126)) // Invaild character
 				break;
 
 			// Skip whitespace
 			if (Character.isWhitespace(ch)) {
-				textBuffer.erase(1);
+				scratchpad.erase(0, 1);
 
-				while ((ch = textBuffer.skip(inStrm)) >= 0) {
+				while ((ch = scratchpad.skip(inStrm)) >= 0) {
 					if (!Character.isWhitespace(ch)) {
-						textBuffer.unskip(inStrm, (char) ch);
+						scratchpad.unskip(inStrm, (char) ch);
 						break;
 					}
 				}
@@ -513,21 +538,21 @@ public class JavaLexer implements Lexer {
 			}
 
 			// Skip comment
-			if (ch == '/' && textBuffer.peek(inStrm, 1) == '*') {
-				textBuffer.erase(2); // Erase stored character '/' and '*'
+			if (ch == '/' && scratchpad.peek(inStrm, 1) == '*') {
+				scratchpad.erase(0, 2); // Erase stored character '/' and '*'
 
 				int ch1, ch2 = 0;
 				do {
 					ch1 = ch2;
 
-				} while ((ch2 = textBuffer.skip(inStrm)) >= 0 && (ch1 != '*' || ch2 != '/'));
+				} while ((ch2 = scratchpad.skip(inStrm)) >= 0 && (ch1 != '*' || ch2 != '/'));
 				continue;
 			}
 
 			if (isJavaLetter(ch))
 				return extractAfterJavaLetter(inStrm);
 
-			if (Character.isDigit(ch) || (ch == '.' && Character.isDigit(textBuffer.peek(inStrm, 1)))) // Digit or
+			if (Character.isDigit(ch) || (ch == '.' && Character.isDigit(scratchpad.peek(inStrm, 1)))) // Digit or
 																										// FloatingPoint
 				return extractAfterDigit(inStrm);
 
@@ -541,7 +566,7 @@ public class JavaLexer implements Lexer {
 			return extractPunctuation(inStrm);
 		}
 
-		int offset = this.textBuffer.getFirstByteCount();
+		int offset = this.scratchpad.getFirstByteCount();
 		return new Token(this.endSymbol, offset, offset);
 	}
 }
