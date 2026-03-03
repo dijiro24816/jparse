@@ -26,15 +26,14 @@ public class App {
 		if (!new File(fname).exists()) {
 			System.out.println("Syntatics Table Making ...");
 			grammar = Grammar.loadFile("JavaSyntax.txt");
-			syntaticsTable = new SyntaticsTable(grammar);
-			syntaticsTable.setup();
+			syntaticsTable = SyntaticsTable.create(grammar);
 
 			syntaticsTable.serialize(new ObjectOutputStream(new FileOutputStream(fname)));
 		} else {
 			System.out.println("Syntatics Table Loading ...");
 			
 			syntaticsTable = SyntaticsTable.deserialize(new ObjectInputStream(new FileInputStream(fname)));
-			grammar = syntaticsTable.getGrammar();
+			grammar = syntaticsTable.grammar();
 		}
 		
 		System.out.println("*** Grammar ***");
@@ -43,8 +42,6 @@ public class App {
 		System.out.println();
 		System.out.println("*** Syntatics Table ***");
 		
-		syntaticsTable.setup();
-
 		System.out.println("actions.csv < ```");
 		System.out.println(syntaticsTable.getActionsCSV());
 		System.out.println("```");
@@ -80,7 +77,7 @@ public class App {
 		Lexer lexerForPrint = new JavaLexer(grammar.getEndSymbol());
 		InputStream inStrm = new ByteArrayInputStream(sourceCode.getBytes());
 		for (;;) {
-			Token symbol = lexerForPrint.getSymbol(inStrm);
+			Token symbol = lexerForPrint.tokenize(inStrm);
 
 			if (grammar.isEndSymbol(symbol)) {
 				System.out.println(symbol);
@@ -119,15 +116,14 @@ public class App {
 		if (!new File(fname).exists()) {
 			System.out.println("Syntatics Table Making ...");
 			grammar = Grammar.loadString(grammarSource);
-			syntaticsTable = new SyntaticsTable(grammar);
-			syntaticsTable.setup();
+			syntaticsTable = SyntaticsTable.create(grammar);
 
 			syntaticsTable.serialize(new ObjectOutputStream(new FileOutputStream(fname)));
 		} else {
 			System.out.println("Syntatics Table Loading ...");
 			
 			syntaticsTable = SyntaticsTable.deserialize(new ObjectInputStream(new FileInputStream(fname)));
-			grammar = syntaticsTable.getGrammar();
+			grammar = syntaticsTable.grammar();
 		}
 		
 		
@@ -161,7 +157,7 @@ public class App {
 		Lexer lexerForPrint = new JavaLexer(grammar.getEndSymbol());
 		InputStream inStrm = new ByteArrayInputStream(sourceCode.getBytes());
 		for (;;) {
-			Token symbol = lexerForPrint.getSymbol(inStrm);
+			Token symbol = lexerForPrint.tokenize(inStrm);
 
 			if (grammar.isEndSymbol(symbol)) {
 				System.out.println(symbol);

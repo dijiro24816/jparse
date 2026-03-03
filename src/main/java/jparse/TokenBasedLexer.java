@@ -15,7 +15,7 @@ public class TokenBasedLexer implements Lexer {
 	}
 
 	@Override
-	public Token getSymbol(InputStream inStrm) throws IOException, InvalidTokenException {
+	public Token tokenize(InputStream inStrm) throws IOException, InvalidTokenException {
 		if (this.i < this.symbols.size())
 			return this.symbols.get(this.i++);
 

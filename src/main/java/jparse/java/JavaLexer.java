@@ -7,7 +7,9 @@ import java.util.HexFormat;
 
 import jparse.InvalidTokenException;
 import jparse.Lexer;
+import jparse.TextBuffer;
 import jparse.Token;
+import jparse.Util;
 
 public class JavaLexer implements Lexer {
 	private TextBuffer textBuffer;
@@ -491,7 +493,7 @@ public class JavaLexer implements Lexer {
 		return false;
 	}
 
-	public Token getSymbol(InputStream inStrm) throws IOException, InvalidTokenException {
+	public Token tokenize(InputStream inStrm) throws IOException, InvalidTokenException {
 		int ch;
 		while ((ch = textBuffer.peek(inStrm)) >= 0) {
 			if (ch != '\n' && (ch < ' ' || ch > 126)) // Invaild character

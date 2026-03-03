@@ -15,23 +15,29 @@ public record Grammar(String productSymbol, String endSymbol, HashMap<String, In
 		List<String> nonterminalSymbols, HashMap<Rule, Integer> ruleIndices, List<Rule> rules) implements Serializable {
 
 	public static Grammar loadFile(String fileName) throws FileNotFoundException {
-		return loadFile(fileName, "$");
+		return new GrammarBuilder().resourceFile(fileName).build();
 	}
 	
-	public static Grammar loadFile(String fileName, String endSymbol) throws FileNotFoundException {
-		return new GrammarBuilder(endSymbol).resourceFile(fileName).build();
+	public static Grammar loadFile(String fileName, String productSymbol) throws FileNotFoundException {
+		return new GrammarBuilder().resourceFile(fileName).build(productSymbol);
+	}
+	
+	public static Grammar loadFile(String fileName, String productSymbol, String endSymbol) throws FileNotFoundException {
+		return new GrammarBuilder().resourceFile(fileName).build(productSymbol, endSymbol);
 	}
 	
 	public static Grammar loadString(String string) {
-		return loadString(string, "$");
+		return new GrammarBuilder().resourceString(string).build();
 	}
 	
-	public static Grammar loadString(String string, String endSymbol) {
-		return new GrammarBuilder(endSymbol).resourceString(string).build();
+	public static Grammar loadString(String string, String begSymbol) {
+		return new GrammarBuilder().resourceString(string).build(begSymbol);
 	}
 	
+	public static Grammar loadString(String string, String begSymbol, String endSymbol) {
+		return new GrammarBuilder().resourceString(string).build(begSymbol, endSymbol);
+	}
 	
-
 	public HashSet<Item> expandFirstItems() {
 		HashSet<Item> items = new HashSet<>(
 				expandSymbolsRules(getProductSymbol()).stream().map(e -> new Item(e)).toList());

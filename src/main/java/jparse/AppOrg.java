@@ -17,21 +17,19 @@ public class AppOrg {
 		System.out.println("version    : " + r.version());
 		System.out.println("maxMemory  : " + r.maxMemory());
 		System.out.println("totalMemory: " + r.totalMemory());
-//		System.exit(0);
 
 		Grammar grammar;
 		SyntaticsTable syntaticsTable;
 
 		String fname = "syntaticsTable.ser";
 		if (!new File(fname).exists()) {
-		grammar = Grammar.loadFile("JavaSyntax21.txt");
-		syntaticsTable = new SyntaticsTable(grammar);
-		syntaticsTable.setup();
+		grammar = Grammar.loadFile("JavaSyntax21.txt", "CompilationUnit");
+		syntaticsTable = SyntaticsTable.create(grammar);
 
 			syntaticsTable.serialize(new ObjectOutputStream(new FileOutputStream(fname)));
 		} else {
 			syntaticsTable = SyntaticsTable.deserialize(new ObjectInputStream(new FileInputStream(fname)));
-			grammar = syntaticsTable.getGrammar();
+			grammar = syntaticsTable.grammar();
 		}
 
 		System.out.println("*** Grammar ***");
@@ -84,7 +82,7 @@ public class AppOrg {
 			Lexer lexer = new TokenBasedLexer(src);
 			InputStream inStrm = new ByteArrayInputStream(src.getBytes());
 			for (;;) {
-				Token symbol = lexer.getSymbol(inStrm);
+				Token symbol = lexer.tokenize(inStrm);
 				if (symbol == null)
 					throw new UnknownTokenException();
 

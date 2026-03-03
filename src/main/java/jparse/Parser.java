@@ -26,7 +26,6 @@ public class Parser {
 	
 	public Token parse(InputStream inStrm, BiFunction<Rule, List<Token>, Object> compounder) throws IOException, InvalidTokenException {
 		StateTokenStack stack = null;
-		this.table.setup();
 		Action action = new Action(ActionKind.Begin, 0);
 		for (;;) {
 			switch (action.kind()) {
@@ -69,7 +68,7 @@ public class Parser {
 				stack.push(toSymbol);
 				System.out.print(stack);
 				
-				action = table.getNonterminalAction(stack.getCurrentState(), toSymbol.label());
+				action = table.getAction(stack.getCurrentState(), toSymbol.label());
 				if (action.kind() == ActionKind.Accept) {
 					System.out.println(" Accept");
 					return toSymbol;

@@ -19,14 +19,9 @@ public class GrammarBuilder {
 	private HashMap<String, Integer> terminalSymbolIndices;
 	private List<String> terminalSymbols;
 
-	public GrammarBuilder()	{
-		this("$");
-	}
-	
-	public GrammarBuilder(String endSymbol) {
+	public GrammarBuilder() {
 		this.terminalSymbols = new ArrayList<String>();
 		this.terminalSymbolIndices = new HashMap<String, Integer>();
-		cacheTerminalSymbolWithIndex(endSymbol); // terminal symbol contains end of symbol
 
 		this.nonterminalSymbolIndices = new HashMap<String, Integer>();
 		this.nonterminalSymbols = new ArrayList<String>();
@@ -72,7 +67,7 @@ public class GrammarBuilder {
 	}
 
 	public Grammar build(String productSymbol, String endSymbol) {
-		
+		cacheTerminalSymbolWithIndex(endSymbol); // terminal symbol contains end of symbol
 		
 		return new Grammar(productSymbol, endSymbol, getTerminalSymbolIndices(), getTerminalSymbols(),
 				getNonterminalSymbolIndices(), getNonterminalSymbols(), getRuleIndices(), getRules());
@@ -147,6 +142,7 @@ public class GrammarBuilder {
 			return new Rule(productSymbol, symbols);
 		}).toList());
 	}
+	
 
 	public GrammarBuilder resourceFile(String fileName) throws FileNotFoundException {
 		return resource(new FileInputStream(fileName));

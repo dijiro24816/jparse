@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
 
+import jparse.TextBuffer;
 import jparse.Token;
 
 public class PunctuationTokenRelation {

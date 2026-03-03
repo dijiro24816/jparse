@@ -86,7 +86,7 @@ public class BufferedLexer {
 		if (distanceIndex(getTokens().length, getHeadIndex(), increaseIndex(getTailIndex())) == 0)
 			throw new RuntimeException("BufferedLexer overflow");
 
-		Token token = getTokens()[getTailIndex()] = getLexer().getSymbol(source);
+		Token token = getTokens()[getTailIndex()] = getLexer().tokenize(source);
 		setTailIndex(increaseIndex(getTailIndex()));
 		return token;
 	}
