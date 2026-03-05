@@ -118,13 +118,13 @@ public class Scratchpad {
 		}
 
 		for (this.index = length(); this.index < index; this.index++) {
-			int ch = pullCharacter(inStrm);
+			int ch = pullByteCharacter(inStrm);
 			if (ch < 0)
 				return ch;
 			this.count++;
 		}
 
-		return pullCharacter(inStrm);
+		return pullByteCharacter(inStrm);
 	}
 
 	public int length() {
@@ -146,7 +146,7 @@ public class Scratchpad {
 		return ch < 0 ? ch : buffer.charAt(getIndex() + nth);
 	}
 
-	protected int pullCharacter(InputStream inStrm) throws IOException {
+	protected int pullByteCharacter(InputStream inStrm) throws IOException {
 		int ch = inStrm.read();
 		buffer.append((char) ch);
 		count++;

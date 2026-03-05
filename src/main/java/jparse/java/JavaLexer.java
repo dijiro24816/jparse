@@ -34,11 +34,11 @@ public class JavaLexer implements Lexer {
 				if (ch != '\\')
 					return ch;
 				
-				if (super.pullCharacter(inStrm) != 'u')
+				if (pullByteCharacter(inStrm) != 'u')
 					return ch;
 				
 				for (int i = 0; i < 4; i++)
-					super.pullCharacter(inStrm);
+					pullByteCharacter(inStrm);
 				
 				ch = (int) Util.parseHexDecimalDigits(copy(begIndex + 2, begIndex + 6));
 				replaceAsCharacter(begIndex, begIndex + 6, ch);
