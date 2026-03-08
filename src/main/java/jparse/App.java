@@ -16,7 +16,7 @@ import jparse.java.JavaLexer;
  */
 
 public class App {
-	public static void main(String[] args) throws IOException, InvalidTokenException, ClassNotFoundException {
+	public static void maina(String[] args) throws IOException, InvalidTokenException, ClassNotFoundException {
 		long start = System.currentTimeMillis();
 		
 		Grammar grammar;
@@ -39,7 +39,7 @@ public class App {
 		System.out.println("*** Grammar ***");
 		System.out.println(grammar);
 
-		System.out.println();
+//		System.out.println();
 		System.out.println("*** Syntatics Table ***");
 		
 		System.out.println("actions.csv < ```");
@@ -98,7 +98,7 @@ public class App {
 		System.out.println((end - start)  + "ms");
 	}
 
-	public static void maina(String[] args) throws IOException, InvalidTokenException, ClassNotFoundException {
+	public static void main(String[] args) throws IOException, InvalidTokenException, ClassNotFoundException {
 		long start = System.currentTimeMillis();
 		
 		String grammarSource = """
@@ -144,33 +144,25 @@ public class App {
 		System.out.println("```");
 
 		String sourceCode = """
-				a = b + c + d
+				a = b + c
 				""";
 
-		System.out.println("*** Source ***");
+		System.out.println("*** Source Code ***");
 		System.out.println("```");
 		System.out.print(sourceCode);
 		System.out.println("```");
 
 		System.out.println();
 		System.out.println("*** Loaded Token ***");
-		Lexer lexerForPrint = new JavaLexer(grammar.getEndSymbol());
-		InputStream inStrm = new ByteArrayInputStream(sourceCode.getBytes());
-		for (;;) {
-			Token symbol = lexerForPrint.tokenize(inStrm);
-
-			if (grammar.isEndSymbol(symbol)) {
-				System.out.println(symbol);
-				break;
-			}
-
-			System.out.println(symbol);
-		}
-
+		Lexer lexer = new JavaLexer();
+		for (Token token : lexer.tokenizeAll(new ByteArrayInputStream(sourceCode.getBytes())))
+			System.out.println(token);
+		
 		System.out.println("*** Parser Stack ***");
-		Lexer lexer = new JavaLexer(grammar.getEndSymbol());
+		lexer = new JavaLexer();
 		Parser parser = new Parser(lexer, syntaticsTable);
 		Token symbol = parser.parse(new ByteArrayInputStream(sourceCode.getBytes()));
+		System.out.println("*** Result Token ***");
 		System.out.println(symbol);
 		
 		long end = System.currentTimeMillis();

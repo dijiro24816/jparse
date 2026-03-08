@@ -1,9 +1,12 @@
 package jparse.java;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.lang.reflect.InvocationTargetException;
+import java.util.ArrayList;
 import java.util.HexFormat;
+import java.util.List;
 
 import jparse.InvalidTokenException;
 import jparse.Lexer;
@@ -11,78 +14,23 @@ import jparse.Scratchpad;
 import jparse.Token;
 import jparse.Util;
 
-public class JavaLexer implements Lexer {
-	private Scratchpad scratchpad;
-	private String endSymbol;
-	
-	public JavaLexer(Scratchpad scratchpad, String endSymbol) {
-		this.scratchpad = scratchpad;
-		this.endSymbol = endSymbol;
+public class JavaLexer extends Lexer {
+	public static Token captureBooleanLiteralToken(int beg, int end, String s) {
+		boolean value;
+		
+		switch (s) {
+		case "true":
+			value = true;
+			break;
+		case "false":
+			value = false;
+			break;
+		default:
+			return null;
+		}
+		
+		return new Token("BooleanLiteral", beg, end, value);
 	}
-	
-	public JavaLexer() {
-		this("$");
-	}
-	
-	public JavaLexer(String endSymbol) {
-		this(new Scratchpad() {
-			public int pullCharacter(InputStream inStrm) throws IOException {
-				int begIndex = length();
-				
-				int ch = getCharacter(inStrm);
-				
-				if (ch != '\\')
-					return ch;
-				
-				if (pullByteCharacter(inStrm) != 'u')
-					return ch;
-				
-				for (int i = 0; i < 4; i++)
-					pullByteCharacter(inStrm);
-				
-				ch = (int) Util.parseHexDecimalDigits(copy(begIndex + 2, begIndex + 6));
-				replaceAsCharacter(begIndex, begIndex + 6, ch);
-				
-				return ch;
-			}
-
-			public void replaceAsCharacter(int begIndex, int endIndex, int ch) {
-				erase(begIndex, endIndex, 1);
-				buffer.insert(begIndex, (char)ch);
-			}
-		}, endSymbol);
-	}
-
-	public Token extractAfterJavaLetter(InputStream inStrm) throws IOException, InvalidTokenException {
-		int ch, length = 0;
-		while ((ch = scratchpad.getCharacter(inStrm)) >= 0 && (isJavaLetter(ch) || Character.isDigit(ch)))
-			length++;
-
-		int beg = scratchpad.getFirstByteCount();
-		String s = scratchpad.extract(0, length);
-		int end = scratchpad.getFirstByteCount();
-
-		Token symbol;
-
-		symbol = captureKeywordToken(beg, end, s);
-		if (symbol != null)
-			return symbol;
-
-		symbol = captureNullLiteralToken(beg, end, s);
-		if (symbol != null)
-			return symbol;
-
-		symbol = captureBooleanLiteralToken(beg, end, s);
-		if (symbol != null)
-			return symbol;
-
-		return new Token("Identifier", beg, end, s);
-	}
-	
-	public static Token captureNullLiteralToken(int beg, int end, String s) {
-		return s.equals("null") ? new Token("NullLiteral", beg, end) : null;
-	}
-	
 	
 	public static Token captureKeywordToken(int beg, int end, String s) {
 		switch (s) {
@@ -191,41 +139,26 @@ public class JavaLexer implements Lexer {
 		return null;
 	}
 	
-	public static Token captureBooleanLiteralToken(int beg, int end, String s) {
-		boolean value;
-		
-		switch (s) {
-		case "true":
-			value = true;
-			break;
-		case "false":
-			value = false;
-			break;
-		default:
-			return null;
-		}
-		
-		return new Token("BooleanLiteral", beg, end, value);
+	public static Token captureNullLiteralToken(int beg, int end, String s) {
+		return s.equals("null") ? new Token("NullLiteral", beg, end) : null;
 	}
+	
+	private Scratchpad scratchpad;
 
-	public long extractOctalDigits(InputStream inStrm) throws IOException, InvalidTokenException {
-		int start = scratchpad.getIndex();
-		int end = start + scratchpad.countLength(inStrm, (Integer ch) -> {
-			return Util.isOctalDigit(ch);
-		});
-
-		return Util.parseOctalDigits(scratchpad.extract(start, end));
+	public JavaLexer() {
+		this("$");
 	}
-
-	public long extractHexdecimalDigits(InputStream inStrm) throws IOException, InvalidTokenException {
-		int start = scratchpad.getIndex();
-		int end = start + scratchpad.countLength(inStrm, (Integer ch) -> {
-			return Util.isHexDecimalDigit(ch);
-		});
-
-		return Util.parseHexDecimalDigits(scratchpad.extract(start, end));
+	
+	public JavaLexer(String endSymbol) {
+		this(endSymbol, new JavaScratchpad());
 	}
-
+	
+	
+	public JavaLexer(String endSymbol, Scratchpad scratchpad) {
+		super(endSymbol);
+		this.scratchpad = scratchpad;
+	}
+	
 	public Token extractAfterBinaryExponent(InputStream inStrm, String left)
 			throws IOException, InvalidTokenException {
 		int beg = scratchpad.getFirstByteCount() - left.length();
@@ -386,6 +319,55 @@ public class JavaLexer implements Lexer {
 		}
 	}
 
+	public Token extractAfterJavaLetter(InputStream inStrm) throws IOException, InvalidTokenException {
+		int ch, length = 0;
+		while ((ch = scratchpad.getCharacter(inStrm)) >= 0 && (isJavaLetter(ch) || Character.isDigit(ch)))
+			length++;
+
+		int beg = scratchpad.getFirstByteCount();
+		String s = scratchpad.extract(0, length);
+		int end = scratchpad.getFirstByteCount();
+
+		Token symbol;
+
+		symbol = captureKeywordToken(beg, end, s);
+		if (symbol != null)
+			return symbol;
+
+		symbol = captureNullLiteralToken(beg, end, s);
+		if (symbol != null)
+			return symbol;
+
+		symbol = captureBooleanLiteralToken(beg, end, s);
+		if (symbol != null)
+			return symbol;
+
+		return new Token("Identifier", beg, end, s);
+	}
+
+	public Token extractCharacterLiteralToken(InputStream inStrm) throws IOException, InvalidTokenException {
+		int beg = scratchpad.getFirstByteCount();
+		int offset = scratchpad.getIndex();
+
+		scratchpad.jump(inStrm, offset + 1); // jump after '\''
+		if (scratchpad.peek(inStrm) == '\'')
+			throw new InvalidTokenException();
+
+		int ch;
+		try {
+			ch = extractSingleCharacter(inStrm); // extract inside '\'' and '\''
+		} catch (InvalidTokenException e) {
+			System.out.println(e.getMessage());
+			return null;
+		}
+
+		if (scratchpad.getCharacter(inStrm) != '\'')
+			throw new InvalidTokenException();
+
+		scratchpad.erase(offset, offset + 2); // erase '\'' + '\''
+		return new Token("CharacterLiteral", ch, beg, scratchpad.getFirstByteCount());
+	}
+
 	public int extractEscapeSequence(InputStream inStrm) throws IOException, InvalidTokenException {
 		int beg = scratchpad.getFirstByteCount();
 		int offset = scratchpad.getIndex();
@@ -442,24 +424,32 @@ public class JavaLexer implements Lexer {
 		return ch;
 	}
 
-	public Token extractStringLiteralToken(InputStream inStrm) throws IOException, InvalidTokenException {
-		int beg = scratchpad.getFirstByteCount();
-		int offset = scratchpad.getIndex();
+	public long extractHexdecimalDigits(InputStream inStrm) throws IOException, InvalidTokenException {
+		int start = scratchpad.getIndex();
+		int end = start + scratchpad.countLength(inStrm, (Integer ch) -> {
+			return Util.isHexDecimalDigit(ch);
+		});
 
-		StringBuilder sb = new StringBuilder();
+		return Util.parseHexDecimalDigits(scratchpad.extract(start, end));
+	}
 
-		scratchpad.jump(inStrm, offset + 1); // jump after '"'
-		int ch;
-		while ((ch = scratchpad.peek(inStrm)) != '"') {
-			if (ch < 0)
-				throw new InvalidTokenException();
-			ch = extractSingleCharacter(inStrm);
-			sb.append((char) ch);
+	public long extractOctalDigits(InputStream inStrm) throws IOException, InvalidTokenException {
+		int start = scratchpad.getIndex();
+		int end = start + scratchpad.countLength(inStrm, (Integer ch) -> {
+			return Util.isOctalDigit(ch);
+		});
+
+		return Util.parseOctalDigits(scratchpad.extract(start, end));
+	}
+
+	public Token extractPunctuation(InputStream inStrm) throws IOException {
+		try {
+			return PunctuationTokenRelation.extract(scratchpad, inStrm);
+		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
+				| NoSuchMethodException | SecurityException | IOException e) {
+			e.printStackTrace();
 		}
-
-		scratchpad.erase(offset, offset + 2); // erase '"' + '"'
-
-		return new Token("StringLiteral", beg, scratchpad.getByteCount(offset), sb.toString());
+		return null;
 	}
 
 	public int extractSingleCharacter(InputStream inStrm) throws IOException, InvalidTokenException {
@@ -478,37 +468,24 @@ public class JavaLexer implements Lexer {
 		return ch;
 	}
 
-	public Token extractCharacterLiteralToken(InputStream inStrm) throws IOException, InvalidTokenException {
+	public Token extractStringLiteralToken(InputStream inStrm) throws IOException, InvalidTokenException {
 		int beg = scratchpad.getFirstByteCount();
 		int offset = scratchpad.getIndex();
 
-		scratchpad.jump(inStrm, offset + 1); // jump after '\''
-		if (scratchpad.peek(inStrm) == '\'')
-			throw new InvalidTokenException();
+		StringBuilder sb = new StringBuilder();
 
+		scratchpad.jump(inStrm, offset + 1); // jump after '"'
 		int ch;
-		try {
-			ch = extractSingleCharacter(inStrm); // extract inside '\'' and '\''
-		} catch (InvalidTokenException e) {
-			System.out.println(e.getMessage());
-			return null;
+		while ((ch = scratchpad.peek(inStrm)) != '"') {
+			if (ch < 0)
+				throw new InvalidTokenException();
+			ch = extractSingleCharacter(inStrm);
+			sb.append((char) ch);
 		}
 
-		if (scratchpad.getCharacter(inStrm) != '\'')
-			throw new InvalidTokenException();
+		scratchpad.erase(offset, offset + 2); // erase '"' + '"'
 
-		scratchpad.erase(offset, offset + 2); // erase '\'' + '\''
-		return new Token("CharacterLiteral", ch, beg, scratchpad.getFirstByteCount());
-	}
-
-	public Token extractPunctuation(InputStream inStrm) throws IOException {
-		try {
-			return PunctuationTokenRelation.extract(scratchpad, inStrm);
-		} catch (InstantiationException | IllegalAccessException | IllegalArgumentException | InvocationTargetException
-				| NoSuchMethodException | SecurityException | IOException e) {
-			e.printStackTrace();
-		}
-		return null;
+		return new Token("StringLiteral", beg, scratchpad.getByteCount(offset), sb.toString());
 	}
 
 	public boolean isJavaLetter(int ch) {
@@ -569,4 +546,22 @@ public class JavaLexer implements Lexer {
 		int offset = this.scratchpad.getFirstByteCount();
 		return new Token(this.endSymbol, offset, offset);
 	}
+
+	@Override
+	public List<Token> tokenizeAll(InputStream inStrm) throws IOException, InvalidTokenException {
+		ArrayList<Token> tokens = new ArrayList<>();
+		for (;;) {
+			Token symbol = tokenize(inStrm);
+
+			if (symbol.label().equals(endSymbol)) {
+				tokens.add(symbol);
+				break;
+			}
+
+			tokens.add(symbol);
+		}
+		
+		return tokens;
+	}
+
 }

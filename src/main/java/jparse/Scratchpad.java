@@ -11,7 +11,7 @@ public class Scratchpad {
 			this(index, length, 0);
 		}
 	}
-
+	
 	protected StringBuilder buffer;
 	private int count; // Counting from beginning of InputStream
 	private ArrayList<ErasedString> erasedStrings;
@@ -39,7 +39,7 @@ public class Scratchpad {
 	}
 
 	public ErasedString erase(int begIndex, int endIndex) {
-		return erase(begIndex, endIndex);
+		return erase(begIndex, endIndex, 0);
 	}
 
 	public ErasedString erase(int begIndex, int endIndex, int resizedLength) {

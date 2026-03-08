@@ -3,7 +3,7 @@ package jparse;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class RegularExpressionLexer implements Lexer {
+public class RegularExpressionLexer extends Lexer {
 	// https://pubs.opengroup.org/onlinepubs/007908799/xbd/re.html
 	
 	private boolean isInsideBracketExpression = false;
@@ -11,6 +11,7 @@ public class RegularExpressionLexer implements Lexer {
 	public Scratchpad textBuffer;
 	
 	public RegularExpressionLexer() {
+		super("$");
 		this.textBuffer = new Scratchpad();
 	}
 	
