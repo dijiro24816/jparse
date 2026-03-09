@@ -1,40 +1,77 @@
 package jparse;
 
 import java.io.ByteArrayInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
 
 import jparse.java.JavaLexer;
 
-/**
- * Hello world!
- */
-
 public class App {
+	public static void main(String[] args) throws IOException, InvalidTokenException, ClassNotFoundException {
+		long start = System.currentTimeMillis();
+		
+		String grammarSource = """
+				Statement -> Expression
+				Statement -> Assignment
+				Expression -> Identifier
+				Expression -> Expression + Expression
+				Assignment -> Identifier = Expression
+				""";
+
+		Grammar grammar;
+		SyntaticsTable syntaticsTable;
+		
+		grammar = Grammar.loadString(grammarSource);
+		syntaticsTable = SyntaticsTable.create(grammar);
+		
+		
+		System.out.println("*** Grammar ***");
+		System.out.println(grammar);
+
+		System.out.println("*** Syntatics Table ***");
+//		SyntaticsTable syntaticsTable = new SyntaticsTable(grammar);
+//		syntaticsTable.setup();
+
+		System.out.println("actions.csv < ```");
+		System.out.println(syntaticsTable.getActionsCSV());
+		System.out.println("```");
+
+		System.out.println("gotos.csv < ```");
+		System.out.println(syntaticsTable.getGotosCSV());
+		System.out.println("```");
+
+		String sourceCode = """
+				a = b + c
+				""";
+
+		System.out.println("*** Source Code ***");
+		System.out.println("```");
+		System.out.print(sourceCode);
+		System.out.println("```");
+
+		System.out.println();
+		System.out.println("*** Loaded Token ***");
+		Lexer lexer = new JavaLexer();
+		for (Token token : lexer.tokenizeAll(new ByteArrayInputStream(sourceCode.getBytes())))
+			System.out.println(token);
+		
+		System.out.println("*** Parser Stack ***");
+		lexer = new JavaLexer();
+		Parser parser = new Parser(lexer, syntaticsTable);
+		Token symbol = parser.parseString(sourceCode);
+		System.out.println("*** Result Token ***");
+		System.out.println(symbol);
+		
+		long end = System.currentTimeMillis();
+		System.out.println((end - start)  + "ms");
+	}
+
 	public static void maina(String[] args) throws IOException, InvalidTokenException, ClassNotFoundException {
 		long start = System.currentTimeMillis();
 		
-		Grammar grammar;
-		SyntaticsTable syntaticsTable;
+		Grammar grammar = Grammar.loadFile("JavaSyntax.txt");
+		SyntaticsTable syntaticsTable = SyntaticsTable.create(grammar);
 
-		String fname = "syntaticsTable.ser";
-		if (!new File(fname).exists()) {
-			System.out.println("Syntatics Table Making ...");
-			grammar = Grammar.loadFile("JavaSyntax.txt");
-			syntaticsTable = SyntaticsTable.create(grammar);
-
-			syntaticsTable.serialize(new ObjectOutputStream(new FileOutputStream(fname)));
-		} else {
-			System.out.println("Syntatics Table Loading ...");
-			
-			syntaticsTable = SyntaticsTable.deserialize(new ObjectInputStream(new FileInputStream(fname)));
-			grammar = syntaticsTable.grammar();
-		}
 		
 		System.out.println("*** Grammar ***");
 		System.out.println(grammar);
@@ -93,77 +130,6 @@ public class App {
 		Token symbol = parser.parse(new ByteArrayInputStream(sourceCode.getBytes()));
 		System.out.println(symbol);
 		
-		
-		long end = System.currentTimeMillis();
-		System.out.println((end - start)  + "ms");
-	}
-
-	public static void main(String[] args) throws IOException, InvalidTokenException, ClassNotFoundException {
-		long start = System.currentTimeMillis();
-		
-		String grammarSource = """
-				Statement -> Expression
-				Statement -> Assignment
-				Expression -> Identifier
-				Expression -> Expression + Expression
-				Assignment -> Identifier = Expression
-				""";
-
-		Grammar grammar;
-		SyntaticsTable syntaticsTable;
-
-		String fname = "syntaticsTable.ser";
-		if (!new File(fname).exists()) {
-			System.out.println("Syntatics Table Making ...");
-			grammar = Grammar.loadString(grammarSource);
-			syntaticsTable = SyntaticsTable.create(grammar);
-
-			syntaticsTable.serialize(new ObjectOutputStream(new FileOutputStream(fname)));
-		} else {
-			System.out.println("Syntatics Table Loading ...");
-			
-			syntaticsTable = SyntaticsTable.deserialize(new ObjectInputStream(new FileInputStream(fname)));
-			grammar = syntaticsTable.grammar();
-		}
-		
-		
-		System.out.println("*** Grammar ***");
-		System.out.println(grammar);
-
-		System.out.println();
-		System.out.println("*** Syntatics Table ***");
-//		SyntaticsTable syntaticsTable = new SyntaticsTable(grammar);
-//		syntaticsTable.setup();
-
-		System.out.println("actions.csv < ```");
-		System.out.println(syntaticsTable.getActionsCSV());
-		System.out.println("```");
-
-		System.out.println("gotos.csv < ```");
-		System.out.println(syntaticsTable.getGotosCSV());
-		System.out.println("```");
-
-		String sourceCode = """
-				a = b + c
-				""";
-
-		System.out.println("*** Source Code ***");
-		System.out.println("```");
-		System.out.print(sourceCode);
-		System.out.println("```");
-
-		System.out.println();
-		System.out.println("*** Loaded Token ***");
-		Lexer lexer = new JavaLexer();
-		for (Token token : lexer.tokenizeAll(new ByteArrayInputStream(sourceCode.getBytes())))
-			System.out.println(token);
-		
-		System.out.println("*** Parser Stack ***");
-		lexer = new JavaLexer();
-		Parser parser = new Parser(lexer, syntaticsTable);
-		Token symbol = parser.parse(new ByteArrayInputStream(sourceCode.getBytes()));
-		System.out.println("*** Result Token ***");
-		System.out.println(symbol);
 		
 		long end = System.currentTimeMillis();
 		System.out.println((end - start)  + "ms");

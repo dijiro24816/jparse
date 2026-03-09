@@ -2,6 +2,7 @@ package jparse;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 
 public class SyntaticsTableBuilder {
@@ -16,7 +17,7 @@ public class SyntaticsTableBuilder {
 	}
 
 	public SyntaticsTable build() {
-		int state = createState(new HashMap<StateKey, Integer>(), StateKey.create(grammar.expandFirstItems()));
+		int state = createState(new HashMap<StateKey, Integer>(), StateKey.create(grammar));
 
 		int lastState = getNewState();
 		if (grammar.isNonterminalSymbol(grammar.getProductSymbol())) {
@@ -35,9 +36,6 @@ public class SyntaticsTableBuilder {
 		}
 		
 		int stateCount = lastState + 1;
-		
-		System.out.println(stateCount);
-		System.out.println(getTerminalSectionColumnLength());
 		
 		Action[] terminalSectionArray = new Action[getTerminalSectionColumnLength() * stateCount];
 		Action[] nonterminalSectionArray = new Action[getNonterminalSectionColumnLength() * stateCount];
@@ -59,6 +57,7 @@ public class SyntaticsTableBuilder {
 			return keyStates.get(key);
 
 		int currentState = getNewState();
+		
 		//		if (currentState == 11) {
 		//			StateKey k10 = null;
 		//			StateKey k11 = key;
@@ -82,7 +81,7 @@ public class SyntaticsTableBuilder {
 
 		keyStates.put(key, currentState);
 		//		System.out.println("" + currentState + " -" + key);
-		List<Item> closures = key.closures();
+		HashSet<Item> closures = key.closures();
 		if (closures.size() > 0) {
 			// Check reduce-reduce problem
 			if (closures.size() > 1) {
@@ -146,9 +145,9 @@ public class SyntaticsTableBuilder {
 			// TODO: Use follow-set or lookahead-set
 
 			for (Item closure : closures) {
-				for (String symbol : closure.getLookaheadSet()) {
+				for (String symbol : closure.lookaheadSet()) {
 					setTerminalSection(currentState, grammar.getTerminalSymbolIndexOf(symbol),
-							new Action(ActionKind.Reduce, grammar.getRuleIndexOf(closure.getRule())));
+							new Action(ActionKind.Reduce, grammar.getRuleIndexOf(closure.rule())));
 				}
 			}
 

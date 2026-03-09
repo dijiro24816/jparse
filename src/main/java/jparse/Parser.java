@@ -106,7 +106,7 @@ public class Parser {
 		}
 	}
 	
-	public Token parseCode(String code) throws IOException, InvalidTokenException {
+	public Token parseString(String code) throws IOException, InvalidTokenException {
 		return parse(new ByteArrayInputStream(code.getBytes()));
 	}
 	
