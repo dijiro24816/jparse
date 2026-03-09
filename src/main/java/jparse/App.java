@@ -7,7 +7,7 @@ import java.io.InputStream;
 import jparse.java.JavaLexer;
 
 public class App {
-	public static void main(String[] args) throws IOException, InvalidTokenException, ClassNotFoundException {
+	public static void maina(String[] args) throws IOException, InvalidTokenException, ClassNotFoundException {
 		long start = System.currentTimeMillis();
 		
 		String grammarSource = """
@@ -66,7 +66,7 @@ public class App {
 		System.out.println((end - start)  + "ms");
 	}
 
-	public static void maina(String[] args) throws IOException, InvalidTokenException, ClassNotFoundException {
+	public static void main(String[] args) throws IOException, InvalidTokenException, ClassNotFoundException {
 		long start = System.currentTimeMillis();
 		
 		Grammar grammar = Grammar.loadFile("JavaSyntax.txt");
